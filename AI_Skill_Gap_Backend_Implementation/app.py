@@ -5,9 +5,11 @@ from routes import api
 from seed import seed_database
 
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
     app.config.from_object(Config)
+    if test_config:
+        app.config.update(test_config)
     db.init_app(app)
     app.register_blueprint(api, url_prefix="/api")
 

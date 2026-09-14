@@ -9,17 +9,24 @@ from extensions import db as _db
 from models import Skill, JobRole, JobSkill, Course, CourseSkill, Student, StudentSkill
 
 
+from sqlalchemy.pool import StaticPool
+
+
 @pytest.fixture(scope="session")
 def app():
     """Create application with an in-memory SQLite test database."""
-    _app = create_app()
-    _app.config.update({
+    test_config = {
         "TESTING":                  True,
-        "SQLALCHEMY_DATABASE_URI":  "sqlite:///:memory:",
+        "SQLALCHEMY_DATABASE_URI":  "sqlite://",
+        "SQLALCHEMY_ENGINE_OPTIONS": {
+            "poolclass": StaticPool,
+            "connect_args": {"check_same_thread": False},
+        },
         "WTF_CSRF_ENABLED":         False,
         "UPLOAD_DIR":               "/tmp/test_uploads",
         "MODEL_PATH":               "ml/models/skill_gap_model.joblib",
-    })
+    }
+    _app = create_app(test_config=test_config)
     with _app.app_context():
         _db.create_all()
         _seed_test_data()
