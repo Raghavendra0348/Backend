@@ -1,0 +1,2001 @@
+assessment_score,current_proficiency,required_proficiency,project_count,certification_count,role_importance,skill_category,gap_level
+52.69,46.21,69.97,1,0,1.0,Database,MEDIUM
+68.85,74.66,77.79,1,1,0.921,Testing,LOW
+19.96,24.24,78.16,2,0,0.789,Backend,HIGH
+76.02,74.8,95.59,1,3,0.823,Database,MEDIUM
+24.61,34.83,67.91,1,1,0.776,Security,MEDIUM
+93.27,65.48,62.35,3,3,1.0,General,LOW
+19.41,11.67,61.91,1,1,0.869,Programming,HIGH
+83.27,74.33,80.82,0,0,1.0,Database,LOW
+58.66,60.44,54.92,3,1,0.838,Backend,LOW
+86.68,71.72,79.73,2,0,0.951,General,LOW
+72.45,63.42,60.81,1,1,1.0,Security,LOW
+43.99,38.98,67.88,2,3,1.0,Security,MEDIUM
+35.01,38.93,64.98,2,1,0.73,Backend,MEDIUM
+46.38,41.85,68.04,2,0,0.925,General,MEDIUM
+3.27,14.0,67.81,0,1,0.701,Programming,HIGH
+53.34,53.68,68.08,3,0,0.725,Artificial Intelligence,MEDIUM
+83.72,69.67,59.98,1,1,1.0,Testing,LOW
+78.51,78.42,87.07,2,1,0.845,Backend,LOW
+43.81,35.68,60.17,3,0,0.665,Database,MEDIUM
+79.23,66.23,60.6,4,0,0.87,Artificial Intelligence,LOW
+72.78,71.03,77.26,2,1,0.817,Software Engineering,LOW
+48.93,39.3,79.59,2,0,0.912,General,HIGH
+24.29,25.06,59.1,4,1,0.901,Programming,HIGH
+58.72,58.3,55.37,4,0,0.779,Data Science,LOW
+58.41,62.94,68.76,2,0,1.0,Database,LOW
+63.52,57.22,79.1,0,2,1.0,Database,MEDIUM
+66.15,57.43,80.57,2,4,1.0,Testing,MEDIUM
+69.02,55.71,79.37,3,0,0.948,General,MEDIUM
+68.99,45.84,63.15,2,0,0.57,General,MEDIUM
+68.12,67.48,65.28,2,0,0.738,Database,LOW
+61.23,39.79,75.46,3,1,1.0,Backend,MEDIUM
+44.81,39.76,60.07,1,0,0.98,Database,MEDIUM
+28.43,18.98,73.18,3,1,1.0,Database,HIGH
+17.31,19.69,64.69,0,1,1.0,Testing,HIGH
+40.0,23.68,69.47,1,1,0.735,Software Engineering,HIGH
+47.53,57.35,81.63,0,1,0.969,Software Engineering,MEDIUM
+35.68,54.65,74.47,4,2,1.0,Backend,MEDIUM
+55.1,46.25,60.14,0,1,0.73,Testing,MEDIUM
+43.14,34.14,68.57,3,3,0.846,Database,HIGH
+51.58,46.11,82.78,4,3,0.87,DevOps,MEDIUM
+61.69,64.4,67.61,5,0,0.808,Backend,LOW
+79.18,72.94,81.58,0,1,0.994,Data Science,LOW
+68.09,71.18,51.1,0,0,1.0,Testing,LOW
+72.62,76.95,71.14,2,0,0.831,Security,LOW
+40.89,47.53,81.54,0,2,1.0,Software Engineering,MEDIUM
+43.47,50.29,71.98,0,0,0.993,Backend,MEDIUM
+81.74,76.82,87.71,1,1,1.0,Software Engineering,LOW
+75.29,70.56,72.7,3,1,0.958,Testing,LOW
+56.72,71.25,73.89,1,0,1.0,Backend,LOW
+50.11,46.69,62.41,3,4,1.0,Software Engineering,MEDIUM
+50.52,51.26,77.0,2,1,0.858,Data Science,MEDIUM
+58.41,74.35,70.85,0,5,0.86,Data Science,LOW
+1.14,14.83,66.87,3,1,0.98,Testing,HIGH
+82.53,80.83,71.15,3,0,1.0,Backend,LOW
+67.74,77.39,71.45,1,0,0.903,Security,LOW
+74.63,65.77,52.69,3,3,0.879,Testing,LOW
+58.51,61.33,64.85,3,0,0.55,General,LOW
+29.03,34.17,75.67,3,0,0.791,General,HIGH
+19.17,33.51,63.85,2,0,0.921,Software Engineering,MEDIUM
+85.21,76.69,75.15,2,1,0.807,DevOps,LOW
+82.18,65.73,54.85,0,0,0.863,Data Science,LOW
+93.55,62.76,80.77,0,1,1.0,Programming,MEDIUM
+26.87,28.74,66.89,1,0,0.993,DevOps,HIGH
+74.86,74.94,81.87,0,1,1.0,DevOps,LOW
+70.18,74.06,60.59,2,0,0.7,Artificial Intelligence,LOW
+48.13,51.74,70.28,1,0,0.864,Database,MEDIUM
+29.46,28.97,66.08,2,2,0.825,Artificial Intelligence,HIGH
+65.08,60.07,64.23,3,1,0.753,Data Science,LOW
+0.0,7.56,62.37,0,1,0.907,Testing,HIGH
+74.22,46.38,58.61,0,0,0.658,Programming,MEDIUM
+67.55,56.49,58.98,2,0,0.916,Database,LOW
+53.36,48.48,66.7,1,1,1.0,Security,MEDIUM
+44.42,38.99,64.82,3,1,1.0,Software Engineering,MEDIUM
+13.67,3.16,68.24,1,1,0.873,Testing,HIGH
+49.71,58.56,80.92,3,2,0.993,DevOps,MEDIUM
+52.04,56.64,73.82,2,3,0.823,Programming,MEDIUM
+41.34,45.62,77.87,4,0,0.717,Testing,MEDIUM
+33.04,31.33,59.42,3,1,1.0,DevOps,MEDIUM
+66.34,48.52,67.97,2,1,0.989,Database,MEDIUM
+36.53,46.43,80.93,2,3,0.781,Testing,MEDIUM
+49.43,38.72,59.12,0,0,0.713,Security,MEDIUM
+6.25,8.55,78.52,2,0,0.994,Backend,HIGH
+38.07,38.14,58.75,3,1,0.702,Software Engineering,MEDIUM
+44.22,52.21,59.83,3,1,0.875,Security,LOW
+77.0,51.3,68.85,0,1,0.734,Programming,MEDIUM
+64.73,52.27,43.49,1,2,0.589,Software Engineering,LOW
+26.08,29.7,80.33,1,1,0.94,Programming,HIGH
+33.99,33.0,67.96,1,0,0.98,Software Engineering,HIGH
+45.53,38.42,65.6,3,0,0.917,Backend,MEDIUM
+63.69,76.11,58.3,2,1,0.878,Backend,LOW
+70.47,68.36,49.18,1,3,0.885,Database,LOW
+51.89,48.82,71.36,2,3,0.743,Data Science,MEDIUM
+72.19,52.13,58.7,2,0,1.0,Security,LOW
+81.72,91.75,86.21,3,0,0.977,DevOps,LOW
+36.48,34.61,70.18,1,0,0.687,Data Science,HIGH
+46.45,40.71,83.41,4,0,0.637,DevOps,HIGH
+21.42,21.47,74.08,3,0,0.751,Security,HIGH
+77.9,84.17,69.65,3,0,1.0,Artificial Intelligence,LOW
+46.35,59.54,52.37,5,1,0.866,Security,LOW
+41.84,33.66,49.73,0,1,0.82,Backend,MEDIUM
+59.14,58.85,64.6,2,1,0.804,Testing,LOW
+66.05,68.66,61.58,2,0,0.97,Software Engineering,LOW
+48.64,62.13,80.68,0,1,1.0,Security,MEDIUM
+67.11,72.29,72.82,5,1,1.0,Database,LOW
+26.98,40.42,65.8,1,0,0.762,Backend,MEDIUM
+4.11,14.82,55.66,2,1,1.0,Software Engineering,HIGH
+54.42,65.65,74.51,4,1,1.0,General,LOW
+38.95,33.4,64.82,1,4,0.807,Backend,MEDIUM
+39.21,47.53,84.21,2,1,0.971,Backend,MEDIUM
+46.29,49.91,66.6,0,5,1.0,Database,MEDIUM
+14.5,28.3,63.23,2,0,0.69,Programming,HIGH
+49.69,49.85,64.82,3,2,1.0,Database,MEDIUM
+69.62,60.29,77.4,6,0,1.0,Software Engineering,MEDIUM
+26.34,33.24,71.3,3,0,1.0,Security,HIGH
+37.67,51.27,71.91,3,3,1.0,Testing,MEDIUM
+49.02,53.49,71.08,2,1,0.829,Data Science,MEDIUM
+51.87,48.2,65.2,0,0,0.821,Security,MEDIUM
+14.7,7.38,68.69,1,2,1.0,General,HIGH
+31.83,42.04,74.4,0,2,1.0,Data Science,MEDIUM
+70.03,51.57,76.5,1,2,0.739,Data Science,MEDIUM
+32.78,32.04,64.89,4,4,0.916,Backend,HIGH
+64.85,52.35,65.56,1,0,1.0,Database,MEDIUM
+76.38,76.78,58.24,0,1,0.585,Artificial Intelligence,LOW
+60.3,63.07,61.65,0,1,0.846,Artificial Intelligence,LOW
+62.38,54.52,56.16,1,1,1.0,Data Science,LOW
+37.34,22.31,64.96,1,0,0.932,Programming,HIGH
+37.43,40.12,56.24,0,1,0.787,Database,MEDIUM
+72.19,77.9,92.98,1,2,1.0,Artificial Intelligence,LOW
+69.28,65.34,83.12,3,3,0.902,Software Engineering,MEDIUM
+95.26,98.96,79.01,0,0,1.0,Backend,LOW
+37.38,31.19,59.68,3,3,1.0,Backend,MEDIUM
+60.63,49.72,64.98,3,1,0.883,Data Science,MEDIUM
+77.05,78.1,54.38,3,2,1.0,Artificial Intelligence,LOW
+80.68,86.94,84.77,2,0,0.959,Testing,LOW
+79.11,73.68,71.74,2,1,0.894,Backend,LOW
+61.46,53.38,78.74,2,2,0.813,Data Science,MEDIUM
+36.82,39.42,49.05,2,0,1.0,Database,LOW
+95.02,82.88,83.47,3,0,0.987,Security,LOW
+58.53,51.25,74.28,0,0,1.0,Database,MEDIUM
+53.3,52.51,77.33,0,0,0.6,DevOps,MEDIUM
+73.72,63.74,81.16,2,0,0.516,Data Science,MEDIUM
+43.49,37.36,83.08,1,1,0.792,Backend,HIGH
+62.11,53.41,70.09,5,0,1.0,Programming,MEDIUM
+48.6,59.37,71.98,3,2,1.0,Artificial Intelligence,LOW
+61.84,58.63,74.36,4,3,1.0,Artificial Intelligence,MEDIUM
+52.61,51.4,80.9,0,0,0.696,Data Science,MEDIUM
+0.0,5.78,55.22,1,1,1.0,Artificial Intelligence,HIGH
+43.58,32.69,66.7,3,1,1.0,Security,HIGH
+21.2,6.75,53.43,6,0,0.526,Data Science,HIGH
+53.18,55.07,67.47,0,1,0.983,Backend,LOW
+20.41,18.61,58.11,3,1,1.0,Backend,HIGH
+38.04,36.98,80.5,1,1,0.8,General,HIGH
+58.65,56.41,64.8,0,2,1.0,Security,LOW
+46.63,53.65,75.49,4,0,0.901,Software Engineering,MEDIUM
+62.42,65.37,67.82,1,1,1.0,Programming,LOW
+53.22,46.88,58.12,1,0,0.962,Data Science,LOW
+74.67,90.04,82.25,2,1,0.94,Security,LOW
+92.93,76.16,61.96,2,0,0.817,Programming,LOW
+81.76,85.55,75.69,0,1,0.869,Database,LOW
+21.2,27.07,58.99,1,1,0.87,Database,HIGH
+63.01,58.39,80.31,1,3,1.0,Database,MEDIUM
+79.18,78.21,62.4,2,0,0.698,Backend,LOW
+61.46,45.62,62.85,4,1,0.904,Database,MEDIUM
+83.52,60.33,82.13,0,1,0.959,Backend,MEDIUM
+53.47,64.17,75.04,1,2,0.767,General,LOW
+5.6,1.72,63.97,4,1,1.0,General,HIGH
+78.44,72.76,70.61,1,1,1.0,Artificial Intelligence,LOW
+65.01,64.51,54.63,1,3,0.826,General,LOW
+29.78,55.04,63.5,1,0,0.91,Security,LOW
+57.89,58.59,68.57,2,0,0.923,Testing,LOW
+67.84,52.53,57.9,1,1,1.0,Software Engineering,LOW
+37.16,43.3,71.49,1,3,0.855,Testing,MEDIUM
+1.81,27.35,81.5,0,2,1.0,DevOps,HIGH
+6.68,1.27,53.3,1,1,0.914,Testing,HIGH
+39.62,54.41,66.54,0,0,0.978,Software Engineering,LOW
+65.17,63.98,74.85,2,1,0.854,Programming,LOW
+18.29,41.32,83.68,3,2,0.883,General,HIGH
+88.06,81.28,63.94,0,2,0.827,Database,LOW
+76.7,63.68,82.42,0,1,1.0,Security,MEDIUM
+81.77,84.06,70.89,0,1,0.914,Security,LOW
+30.74,18.74,54.53,1,0,0.751,DevOps,HIGH
+27.6,35.42,70.83,0,0,0.982,Database,MEDIUM
+66.95,79.47,76.07,0,2,0.825,Software Engineering,LOW
+58.84,44.29,62.17,3,0,1.0,DevOps,MEDIUM
+24.32,3.76,61.55,2,0,0.785,Security,HIGH
+72.57,63.97,68.07,4,2,0.713,Testing,LOW
+78.92,77.11,76.63,2,0,0.705,Security,LOW
+36.98,42.27,79.0,4,1,1.0,Security,MEDIUM
+76.04,72.75,86.11,1,1,0.985,Database,LOW
+49.14,36.26,78.28,1,2,0.837,Testing,HIGH
+47.34,48.68,86.97,1,1,1.0,Database,MEDIUM
+44.17,53.04,63.79,3,1,0.734,Security,LOW
+55.04,69.22,72.25,1,1,0.636,Testing,LOW
+89.26,94.9,62.48,3,2,0.878,General,LOW
+86.36,75.2,69.93,3,0,0.803,Software Engineering,LOW
+5.82,6.65,62.83,5,2,0.882,Testing,HIGH
+62.93,50.95,81.47,1,0,0.609,Data Science,MEDIUM
+16.45,13.22,69.41,1,2,0.828,Programming,HIGH
+67.85,78.97,73.08,0,1,0.992,Artificial Intelligence,LOW
+44.06,50.09,84.61,1,3,0.92,Programming,MEDIUM
+38.95,47.73,74.0,2,1,0.876,Software Engineering,MEDIUM
+46.05,45.04,64.74,2,0,0.73,Testing,MEDIUM
+59.5,52.48,72.47,0,1,0.915,Data Science,MEDIUM
+32.41,29.47,77.94,3,0,0.697,Artificial Intelligence,HIGH
+41.51,35.18,65.73,2,2,0.833,Programming,MEDIUM
+90.56,91.39,78.79,1,3,0.876,Database,LOW
+30.09,37.2,82.7,3,1,0.811,DevOps,HIGH
+45.45,33.83,62.91,1,3,0.785,Programming,MEDIUM
+48.57,49.18,71.17,3,2,0.74,General,MEDIUM
+30.22,21.03,71.13,3,2,0.8,DevOps,HIGH
+78.74,70.41,81.83,3,0,0.886,DevOps,LOW
+74.91,54.29,65.45,0,2,0.84,Testing,LOW
+45.47,56.09,67.2,2,0,0.914,Programming,LOW
+100.0,100.0,79.87,0,1,0.899,Backend,LOW
+71.56,53.48,67.71,2,1,0.853,Backend,MEDIUM
+44.13,54.12,77.97,2,0,0.724,Database,MEDIUM
+42.56,26.41,64.08,3,2,0.802,Security,HIGH
+49.15,37.21,75.72,0,0,0.782,General,HIGH
+48.08,53.17,60.98,3,0,0.917,DevOps,LOW
+59.7,56.19,75.14,3,2,0.973,DevOps,MEDIUM
+1.41,0.0,52.95,2,1,1.0,Artificial Intelligence,HIGH
+65.73,58.63,78.32,4,2,0.935,DevOps,MEDIUM
+61.58,57.91,59.64,0,0,1.0,Software Engineering,LOW
+52.2,44.2,71.81,1,1,0.708,Backend,MEDIUM
+87.42,88.46,77.5,1,3,0.825,DevOps,LOW
+53.53,43.78,55.73,3,0,0.875,Database,MEDIUM
+62.54,53.68,86.74,3,1,0.985,Programming,MEDIUM
+41.68,44.24,62.35,5,0,0.59,Backend,MEDIUM
+11.28,17.4,62.58,1,1,0.894,Data Science,HIGH
+21.05,36.09,53.94,1,0,0.964,Testing,MEDIUM
+49.84,45.04,80.84,2,0,1.0,Backend,MEDIUM
+52.71,51.67,66.14,4,0,0.676,Backend,MEDIUM
+11.91,3.6,58.22,2,3,0.923,Software Engineering,HIGH
+63.28,47.15,63.17,0,1,0.985,Database,MEDIUM
+50.46,35.25,59.12,0,0,0.776,Software Engineering,MEDIUM
+57.98,45.72,70.12,2,2,0.974,Security,MEDIUM
+66.39,65.8,75.82,1,1,0.838,Security,LOW
+37.04,56.63,94.78,4,1,0.96,Programming,MEDIUM
+60.02,46.09,85.01,4,1,0.962,Testing,MEDIUM
+65.82,75.69,85.86,1,0,1.0,General,LOW
+74.14,61.04,64.92,1,1,1.0,Programming,LOW
+79.22,91.57,84.65,3,1,0.911,General,LOW
+49.99,54.35,77.46,0,1,0.934,Software Engineering,MEDIUM
+24.84,25.77,46.96,4,2,0.834,Software Engineering,MEDIUM
+15.16,13.32,77.29,4,0,0.773,General,HIGH
+23.48,22.87,57.39,2,1,0.974,Database,HIGH
+37.98,26.97,46.7,1,1,1.0,General,MEDIUM
+39.99,37.45,96.44,2,1,0.97,Testing,HIGH
+64.06,65.3,68.35,4,0,0.824,Artificial Intelligence,LOW
+44.88,42.47,81.4,4,2,0.637,Security,MEDIUM
+51.72,53.07,81.66,3,1,1.0,Backend,MEDIUM
+72.19,76.29,77.52,2,0,0.738,Artificial Intelligence,LOW
+71.03,65.88,69.64,1,3,1.0,Software Engineering,LOW
+39.66,47.87,62.33,2,0,0.896,Software Engineering,MEDIUM
+43.85,43.55,66.07,1,2,0.891,Database,MEDIUM
+11.3,18.99,48.92,4,1,0.659,Testing,HIGH
+33.49,50.02,70.79,1,2,1.0,Testing,MEDIUM
+84.98,82.88,83.01,3,1,0.726,Artificial Intelligence,LOW
+39.91,40.17,71.92,1,1,0.585,Artificial Intelligence,MEDIUM
+62.17,62.16,56.78,0,0,0.799,Testing,LOW
+58.06,49.81,66.72,1,0,0.77,DevOps,MEDIUM
+54.61,44.34,77.29,3,1,0.8,Artificial Intelligence,MEDIUM
+100.0,84.68,64.34,1,0,0.601,Artificial Intelligence,LOW
+77.87,76.98,74.65,1,2,0.83,DevOps,LOW
+21.03,49.36,74.08,1,1,0.903,General,MEDIUM
+45.88,49.84,80.35,3,2,0.922,Artificial Intelligence,MEDIUM
+24.9,33.59,73.76,3,1,1.0,Programming,HIGH
+40.94,40.54,62.56,2,1,0.7,Testing,MEDIUM
+7.79,0.0,67.82,1,2,0.539,Artificial Intelligence,HIGH
+70.17,63.02,58.19,2,0,1.0,General,LOW
+58.51,62.05,71.73,0,0,0.714,Software Engineering,LOW
+69.7,82.09,73.02,0,0,0.73,Data Science,LOW
+54.3,52.57,73.65,3,0,0.987,Backend,MEDIUM
+44.57,27.86,62.57,1,6,0.884,Data Science,HIGH
+20.6,24.35,52.4,3,2,0.752,DevOps,HIGH
+60.67,54.28,53.3,2,1,0.764,Database,LOW
+67.47,83.54,59.65,2,0,0.878,Security,LOW
+49.58,71.69,63.2,0,0,1.0,General,LOW
+28.01,32.3,53.76,4,2,0.938,Database,MEDIUM
+37.8,35.91,90.24,3,4,0.801,Testing,HIGH
+13.92,23.54,69.15,2,2,1.0,Backend,HIGH
+55.47,49.18,76.18,1,2,0.71,Programming,MEDIUM
+69.12,48.12,70.63,0,0,0.963,Backend,MEDIUM
+45.49,51.98,79.44,5,1,1.0,General,MEDIUM
+44.45,56.56,55.3,2,1,1.0,Data Science,LOW
+32.71,48.11,74.14,3,0,1.0,General,MEDIUM
+64.83,66.11,68.11,1,1,1.0,Artificial Intelligence,LOW
+22.15,48.19,80.87,4,1,0.98,Artificial Intelligence,MEDIUM
+65.09,70.82,71.09,0,0,0.65,DevOps,LOW
+0.0,0.0,71.9,1,0,0.647,Programming,HIGH
+40.94,34.28,81.79,1,0,1.0,Artificial Intelligence,HIGH
+62.04,66.64,78.64,5,1,0.73,DevOps,LOW
+70.58,65.78,83.02,2,0,0.715,Security,MEDIUM
+64.84,55.14,56.12,0,1,1.0,Programming,LOW
+54.93,49.58,76.07,5,0,1.0,Backend,MEDIUM
+46.56,59.55,69.64,6,1,0.817,Data Science,LOW
+67.91,70.85,76.96,1,2,0.889,Data Science,LOW
+32.82,30.89,72.74,1,1,0.998,Security,HIGH
+55.15,52.71,67.62,1,1,1.0,General,MEDIUM
+23.3,19.54,56.83,2,3,0.971,Data Science,HIGH
+31.52,49.28,66.31,1,1,0.961,Security,MEDIUM
+71.31,76.67,65.71,2,1,0.694,Security,LOW
+71.19,83.04,85.87,2,0,1.0,DevOps,LOW
+0.0,8.58,59.93,1,1,0.812,Data Science,HIGH
+68.85,79.93,65.57,1,1,0.701,Testing,LOW
+30.8,29.92,79.48,0,0,0.959,Testing,HIGH
+54.1,52.13,69.17,2,0,0.778,Data Science,MEDIUM
+58.35,74.1,76.9,3,0,0.939,Backend,LOW
+62.18,58.27,73.51,3,1,0.651,Data Science,MEDIUM
+66.5,55.26,80.72,1,1,0.95,Testing,MEDIUM
+47.6,45.35,69.76,2,1,0.845,Testing,MEDIUM
+61.66,45.98,68.16,2,0,1.0,Software Engineering,MEDIUM
+55.89,62.87,73.59,1,1,0.769,Database,LOW
+84.33,80.25,86.15,3,2,0.968,DevOps,LOW
+51.25,44.42,62.37,2,1,0.869,Artificial Intelligence,MEDIUM
+87.49,66.07,76.07,2,1,0.687,DevOps,LOW
+54.97,58.84,59.5,2,2,0.793,Backend,LOW
+65.36,77.92,70.07,1,0,1.0,Artificial Intelligence,LOW
+34.78,33.42,77.43,1,0,0.975,Software Engineering,HIGH
+54.39,24.9,59.15,1,2,1.0,Data Science,HIGH
+22.19,15.11,60.54,1,1,0.951,Programming,HIGH
+43.66,39.48,55.99,5,1,1.0,Artificial Intelligence,MEDIUM
+59.14,58.02,61.63,1,0,1.0,General,LOW
+13.19,15.36,57.9,2,0,0.754,Programming,HIGH
+38.28,28.06,56.22,2,2,1.0,Artificial Intelligence,HIGH
+35.3,32.02,45.64,1,1,1.0,Programming,MEDIUM
+23.21,33.17,59.05,2,1,0.948,Testing,MEDIUM
+55.07,34.78,71.54,2,2,1.0,Artificial Intelligence,HIGH
+37.44,58.3,73.61,2,2,0.872,Security,MEDIUM
+30.99,33.74,68.15,2,1,1.0,Backend,HIGH
+30.2,48.96,84.0,1,1,1.0,Backend,MEDIUM
+8.97,0.0,61.95,1,0,1.0,Artificial Intelligence,HIGH
+93.83,91.14,69.91,0,2,1.0,Programming,LOW
+56.7,68.14,79.51,3,0,0.959,Software Engineering,LOW
+58.81,56.84,67.97,4,0,0.847,Artificial Intelligence,LOW
+45.33,53.8,83.09,1,0,0.702,DevOps,MEDIUM
+39.5,53.22,80.51,0,1,0.955,DevOps,MEDIUM
+66.61,73.19,75.11,3,0,1.0,Security,LOW
+24.45,34.59,66.83,2,3,1.0,Artificial Intelligence,MEDIUM
+29.96,40.05,72.6,0,0,0.606,General,MEDIUM
+17.6,16.65,68.5,3,4,0.76,Programming,HIGH
+61.67,50.06,67.93,4,1,0.878,Artificial Intelligence,MEDIUM
+49.37,46.03,69.61,2,0,1.0,Data Science,MEDIUM
+83.8,79.93,76.22,4,2,1.0,Programming,LOW
+77.52,72.52,59.82,4,4,0.64,Artificial Intelligence,LOW
+65.47,45.92,62.08,3,1,0.774,Backend,MEDIUM
+76.88,84.31,82.11,2,1,0.877,Software Engineering,LOW
+68.97,63.74,77.53,5,1,1.0,Artificial Intelligence,LOW
+48.3,46.79,51.45,2,0,0.965,Artificial Intelligence,LOW
+48.28,38.97,59.93,2,2,0.889,Database,MEDIUM
+66.94,64.05,63.04,2,0,0.961,Programming,LOW
+47.41,54.07,68.43,1,1,0.773,Security,MEDIUM
+25.2,31.33,57.98,1,0,1.0,Software Engineering,MEDIUM
+13.13,17.69,62.3,2,0,0.927,Database,HIGH
+34.04,28.31,64.69,1,1,0.532,Programming,HIGH
+33.91,34.87,78.5,0,1,0.734,Backend,HIGH
+5.42,0.0,58.14,4,3,1.0,Programming,HIGH
+20.03,20.55,69.51,3,1,1.0,DevOps,HIGH
+52.03,54.46,85.63,2,1,0.855,DevOps,MEDIUM
+34.01,54.98,59.67,1,1,1.0,Database,LOW
+32.76,28.34,60.91,4,1,0.835,Backend,HIGH
+52.56,40.76,64.82,2,0,0.979,Testing,MEDIUM
+35.92,44.3,72.09,0,3,0.717,DevOps,MEDIUM
+17.18,24.33,68.58,2,0,0.861,General,HIGH
+25.55,26.25,58.44,2,1,0.933,Database,HIGH
+69.23,73.08,64.74,0,0,0.957,Testing,LOW
+18.56,10.88,76.41,2,0,1.0,General,HIGH
+69.53,72.41,54.16,0,1,1.0,Testing,LOW
+24.73,32.87,72.49,2,1,0.818,Artificial Intelligence,HIGH
+67.3,60.44,64.69,2,0,1.0,Backend,LOW
+71.92,79.1,75.98,1,3,1.0,General,LOW
+84.95,76.26,80.78,4,1,0.732,Backend,LOW
+69.32,80.21,84.91,0,1,0.808,Testing,LOW
+49.55,43.15,74.97,0,0,0.771,General,MEDIUM
+32.67,31.81,78.24,1,3,0.551,General,HIGH
+90.13,80.8,65.51,4,0,0.965,Software Engineering,LOW
+36.4,24.17,64.71,0,2,0.861,Artificial Intelligence,HIGH
+17.06,30.74,45.88,1,2,1.0,Software Engineering,MEDIUM
+100.0,83.49,83.52,2,0,1.0,Security,LOW
+60.67,58.89,69.67,1,1,0.663,Software Engineering,LOW
+44.19,39.95,76.49,0,0,1.0,Artificial Intelligence,MEDIUM
+49.17,49.83,54.56,1,0,1.0,Database,LOW
+90.82,85.26,67.86,2,2,0.75,Software Engineering,LOW
+2.71,8.55,52.13,1,1,0.956,Data Science,HIGH
+65.38,53.38,60.49,3,1,0.731,DevOps,LOW
+55.62,60.72,73.9,2,2,0.955,DevOps,LOW
+36.88,46.51,61.57,3,0,0.769,Security,MEDIUM
+57.11,53.08,43.15,2,0,0.864,Testing,LOW
+17.35,5.78,59.31,0,1,1.0,Security,HIGH
+45.03,45.96,75.17,2,0,0.871,Data Science,MEDIUM
+65.31,63.05,89.55,3,1,1.0,General,MEDIUM
+66.43,64.09,75.75,3,1,0.813,Software Engineering,LOW
+53.47,72.98,69.43,2,0,0.922,Database,LOW
+46.69,55.33,67.06,5,1,1.0,Data Science,LOW
+74.66,81.96,86.49,2,0,0.954,Data Science,LOW
+3.14,14.76,74.51,1,2,0.858,General,HIGH
+23.8,35.12,56.6,1,2,0.852,Artificial Intelligence,MEDIUM
+42.48,43.88,72.91,0,0,0.961,Programming,MEDIUM
+64.13,63.4,52.91,0,1,0.888,Software Engineering,LOW
+43.04,39.6,70.97,2,0,0.889,Data Science,MEDIUM
+56.61,62.91,67.58,3,0,0.91,Software Engineering,LOW
+37.31,28.89,66.89,0,0,0.795,Software Engineering,HIGH
+10.12,20.5,40.0,1,2,0.605,General,MEDIUM
+32.84,40.9,63.28,2,0,0.598,Testing,MEDIUM
+48.04,42.78,85.68,3,0,0.729,Programming,HIGH
+38.46,28.7,55.33,3,1,0.977,Backend,MEDIUM
+70.93,62.0,63.03,2,1,1.0,Backend,LOW
+28.4,16.96,46.64,2,2,0.831,Artificial Intelligence,HIGH
+46.42,40.56,78.63,0,0,0.891,Security,MEDIUM
+72.74,63.72,65.47,3,0,1.0,Data Science,LOW
+44.28,54.78,57.65,2,0,0.914,Data Science,LOW
+24.16,32.63,74.84,3,0,1.0,Programming,HIGH
+45.53,44.77,73.14,2,0,0.959,Testing,MEDIUM
+68.3,52.08,72.19,1,0,1.0,Artificial Intelligence,MEDIUM
+53.27,54.99,48.31,1,0,0.916,Backend,LOW
+66.92,65.81,87.02,3,0,0.873,General,MEDIUM
+39.06,27.19,59.19,1,1,1.0,Data Science,HIGH
+83.7,92.48,76.65,0,3,0.843,Security,LOW
+41.43,45.21,83.35,0,1,0.892,Artificial Intelligence,MEDIUM
+57.17,56.38,76.7,1,1,0.883,Security,MEDIUM
+63.44,66.74,52.39,1,0,0.818,Software Engineering,LOW
+61.46,50.77,64.68,4,1,0.814,Data Science,MEDIUM
+65.66,62.27,56.47,0,2,0.709,Testing,LOW
+76.17,58.56,73.32,1,0,0.85,Backend,MEDIUM
+24.97,14.52,70.4,1,1,1.0,Backend,HIGH
+44.11,52.64,93.55,0,0,0.863,Database,MEDIUM
+100.0,99.33,76.8,1,1,0.609,Security,LOW
+26.41,18.05,56.62,3,1,0.836,DevOps,HIGH
+14.53,34.79,75.99,1,0,1.0,Backend,HIGH
+53.27,62.92,54.74,3,0,1.0,Data Science,LOW
+28.67,29.55,70.18,0,0,0.901,General,HIGH
+20.03,40.68,57.49,1,1,0.797,General,MEDIUM
+56.26,36.33,83.83,0,4,0.733,Database,HIGH
+37.3,55.27,94.45,1,1,1.0,Testing,MEDIUM
+57.45,56.65,61.6,3,2,0.798,Software Engineering,LOW
+42.04,57.81,78.62,1,1,0.78,Testing,MEDIUM
+100.0,85.82,80.06,4,2,0.939,Security,LOW
+8.23,1.41,74.36,4,1,0.919,Testing,HIGH
+63.51,65.26,69.1,2,2,0.84,Programming,LOW
+21.22,17.96,67.07,3,2,1.0,Testing,HIGH
+69.92,47.2,70.22,2,0,0.933,DevOps,MEDIUM
+35.65,34.24,66.46,2,1,1.0,Data Science,MEDIUM
+32.53,37.92,69.83,2,1,0.98,Programming,MEDIUM
+42.66,25.7,70.19,3,0,1.0,Testing,HIGH
+72.17,77.05,93.04,0,0,1.0,Data Science,LOW
+44.52,41.33,55.62,1,1,0.97,Software Engineering,MEDIUM
+50.2,76.61,58.86,0,0,0.851,Programming,LOW
+49.36,58.52,69.1,1,0,1.0,Data Science,LOW
+50.38,45.27,79.96,2,0,1.0,Database,MEDIUM
+46.57,46.12,83.81,1,2,0.958,Data Science,MEDIUM
+64.34,69.88,69.03,4,1,1.0,General,LOW
+15.15,10.12,77.8,1,1,0.5,Programming,HIGH
+19.47,21.45,64.18,2,1,1.0,DevOps,HIGH
+25.86,39.83,95.7,1,0,0.951,Testing,HIGH
+92.63,83.84,78.31,4,0,0.838,Backend,LOW
+20.89,17.42,69.69,1,1,1.0,Security,HIGH
+56.21,57.35,78.41,0,1,0.755,General,MEDIUM
+2.46,2.84,75.79,0,3,0.907,General,HIGH
+76.37,73.16,67.03,1,0,0.929,Security,LOW
+36.24,31.01,65.71,3,0,0.675,Data Science,HIGH
+18.07,25.03,72.71,2,2,0.812,Testing,HIGH
+48.13,35.54,93.04,5,0,1.0,Artificial Intelligence,HIGH
+49.94,54.68,65.23,3,2,0.795,General,LOW
+31.59,31.25,56.5,4,2,0.917,Programming,MEDIUM
+61.53,75.26,81.95,2,2,0.953,Database,LOW
+31.51,25.55,54.57,5,1,0.805,Backend,HIGH
+30.57,40.47,63.03,1,2,0.845,Database,MEDIUM
+56.82,53.51,64.35,2,1,0.921,Backend,LOW
+35.65,31.92,66.4,1,0,0.947,Security,HIGH
+84.6,76.43,87.03,0,2,0.936,DevOps,LOW
+46.99,49.03,80.53,2,2,1.0,Artificial Intelligence,MEDIUM
+78.57,87.17,72.91,3,3,1.0,General,LOW
+62.89,65.09,75.61,1,3,0.811,Testing,LOW
+34.66,44.88,84.97,0,2,0.955,Backend,MEDIUM
+0.0,12.96,54.32,3,1,0.991,Testing,HIGH
+20.23,35.77,67.15,2,2,1.0,Data Science,MEDIUM
+36.05,35.2,58.45,3,1,1.0,Backend,MEDIUM
+34.35,29.56,53.91,1,0,0.952,General,MEDIUM
+41.16,51.11,68.22,2,2,0.773,Backend,MEDIUM
+43.28,50.21,84.53,4,1,0.655,Database,MEDIUM
+57.34,54.86,69.9,2,1,0.656,Backend,MEDIUM
+49.11,39.09,71.65,0,0,0.725,DevOps,MEDIUM
+9.22,26.93,60.18,3,1,0.921,DevOps,HIGH
+34.49,44.91,73.5,1,0,0.824,Programming,MEDIUM
+54.0,49.15,61.09,1,1,0.83,Testing,LOW
+67.69,51.99,67.97,4,0,0.91,General,MEDIUM
+21.71,12.38,59.48,1,0,0.515,Data Science,HIGH
+19.92,13.37,75.35,1,1,1.0,Data Science,HIGH
+0.0,0.79,52.36,1,1,0.781,Testing,HIGH
+47.64,48.09,61.0,3,0,0.827,Artificial Intelligence,MEDIUM
+54.3,66.79,70.79,2,2,0.684,Security,LOW
+32.5,40.31,67.22,3,1,0.746,Data Science,MEDIUM
+54.09,57.37,86.1,1,1,1.0,Database,MEDIUM
+32.4,38.44,71.43,0,0,0.692,Programming,MEDIUM
+30.75,41.37,66.64,2,1,0.943,Software Engineering,MEDIUM
+85.71,84.31,73.2,1,0,1.0,Testing,LOW
+75.95,62.69,72.54,4,0,0.902,Database,LOW
+21.36,13.92,67.6,2,2,0.775,General,HIGH
+63.96,48.83,76.98,2,1,0.96,Programming,MEDIUM
+73.76,69.47,78.93,1,1,0.857,Testing,LOW
+67.12,53.86,86.15,2,0,0.689,Programming,MEDIUM
+24.18,39.17,80.09,4,2,0.886,Data Science,HIGH
+11.72,14.34,66.54,0,0,0.85,Data Science,HIGH
+51.78,63.57,77.6,6,1,0.876,DevOps,LOW
+28.61,45.06,80.08,3,0,1.0,Artificial Intelligence,MEDIUM
+55.03,57.83,70.38,1,1,0.608,Data Science,LOW
+35.28,36.21,69.19,4,2,0.964,Data Science,MEDIUM
+53.72,50.6,61.92,2,1,0.567,Artificial Intelligence,LOW
+37.88,50.62,68.77,3,1,0.907,Software Engineering,MEDIUM
+32.2,37.42,50.88,0,1,0.876,Database,MEDIUM
+8.0,27.75,53.11,4,0,1.0,Software Engineering,MEDIUM
+45.88,29.45,51.22,1,2,1.0,Data Science,MEDIUM
+7.38,14.99,67.0,0,1,0.831,Artificial Intelligence,HIGH
+11.2,21.05,70.23,0,0,0.93,Programming,HIGH
+33.46,38.26,71.21,1,1,1.0,Database,MEDIUM
+43.52,50.31,49.48,1,5,0.802,Testing,LOW
+13.8,25.31,76.62,2,1,0.5,Database,HIGH
+65.18,55.91,80.74,1,2,1.0,Security,MEDIUM
+52.26,59.64,73.96,3,2,1.0,Security,LOW
+72.01,69.51,75.29,0,0,1.0,Artificial Intelligence,LOW
+71.25,80.39,82.64,2,1,0.914,Backend,LOW
+2.43,6.31,66.37,2,1,0.854,Software Engineering,HIGH
+39.28,38.49,69.41,0,2,0.91,Data Science,MEDIUM
+49.15,47.48,63.2,2,0,0.863,Data Science,MEDIUM
+81.52,75.03,85.18,0,1,1.0,Backend,LOW
+74.15,74.78,81.51,3,1,0.886,Security,LOW
+57.06,41.47,81.46,2,0,0.67,Testing,MEDIUM
+6.35,10.9,69.57,1,2,0.794,Data Science,HIGH
+100.0,84.29,91.84,2,2,0.898,Programming,LOW
+46.4,45.73,66.54,5,1,0.5,General,MEDIUM
+20.96,42.95,62.34,3,0,1.0,DevOps,MEDIUM
+54.6,57.29,68.13,2,0,0.575,Security,LOW
+29.74,45.17,84.86,1,1,0.976,Security,MEDIUM
+74.61,56.47,71.91,1,0,0.899,Database,MEDIUM
+60.86,61.84,60.28,2,1,0.734,Database,LOW
+71.28,58.44,75.96,4,3,0.586,Database,MEDIUM
+9.41,25.88,47.58,1,1,0.891,DevOps,MEDIUM
+45.78,47.83,64.06,1,0,0.774,Testing,MEDIUM
+44.42,36.44,67.44,1,2,0.621,Testing,MEDIUM
+45.26,48.65,68.8,4,1,0.704,Data Science,MEDIUM
+60.2,73.93,71.94,4,1,1.0,Backend,LOW
+16.5,25.01,68.04,4,1,0.663,Security,HIGH
+19.96,18.31,70.25,4,2,1.0,Artificial Intelligence,HIGH
+70.72,71.64,61.64,2,2,0.767,General,LOW
+47.88,48.48,77.6,2,0,0.974,DevOps,MEDIUM
+27.51,41.1,73.68,2,0,0.838,Testing,MEDIUM
+78.13,57.2,71.32,3,1,0.723,Software Engineering,LOW
+64.6,49.51,65.42,2,2,0.991,Testing,MEDIUM
+19.85,30.4,87.07,1,0,1.0,Testing,HIGH
+36.83,42.68,81.5,4,0,0.614,Testing,MEDIUM
+38.51,23.18,58.63,4,0,0.905,General,HIGH
+25.6,15.13,47.79,2,1,0.914,Data Science,HIGH
+38.24,30.7,76.81,1,1,0.93,Data Science,HIGH
+37.62,28.21,49.37,3,0,0.929,Data Science,MEDIUM
+32.36,32.18,48.34,1,1,0.648,Software Engineering,MEDIUM
+57.63,51.14,63.97,1,2,0.987,Security,MEDIUM
+82.93,88.18,66.03,1,1,0.955,Data Science,LOW
+52.61,42.66,57.08,1,0,0.947,Backend,MEDIUM
+57.43,67.13,65.79,4,0,0.788,Backend,LOW
+39.58,33.82,65.94,3,1,0.878,Artificial Intelligence,MEDIUM
+66.87,63.66,56.03,0,5,0.875,Artificial Intelligence,LOW
+68.56,77.35,79.87,4,0,1.0,Software Engineering,LOW
+60.13,66.81,70.41,3,0,0.791,Data Science,LOW
+40.46,41.14,57.53,2,2,0.835,Artificial Intelligence,MEDIUM
+34.36,37.58,64.39,4,0,0.966,DevOps,MEDIUM
+63.29,67.96,81.96,3,0,0.723,Programming,LOW
+47.1,66.47,75.52,1,2,0.786,Security,LOW
+37.09,35.85,65.08,1,0,0.806,Software Engineering,MEDIUM
+55.58,67.15,87.68,2,2,0.8,Data Science,MEDIUM
+75.86,81.66,83.43,0,0,0.827,Security,LOW
+65.78,64.7,80.5,1,2,1.0,Programming,LOW
+76.41,70.03,72.07,2,1,0.867,DevOps,LOW
+39.3,47.75,60.05,1,1,1.0,DevOps,MEDIUM
+52.7,43.89,79.21,1,0,1.0,Data Science,MEDIUM
+47.91,33.24,72.72,2,1,0.931,Software Engineering,HIGH
+0.0,15.24,60.41,3,2,0.962,Artificial Intelligence,HIGH
+56.45,54.94,64.51,1,0,0.857,Database,LOW
+23.92,28.1,66.22,0,1,0.902,Security,HIGH
+54.33,34.6,85.47,2,0,1.0,Software Engineering,HIGH
+62.27,50.1,74.73,2,4,0.838,Data Science,MEDIUM
+51.76,50.49,68.18,2,1,0.913,Programming,MEDIUM
+62.27,63.28,73.7,3,0,0.891,Database,LOW
+33.41,30.63,84.5,2,1,0.854,Testing,HIGH
+51.65,43.13,77.92,4,2,0.716,Database,MEDIUM
+48.33,40.24,66.04,1,0,0.862,Database,MEDIUM
+35.91,47.78,65.28,3,0,0.755,Database,MEDIUM
+32.12,32.18,74.09,4,0,1.0,DevOps,HIGH
+50.59,45.13,58.86,4,2,0.5,Testing,MEDIUM
+79.26,90.18,91.35,0,0,0.962,Programming,LOW
+61.83,54.97,64.55,2,3,0.724,Programming,LOW
+40.25,51.96,62.36,1,1,1.0,Software Engineering,LOW
+57.76,51.04,84.67,1,0,0.764,Artificial Intelligence,MEDIUM
+49.73,65.18,80.96,3,0,0.819,Backend,LOW
+64.97,65.04,55.35,4,2,0.927,Artificial Intelligence,LOW
+23.2,20.38,68.39,3,1,0.874,DevOps,HIGH
+29.34,38.45,62.0,2,2,1.0,DevOps,MEDIUM
+0.0,3.97,80.59,1,1,1.0,General,HIGH
+65.54,56.23,59.42,3,0,1.0,General,LOW
+31.44,41.81,79.71,1,1,0.9,Backend,MEDIUM
+64.2,54.68,71.17,1,2,1.0,General,MEDIUM
+70.57,57.72,55.04,3,2,0.806,Backend,LOW
+62.09,57.99,65.92,2,0,1.0,Testing,LOW
+98.03,90.8,95.88,2,1,0.967,Testing,LOW
+40.28,39.93,57.1,2,1,1.0,Programming,MEDIUM
+63.68,71.59,74.91,2,3,0.955,Testing,LOW
+69.25,49.26,59.46,0,1,1.0,Security,LOW
+33.86,39.21,67.64,3,1,0.944,Database,MEDIUM
+52.84,62.79,78.72,1,2,0.987,Software Engineering,MEDIUM
+59.28,59.06,83.61,4,1,1.0,Testing,MEDIUM
+36.38,53.28,67.79,2,2,0.653,Artificial Intelligence,MEDIUM
+34.5,35.64,62.34,1,0,0.84,Testing,MEDIUM
+68.81,47.31,71.48,3,0,1.0,Testing,MEDIUM
+7.85,15.24,67.37,1,1,0.998,Artificial Intelligence,HIGH
+24.01,17.41,79.56,0,1,0.829,Database,HIGH
+54.56,63.95,66.58,1,0,1.0,Artificial Intelligence,LOW
+42.17,42.8,61.54,3,2,0.936,Software Engineering,MEDIUM
+49.76,49.26,66.22,1,0,1.0,Testing,MEDIUM
+33.82,41.88,78.51,0,0,0.811,Testing,MEDIUM
+66.13,54.47,81.86,2,2,1.0,Artificial Intelligence,MEDIUM
+85.52,80.21,41.75,2,0,0.872,Programming,LOW
+75.38,74.07,78.71,1,0,0.879,Programming,LOW
+0.0,25.23,56.35,1,0,0.854,Data Science,HIGH
+68.95,38.19,69.47,1,0,1.0,Backend,MEDIUM
+18.26,21.41,78.69,1,2,0.864,Software Engineering,HIGH
+74.91,83.43,79.94,2,0,0.971,Backend,LOW
+78.06,75.79,62.28,0,1,0.995,Testing,LOW
+4.61,4.66,54.87,0,1,0.701,DevOps,HIGH
+58.35,62.27,71.71,1,2,0.647,Database,LOW
+25.36,34.33,56.88,5,0,0.846,Programming,MEDIUM
+61.04,47.53,78.63,3,2,1.0,Data Science,MEDIUM
+58.35,51.82,63.62,0,1,1.0,General,LOW
+26.8,11.45,78.97,2,1,1.0,DevOps,HIGH
+52.33,55.24,78.89,3,1,0.911,Testing,MEDIUM
+64.76,54.53,55.41,2,2,0.789,Artificial Intelligence,LOW
+65.17,60.37,80.59,1,2,0.89,Backend,MEDIUM
+30.3,39.7,63.44,3,1,1.0,Security,MEDIUM
+23.6,9.82,53.28,2,0,0.867,Security,HIGH
+53.71,48.06,72.87,1,1,1.0,Testing,MEDIUM
+46.82,47.97,49.01,1,0,0.985,Testing,LOW
+71.93,88.24,75.13,1,0,0.958,Testing,LOW
+33.66,26.33,47.04,3,0,0.609,Software Engineering,MEDIUM
+53.04,58.6,75.57,4,2,1.0,Data Science,MEDIUM
+12.42,37.14,59.06,2,2,0.749,DevOps,MEDIUM
+51.11,48.79,75.08,1,0,1.0,Artificial Intelligence,MEDIUM
+66.8,50.56,91.85,2,1,0.957,Software Engineering,MEDIUM
+9.73,16.37,74.85,3,1,0.714,Artificial Intelligence,HIGH
+66.33,65.03,71.74,1,0,0.702,Testing,LOW
+64.45,67.8,66.95,4,1,0.699,Database,LOW
+7.1,14.82,67.63,6,1,1.0,Software Engineering,HIGH
+34.27,24.71,65.84,2,3,1.0,Testing,HIGH
+52.37,47.85,76.27,1,0,0.719,Artificial Intelligence,MEDIUM
+21.62,29.29,73.89,8,0,0.81,Software Engineering,HIGH
+41.8,46.61,64.26,1,0,1.0,Backend,MEDIUM
+42.33,54.67,78.45,2,1,0.665,Programming,MEDIUM
+52.7,45.8,67.42,1,1,0.797,Security,MEDIUM
+54.96,50.6,69.5,0,3,0.977,General,MEDIUM
+39.62,44.07,75.83,2,0,0.816,Database,MEDIUM
+65.6,63.69,60.75,2,0,0.98,Data Science,LOW
+26.53,27.55,72.98,1,2,0.948,Testing,HIGH
+40.57,39.2,56.31,1,0,1.0,Artificial Intelligence,MEDIUM
+74.19,83.0,100.0,0,2,1.0,DevOps,LOW
+22.99,34.48,65.08,3,1,1.0,Programming,MEDIUM
+47.48,55.35,72.6,4,1,0.641,Data Science,MEDIUM
+52.79,47.23,68.65,2,2,0.911,Database,MEDIUM
+37.98,36.48,66.69,2,2,1.0,Security,MEDIUM
+26.43,28.18,71.07,3,0,0.96,Artificial Intelligence,HIGH
+57.64,57.34,63.56,1,1,0.601,Software Engineering,LOW
+62.57,58.13,78.21,3,0,0.729,Security,MEDIUM
+79.94,93.92,75.08,2,1,1.0,General,LOW
+71.44,74.44,64.73,5,1,0.877,DevOps,LOW
+17.8,33.07,66.53,1,0,0.874,Database,HIGH
+91.99,79.46,55.73,4,0,0.833,General,LOW
+33.73,47.09,82.92,3,1,1.0,Testing,MEDIUM
+9.19,16.95,60.3,2,2,1.0,Software Engineering,HIGH
+61.7,67.75,57.83,3,2,1.0,Data Science,LOW
+83.39,75.74,92.14,3,1,0.803,Backend,LOW
+58.55,39.48,77.74,0,0,0.635,Database,MEDIUM
+61.82,71.67,63.2,2,0,0.732,Software Engineering,LOW
+30.2,30.92,71.75,2,2,1.0,Software Engineering,HIGH
+62.79,50.53,56.84,3,0,0.972,Artificial Intelligence,LOW
+24.51,27.98,62.87,0,2,0.966,Backend,HIGH
+26.07,29.36,57.98,1,0,1.0,Data Science,MEDIUM
+11.36,0.0,81.2,6,1,0.863,Backend,HIGH
+26.89,27.35,46.93,0,1,0.817,General,MEDIUM
+20.05,44.29,72.64,3,0,0.806,Programming,MEDIUM
+42.89,38.57,57.04,4,1,0.961,Backend,MEDIUM
+39.02,32.15,76.6,0,3,0.877,General,HIGH
+14.9,28.21,83.51,1,0,0.573,Database,HIGH
+31.68,27.12,80.92,1,2,0.862,Backend,HIGH
+30.1,41.98,51.07,3,1,0.84,Backend,LOW
+64.67,69.93,67.95,3,0,0.821,Software Engineering,LOW
+42.92,52.72,76.84,4,2,0.841,General,MEDIUM
+20.73,33.87,60.43,0,0,1.0,Testing,MEDIUM
+33.08,59.12,74.19,2,0,0.821,DevOps,MEDIUM
+25.72,23.57,65.85,2,0,1.0,Testing,HIGH
+84.78,85.79,89.99,3,0,0.828,Database,LOW
+33.81,34.18,54.64,2,0,0.899,Programming,MEDIUM
+52.78,56.04,72.94,2,0,0.919,Programming,MEDIUM
+77.31,79.15,66.3,3,2,0.847,Backend,LOW
+36.63,50.36,75.29,0,1,1.0,Software Engineering,MEDIUM
+95.81,91.5,71.21,0,1,0.809,DevOps,LOW
+55.65,50.54,83.81,0,0,0.943,Programming,MEDIUM
+58.34,55.39,77.35,1,1,0.943,Artificial Intelligence,MEDIUM
+45.79,27.8,62.13,3,0,1.0,Database,HIGH
+49.17,61.56,70.05,1,0,0.575,Database,LOW
+23.89,30.1,65.32,1,1,1.0,Data Science,HIGH
+36.48,33.17,65.8,5,2,1.0,Security,MEDIUM
+76.31,59.42,57.68,2,1,1.0,Database,LOW
+87.67,71.26,83.26,2,1,0.773,Security,LOW
+20.29,19.54,69.36,3,1,1.0,General,HIGH
+77.4,66.52,75.31,0,1,1.0,Security,LOW
+34.13,38.91,55.83,2,1,0.682,Data Science,MEDIUM
+95.7,79.26,84.0,2,1,0.859,Programming,LOW
+63.06,60.82,59.8,0,0,1.0,Data Science,LOW
+50.48,64.92,83.6,0,0,1.0,Artificial Intelligence,MEDIUM
+58.6,42.4,69.86,2,3,0.707,Database,MEDIUM
+100.0,90.35,78.6,2,0,0.964,Data Science,LOW
+48.95,52.15,78.9,1,1,0.733,Database,MEDIUM
+60.84,68.94,71.28,1,1,0.905,General,LOW
+48.2,56.03,71.51,3,2,1.0,Database,MEDIUM
+56.6,75.9,70.75,3,2,0.84,Testing,LOW
+61.89,70.65,68.69,3,0,0.779,General,LOW
+43.45,50.5,72.49,1,1,0.999,Software Engineering,MEDIUM
+61.45,59.82,64.73,2,1,1.0,General,LOW
+41.97,40.17,56.81,0,3,1.0,Testing,MEDIUM
+22.61,28.38,72.57,2,1,0.839,Security,HIGH
+17.87,14.55,70.68,5,0,0.743,Artificial Intelligence,HIGH
+48.98,50.61,81.29,1,1,0.996,Database,MEDIUM
+54.66,50.92,88.52,3,1,0.928,Security,MEDIUM
+38.15,39.49,66.29,5,1,0.822,Backend,MEDIUM
+37.31,31.64,55.76,0,1,0.795,Data Science,MEDIUM
+0.0,21.57,65.52,3,2,0.865,Artificial Intelligence,HIGH
+55.34,42.41,70.13,0,0,1.0,Data Science,MEDIUM
+83.03,52.13,59.54,4,0,0.992,Artificial Intelligence,LOW
+13.56,36.26,52.55,1,1,0.769,Database,MEDIUM
+21.79,40.84,77.67,1,1,0.889,Artificial Intelligence,MEDIUM
+66.4,81.98,60.7,1,0,1.0,Testing,LOW
+38.84,35.76,74.98,3,0,0.655,DevOps,HIGH
+32.74,25.95,73.49,2,1,0.808,Data Science,HIGH
+2.97,0.0,58.74,1,1,1.0,Database,HIGH
+46.04,43.08,80.1,4,1,0.964,Database,MEDIUM
+50.86,47.93,59.09,1,1,1.0,Database,LOW
+45.04,29.46,65.53,0,1,0.544,Software Engineering,HIGH
+43.46,54.61,70.34,0,1,1.0,Security,MEDIUM
+28.96,46.6,93.61,0,0,1.0,General,HIGH
+71.24,64.52,73.14,2,2,1.0,Security,LOW
+58.52,74.72,53.43,3,0,0.797,Database,LOW
+48.82,42.7,74.43,2,0,0.803,Software Engineering,MEDIUM
+43.2,30.76,61.99,1,0,0.984,Artificial Intelligence,HIGH
+41.24,48.74,63.41,0,1,0.661,Programming,MEDIUM
+44.62,31.91,71.6,2,0,0.703,General,HIGH
+65.35,58.62,43.96,4,0,0.625,Software Engineering,LOW
+27.34,29.62,52.34,2,2,1.0,General,MEDIUM
+70.4,71.1,70.38,1,2,0.522,Backend,LOW
+0.11,25.75,68.16,4,0,0.885,Data Science,HIGH
+27.52,16.63,53.48,0,0,0.931,Database,HIGH
+59.59,54.53,64.01,1,0,1.0,Security,LOW
+36.22,53.75,74.44,4,0,0.721,Database,MEDIUM
+54.27,63.93,79.81,1,1,0.731,General,LOW
+81.82,69.55,86.73,3,0,0.663,Artificial Intelligence,LOW
+51.28,38.88,67.08,3,1,0.9,General,MEDIUM
+44.0,36.97,71.34,4,1,0.821,Security,MEDIUM
+38.91,25.23,75.35,2,1,1.0,General,HIGH
+25.53,37.17,63.91,1,0,0.821,Testing,MEDIUM
+78.93,76.53,91.53,2,0,1.0,DevOps,LOW
+85.3,69.4,87.91,1,0,0.765,Testing,MEDIUM
+75.55,66.16,72.99,1,1,0.667,Software Engineering,LOW
+41.53,56.51,64.75,1,0,1.0,DevOps,LOW
+61.03,64.24,67.86,3,2,0.662,General,LOW
+93.5,85.6,66.38,4,0,0.846,Artificial Intelligence,LOW
+40.37,45.89,73.89,0,1,1.0,DevOps,MEDIUM
+30.59,25.57,48.66,1,0,0.666,Programming,MEDIUM
+56.45,50.57,67.86,4,0,1.0,Security,MEDIUM
+46.99,69.4,82.96,2,1,0.901,Artificial Intelligence,LOW
+83.54,82.79,75.41,4,0,1.0,Data Science,LOW
+58.74,62.39,68.49,0,2,1.0,DevOps,LOW
+49.49,43.72,76.67,4,0,0.624,Testing,MEDIUM
+78.36,62.88,51.63,2,0,0.848,Software Engineering,LOW
+18.51,15.87,66.9,2,2,0.894,General,HIGH
+34.66,33.94,73.37,1,0,1.0,Programming,HIGH
+64.75,58.5,77.06,0,1,0.735,DevOps,MEDIUM
+87.37,63.99,61.05,1,0,0.771,Programming,LOW
+40.27,47.89,55.46,1,1,0.858,Database,LOW
+24.15,26.18,72.62,3,1,0.734,Data Science,HIGH
+72.02,82.06,65.32,1,0,0.925,Artificial Intelligence,LOW
+47.04,46.61,82.9,1,1,1.0,General,MEDIUM
+69.86,63.95,71.83,0,1,0.917,Artificial Intelligence,LOW
+29.31,16.4,64.37,0,1,0.98,Backend,HIGH
+33.42,26.17,62.27,1,0,0.967,Database,HIGH
+12.94,29.7,53.18,4,1,0.866,Artificial Intelligence,MEDIUM
+55.75,57.37,86.36,1,0,1.0,Testing,MEDIUM
+50.57,28.19,51.57,3,1,0.659,General,MEDIUM
+67.94,56.71,85.16,1,0,1.0,Security,MEDIUM
+24.82,31.55,75.83,2,0,0.944,Testing,HIGH
+37.72,43.24,72.01,1,1,0.835,Backend,MEDIUM
+88.38,100.0,94.92,1,0,1.0,General,LOW
+25.35,30.39,96.6,1,1,1.0,Programming,HIGH
+54.66,59.29,84.22,3,2,0.5,Testing,MEDIUM
+45.08,42.17,78.29,3,1,0.845,DevOps,MEDIUM
+47.35,49.52,60.44,2,0,0.709,Testing,LOW
+58.7,53.32,61.95,2,0,0.946,Database,LOW
+72.17,76.04,100.0,3,1,0.669,Data Science,MEDIUM
+69.3,70.88,79.16,1,1,0.846,Artificial Intelligence,LOW
+78.56,68.89,70.73,1,1,0.974,DevOps,LOW
+24.09,28.12,71.08,1,3,0.963,Security,HIGH
+39.31,38.17,52.91,2,0,0.828,Backend,MEDIUM
+70.18,55.69,59.6,5,0,0.853,Security,LOW
+24.75,33.45,57.77,2,2,0.698,Software Engineering,MEDIUM
+81.96,68.94,76.26,2,2,0.896,Artificial Intelligence,LOW
+27.07,28.59,71.91,3,2,1.0,Programming,HIGH
+13.54,18.7,67.08,3,0,1.0,Programming,HIGH
+44.13,46.93,73.78,4,0,0.876,Database,MEDIUM
+83.72,80.73,63.68,0,1,0.764,General,LOW
+46.41,46.09,70.56,2,0,0.961,General,MEDIUM
+35.56,49.1,99.8,3,1,1.0,Artificial Intelligence,HIGH
+11.9,31.72,89.46,3,1,0.625,Database,HIGH
+0.0,2.65,69.54,1,3,0.886,Programming,HIGH
+71.94,68.37,66.28,2,0,0.86,DevOps,LOW
+29.48,34.64,90.58,2,1,0.881,Data Science,HIGH
+67.14,76.84,64.98,2,0,1.0,Software Engineering,LOW
+36.09,44.87,56.66,2,0,1.0,Artificial Intelligence,MEDIUM
+47.14,43.55,82.38,2,2,1.0,Backend,MEDIUM
+48.22,38.56,65.48,2,0,1.0,General,MEDIUM
+62.01,59.73,69.67,1,2,0.703,Security,LOW
+90.34,76.82,66.86,1,1,0.93,Artificial Intelligence,LOW
+11.79,10.44,53.18,1,2,0.801,Software Engineering,HIGH
+18.03,27.77,79.57,1,0,0.783,Software Engineering,HIGH
+11.88,34.41,62.34,2,0,0.95,Database,MEDIUM
+6.55,18.37,54.93,1,0,1.0,Database,HIGH
+65.94,50.82,76.57,1,0,0.73,Security,MEDIUM
+38.7,33.39,61.5,0,1,0.8,Software Engineering,MEDIUM
+62.24,73.59,96.61,2,0,0.695,DevOps,MEDIUM
+41.44,62.08,67.16,0,1,1.0,Database,LOW
+23.29,19.26,67.72,0,2,1.0,Testing,HIGH
+59.42,49.45,59.74,0,1,1.0,DevOps,LOW
+62.44,54.45,58.95,3,1,0.926,DevOps,LOW
+55.15,54.66,60.84,1,0,0.831,Database,LOW
+84.44,68.93,57.77,1,0,1.0,Data Science,LOW
+100.0,100.0,77.9,2,0,1.0,General,LOW
+18.49,20.46,78.96,0,0,1.0,Data Science,HIGH
+44.74,49.23,70.01,2,2,0.83,General,MEDIUM
+68.7,59.91,69.84,1,0,0.648,General,LOW
+26.32,23.52,62.83,1,0,0.5,Software Engineering,HIGH
+76.85,69.45,54.46,3,1,0.839,Data Science,LOW
+44.16,45.56,67.85,5,1,1.0,Data Science,MEDIUM
+24.19,54.09,78.96,3,2,0.787,Testing,MEDIUM
+54.79,53.21,89.43,1,0,1.0,General,MEDIUM
+52.58,48.83,68.48,0,0,0.939,Software Engineering,MEDIUM
+0.0,0.0,80.48,2,0,1.0,Database,HIGH
+13.66,8.52,47.66,1,0,1.0,Data Science,HIGH
+59.97,72.86,54.35,3,1,0.959,Programming,LOW
+42.72,50.59,66.9,5,4,1.0,Software Engineering,MEDIUM
+70.21,69.6,45.7,3,1,0.607,Database,LOW
+66.65,64.32,80.15,1,0,0.63,Database,LOW
+23.39,31.0,66.07,1,0,0.841,General,HIGH
+15.23,14.89,66.86,1,0,0.882,Artificial Intelligence,HIGH
+85.05,79.52,62.22,2,2,0.81,General,LOW
+68.83,81.52,64.55,4,2,1.0,Programming,LOW
+0.0,2.3,80.64,1,2,0.811,General,HIGH
+81.84,80.4,78.15,3,1,0.787,Backend,LOW
+40.19,41.14,72.77,4,0,0.683,General,MEDIUM
+0.0,9.76,64.7,2,0,0.805,Security,HIGH
+49.29,58.0,77.75,3,0,0.812,Programming,MEDIUM
+33.6,55.8,83.91,1,1,0.74,Database,MEDIUM
+62.75,52.03,82.62,1,2,1.0,Database,MEDIUM
+34.39,35.14,61.69,5,2,1.0,DevOps,MEDIUM
+31.93,42.38,66.92,2,3,1.0,Backend,MEDIUM
+61.93,62.32,67.91,4,1,0.955,Data Science,LOW
+15.4,24.95,61.99,1,0,1.0,Security,HIGH
+55.67,57.64,74.13,4,1,0.674,General,MEDIUM
+53.8,50.83,78.2,2,1,1.0,Software Engineering,MEDIUM
+59.48,61.15,75.19,2,2,0.672,Testing,LOW
+41.39,41.28,69.5,1,1,0.75,Artificial Intelligence,MEDIUM
+69.96,58.77,63.78,1,1,1.0,General,LOW
+89.82,67.32,80.38,3,0,0.864,Software Engineering,LOW
+60.86,69.5,51.5,2,1,0.981,Software Engineering,LOW
+80.43,63.51,56.8,1,2,0.651,Security,LOW
+54.53,34.61,64.98,1,0,1.0,Artificial Intelligence,MEDIUM
+16.38,25.02,67.93,2,0,0.787,Testing,HIGH
+35.06,51.34,60.15,2,0,0.959,General,LOW
+8.39,20.87,67.0,0,1,1.0,Software Engineering,HIGH
+87.97,62.67,75.92,3,0,0.851,General,LOW
+50.33,57.97,81.93,3,2,0.801,DevOps,MEDIUM
+66.15,66.27,87.33,2,1,1.0,Testing,MEDIUM
+65.93,71.96,58.33,1,1,0.621,Artificial Intelligence,LOW
+15.49,15.96,48.02,0,0,0.932,General,HIGH
+72.24,88.25,81.92,0,1,0.514,Database,LOW
+40.81,47.89,55.56,3,0,0.769,Security,LOW
+50.23,47.47,68.01,2,1,1.0,Software Engineering,MEDIUM
+25.1,33.69,58.36,3,1,0.766,Security,MEDIUM
+81.65,70.96,68.13,2,1,0.807,Artificial Intelligence,LOW
+55.11,60.07,77.15,1,1,1.0,Software Engineering,MEDIUM
+59.46,60.8,90.89,5,0,0.746,Software Engineering,MEDIUM
+14.28,18.57,63.7,3,1,0.995,DevOps,HIGH
+47.15,60.48,66.32,1,0,1.0,Software Engineering,LOW
+55.55,48.64,87.98,0,1,0.953,Backend,MEDIUM
+66.45,61.46,81.17,0,3,0.849,DevOps,MEDIUM
+43.17,45.04,65.2,0,0,1.0,Database,MEDIUM
+35.67,34.56,69.18,3,1,1.0,Database,HIGH
+86.17,79.63,89.39,0,1,0.865,Security,LOW
+17.59,30.13,62.23,2,0,0.717,Security,HIGH
+85.32,75.86,80.88,1,0,1.0,Software Engineering,LOW
+42.82,46.97,67.21,1,1,0.774,DevOps,MEDIUM
+56.83,50.91,70.52,5,2,1.0,Artificial Intelligence,MEDIUM
+44.58,31.68,69.65,2,0,0.908,DevOps,HIGH
+68.06,64.95,81.37,1,0,0.731,General,MEDIUM
+47.55,53.67,69.44,3,1,0.824,Data Science,MEDIUM
+21.29,11.25,71.11,5,1,0.954,Artificial Intelligence,HIGH
+60.81,49.63,48.91,3,1,0.645,Backend,LOW
+55.29,45.45,72.3,2,0,1.0,General,MEDIUM
+48.73,50.05,52.47,2,1,0.732,Data Science,LOW
+87.22,79.21,77.32,0,1,1.0,Security,LOW
+43.15,49.12,54.88,2,0,0.734,Testing,LOW
+86.75,66.78,89.69,1,1,0.803,Backend,MEDIUM
+41.36,48.36,51.38,0,0,0.816,General,LOW
+58.74,59.18,59.42,2,1,1.0,Data Science,LOW
+48.44,37.82,81.14,2,2,0.785,Artificial Intelligence,HIGH
+24.34,29.12,65.64,3,2,0.893,Security,HIGH
+12.85,20.01,79.24,3,1,0.846,DevOps,HIGH
+27.64,32.66,53.48,0,2,0.901,General,MEDIUM
+47.28,38.99,47.06,2,0,1.0,Testing,LOW
+23.23,31.01,54.65,1,1,1.0,Data Science,MEDIUM
+78.84,79.06,56.11,3,0,0.733,Security,LOW
+77.14,63.39,73.32,2,0,1.0,Security,LOW
+54.82,47.52,78.14,3,0,0.86,Testing,MEDIUM
+78.87,57.99,99.26,4,2,0.936,DevOps,MEDIUM
+90.83,82.06,69.42,2,1,0.74,Data Science,LOW
+31.96,31.82,57.09,2,1,0.985,DevOps,MEDIUM
+88.79,100.0,92.27,1,0,0.949,Database,LOW
+52.98,63.37,71.61,5,1,1.0,Data Science,LOW
+28.01,21.13,58.67,0,0,0.783,Programming,HIGH
+38.55,31.56,63.46,1,1,0.856,Programming,HIGH
+48.58,38.01,75.36,1,3,1.0,Security,MEDIUM
+88.2,89.03,75.19,3,1,0.947,Backend,LOW
+78.82,80.29,75.87,0,0,0.852,Database,LOW
+57.12,55.29,76.74,2,2,0.725,Backend,MEDIUM
+37.93,48.48,89.36,3,0,0.99,Software Engineering,MEDIUM
+22.62,33.49,74.91,5,1,1.0,Software Engineering,HIGH
+33.34,46.6,68.44,2,0,1.0,DevOps,MEDIUM
+42.7,44.04,79.95,4,0,0.839,Testing,MEDIUM
+26.24,36.31,64.75,2,1,0.782,DevOps,MEDIUM
+18.16,11.8,68.55,1,3,0.782,Data Science,HIGH
+60.73,31.3,58.24,7,0,1.0,General,MEDIUM
+77.37,60.63,87.11,1,1,1.0,Database,MEDIUM
+40.32,27.07,62.06,2,1,0.857,Testing,HIGH
+78.52,75.46,83.11,2,2,0.865,DevOps,LOW
+55.69,45.31,80.6,2,0,1.0,General,MEDIUM
+47.69,51.63,72.09,4,4,0.614,Artificial Intelligence,MEDIUM
+31.9,34.39,71.87,0,2,1.0,Testing,HIGH
+81.57,68.74,74.39,1,0,0.912,Testing,LOW
+86.48,80.8,100.0,2,0,1.0,Programming,LOW
+43.38,33.54,78.16,1,0,0.864,Artificial Intelligence,HIGH
+66.5,55.97,46.25,2,3,0.815,General,LOW
+64.73,73.69,64.29,0,1,0.5,Database,LOW
+47.47,50.74,57.06,1,0,0.824,Data Science,LOW
+52.62,41.0,57.71,0,1,1.0,Security,MEDIUM
+72.17,54.52,59.86,3,2,1.0,Security,LOW
+74.77,70.76,67.71,1,0,0.961,Backend,LOW
+8.01,17.11,54.44,0,1,0.914,DevOps,HIGH
+33.57,38.24,65.48,0,2,0.501,Artificial Intelligence,MEDIUM
+0.63,10.71,69.61,2,1,1.0,General,HIGH
+63.48,64.43,55.64,5,1,1.0,Backend,LOW
+47.74,53.33,67.75,0,0,0.853,Artificial Intelligence,MEDIUM
+69.33,66.82,82.29,0,0,1.0,Database,LOW
+25.64,31.67,67.36,1,1,0.9,Software Engineering,HIGH
+46.75,29.49,47.26,3,0,1.0,Security,MEDIUM
+55.64,54.04,54.69,1,2,0.717,Security,LOW
+32.74,56.53,87.83,3,0,1.0,Security,MEDIUM
+55.52,57.38,84.78,3,1,1.0,Artificial Intelligence,MEDIUM
+36.23,49.08,59.5,2,0,0.755,Programming,LOW
+48.83,34.92,64.67,1,1,0.997,Artificial Intelligence,MEDIUM
+64.15,62.06,79.84,2,2,0.78,Testing,MEDIUM
+65.44,66.85,61.41,3,0,0.721,Programming,LOW
+12.14,15.72,71.63,3,1,0.666,Database,HIGH
+0.0,14.47,60.65,1,0,0.845,Backend,HIGH
+52.59,51.34,58.89,3,2,0.744,Database,LOW
+46.7,55.17,73.96,1,1,0.991,Software Engineering,MEDIUM
+26.88,16.94,54.27,0,1,0.938,Programming,HIGH
+37.03,49.46,61.59,2,1,0.994,Security,LOW
+0.0,0.0,70.35,3,1,0.791,DevOps,HIGH
+21.76,29.79,56.98,3,2,0.69,Data Science,MEDIUM
+28.84,21.72,56.39,3,0,0.655,Data Science,HIGH
+0.0,18.98,79.36,1,0,0.813,DevOps,HIGH
+58.82,76.48,72.19,1,2,0.839,Database,LOW
+61.62,46.42,75.84,2,2,0.5,Data Science,MEDIUM
+61.29,71.59,83.93,0,1,0.927,Testing,LOW
+40.15,44.37,56.69,1,1,0.994,Programming,MEDIUM
+42.33,32.95,62.29,3,2,1.0,Programming,MEDIUM
+46.14,42.04,65.66,4,0,0.76,Testing,MEDIUM
+32.49,28.04,80.32,3,0,1.0,Artificial Intelligence,HIGH
+58.36,58.56,68.05,2,0,0.753,Data Science,LOW
+61.32,55.55,75.53,3,0,0.666,Programming,MEDIUM
+16.97,18.69,62.0,3,0,1.0,Backend,HIGH
+42.05,41.36,83.76,1,0,0.957,Software Engineering,HIGH
+50.88,49.71,70.96,0,0,0.749,Software Engineering,MEDIUM
+79.07,76.97,95.1,3,0,0.942,Database,LOW
+96.58,89.77,74.42,3,1,0.974,Artificial Intelligence,LOW
+67.06,88.64,79.97,3,0,0.855,Data Science,LOW
+86.06,60.07,86.68,4,1,0.691,Software Engineering,MEDIUM
+39.94,36.52,78.21,3,1,0.945,Data Science,HIGH
+41.03,18.85,77.08,1,2,0.809,Data Science,HIGH
+23.28,32.53,69.14,5,1,0.782,Security,HIGH
+3.6,11.94,69.44,1,0,0.748,Database,HIGH
+17.96,39.0,79.2,3,3,1.0,Artificial Intelligence,HIGH
+49.89,40.12,85.48,0,3,1.0,Artificial Intelligence,HIGH
+46.08,44.17,69.41,3,0,0.728,DevOps,MEDIUM
+69.06,85.87,60.0,4,3,0.825,Testing,LOW
+56.54,36.51,61.49,3,0,0.804,Database,MEDIUM
+54.9,63.01,62.36,2,1,0.823,Software Engineering,LOW
+18.14,22.73,50.84,3,1,0.647,Testing,HIGH
+77.86,49.62,96.65,1,1,0.797,Data Science,MEDIUM
+47.84,34.98,56.8,3,0,0.891,Artificial Intelligence,MEDIUM
+46.26,48.33,51.06,2,0,1.0,Data Science,LOW
+52.53,58.18,66.68,1,1,0.66,Data Science,LOW
+79.48,75.02,87.55,3,0,1.0,Software Engineering,LOW
+31.04,37.93,67.25,4,4,0.97,Artificial Intelligence,MEDIUM
+48.33,57.39,64.82,1,0,0.871,Programming,LOW
+56.62,69.96,90.31,0,3,1.0,Artificial Intelligence,MEDIUM
+41.08,63.26,66.1,3,0,1.0,Security,LOW
+30.78,36.27,65.89,6,1,0.737,DevOps,MEDIUM
+36.33,22.81,72.3,2,2,1.0,DevOps,HIGH
+52.65,58.24,62.2,3,2,0.831,Data Science,LOW
+67.32,54.68,76.83,1,1,0.849,DevOps,MEDIUM
+25.05,34.18,69.77,1,1,0.997,Backend,HIGH
+39.2,42.82,69.59,6,1,0.828,Software Engineering,MEDIUM
+49.72,33.19,71.27,0,2,1.0,Artificial Intelligence,HIGH
+70.37,69.35,82.78,3,0,1.0,Programming,LOW
+33.2,30.08,55.59,3,1,0.869,DevOps,MEDIUM
+23.54,23.8,62.8,2,1,0.5,Data Science,HIGH
+88.85,74.73,63.85,2,1,0.968,Software Engineering,LOW
+57.82,58.43,83.98,1,0,0.96,Database,MEDIUM
+65.16,71.45,79.53,1,0,0.794,DevOps,LOW
+39.25,33.11,60.92,1,2,0.806,Software Engineering,MEDIUM
+32.9,31.85,73.83,2,0,0.973,Software Engineering,HIGH
+72.51,72.16,76.64,2,0,0.746,Testing,LOW
+36.75,37.57,49.28,3,1,1.0,Database,MEDIUM
+27.14,46.99,60.41,2,2,0.96,DevOps,MEDIUM
+58.93,59.97,61.5,1,1,0.877,Security,LOW
+86.08,81.73,83.54,1,1,0.975,Security,LOW
+0.06,11.64,70.19,1,2,0.703,Testing,HIGH
+46.44,65.71,63.51,3,0,0.628,Data Science,LOW
+29.44,39.58,61.11,1,0,0.951,General,MEDIUM
+82.57,86.82,66.18,3,1,0.83,Data Science,LOW
+60.21,57.42,74.68,2,1,0.873,Database,MEDIUM
+72.32,87.62,72.81,1,1,0.882,Database,LOW
+16.84,31.31,65.7,4,1,0.88,DevOps,HIGH
+38.34,56.46,58.11,1,1,0.649,Data Science,LOW
+56.91,62.0,80.55,4,0,0.581,Software Engineering,MEDIUM
+61.13,69.21,62.44,5,1,0.763,Software Engineering,LOW
+4.83,21.07,77.63,4,0,0.992,Database,HIGH
+66.49,59.66,83.62,4,0,0.998,Security,MEDIUM
+67.84,74.23,88.98,3,1,0.86,Testing,LOW
+29.03,33.76,62.37,2,2,0.793,DevOps,MEDIUM
+52.22,46.8,71.0,0,1,0.984,Security,MEDIUM
+4.28,20.8,67.79,4,1,1.0,Database,HIGH
+46.08,37.12,72.29,1,1,0.891,DevOps,MEDIUM
+43.04,37.19,83.04,3,1,0.965,Data Science,HIGH
+34.17,35.67,58.64,4,0,0.994,Software Engineering,MEDIUM
+15.23,3.52,59.04,4,1,0.818,General,HIGH
+22.39,44.55,66.11,2,0,0.821,Data Science,MEDIUM
+54.5,59.82,55.23,1,1,0.842,DevOps,LOW
+62.5,65.66,61.36,3,0,1.0,Database,LOW
+71.51,51.5,55.87,3,2,0.883,Testing,LOW
+84.28,69.74,70.13,1,1,0.878,Data Science,LOW
+56.54,70.78,78.31,1,1,1.0,Artificial Intelligence,LOW
+43.71,35.07,74.42,4,0,1.0,General,HIGH
+30.03,11.95,54.9,2,1,1.0,DevOps,HIGH
+69.81,62.34,75.88,3,0,0.833,Database,LOW
+48.89,48.02,73.49,3,0,0.948,Data Science,MEDIUM
+51.72,47.95,65.74,2,2,0.726,Security,MEDIUM
+32.41,46.31,60.12,2,1,0.832,DevOps,MEDIUM
+67.86,62.18,78.78,2,0,0.957,General,MEDIUM
+0.09,1.93,72.5,1,3,0.869,DevOps,HIGH
+77.14,75.91,72.93,2,1,0.731,Security,LOW
+71.18,63.06,74.33,3,1,1.0,Database,LOW
+59.04,55.75,74.43,3,1,0.947,DevOps,MEDIUM
+100.0,90.33,56.44,1,0,0.651,DevOps,LOW
+50.21,50.86,64.22,1,0,0.914,Software Engineering,MEDIUM
+43.11,55.13,69.48,2,0,0.866,Backend,MEDIUM
+73.77,77.77,63.66,0,1,0.575,Security,LOW
+50.17,48.59,65.12,3,0,0.879,Database,MEDIUM
+52.51,34.81,55.71,2,1,1.0,Backend,MEDIUM
+15.79,26.8,56.14,3,1,0.91,Security,HIGH
+38.6,28.71,72.58,3,2,0.793,DevOps,HIGH
+26.68,33.74,60.34,3,2,0.908,Testing,MEDIUM
+55.73,35.89,89.13,1,0,1.0,Security,HIGH
+70.28,71.28,67.22,2,2,1.0,Security,LOW
+0.0,0.0,62.37,2,0,1.0,DevOps,HIGH
+76.16,67.64,77.79,2,0,0.901,General,LOW
+54.91,44.57,81.49,0,0,0.822,DevOps,MEDIUM
+16.04,3.8,55.02,0,0,0.695,General,HIGH
+46.38,33.59,62.43,3,2,0.711,General,MEDIUM
+59.64,62.85,71.32,1,1,0.646,General,LOW
+92.26,91.45,75.61,1,0,1.0,Programming,LOW
+19.78,19.02,75.46,4,1,1.0,Programming,HIGH
+32.62,56.17,74.28,3,1,0.803,General,MEDIUM
+73.32,74.77,72.1,0,1,0.911,Backend,LOW
+76.85,82.82,71.62,2,1,0.873,Artificial Intelligence,LOW
+12.22,19.22,88.64,2,1,0.869,Programming,HIGH
+57.62,44.9,80.47,1,0,0.713,Security,MEDIUM
+55.53,29.67,64.16,3,1,0.913,Testing,HIGH
+61.01,58.82,67.41,1,0,0.925,Backend,LOW
+70.08,60.57,89.64,2,1,0.652,Artificial Intelligence,MEDIUM
+79.64,69.42,65.16,2,1,0.882,Data Science,LOW
+36.29,48.99,75.49,1,1,1.0,Programming,MEDIUM
+55.27,58.1,62.8,3,1,1.0,Data Science,LOW
+47.44,50.03,79.94,2,2,0.913,Data Science,MEDIUM
+82.61,75.54,83.96,3,2,0.937,Backend,LOW
+30.84,26.99,58.18,5,2,0.97,General,HIGH
+100.0,100.0,82.75,1,3,0.743,Software Engineering,LOW
+4.65,2.38,66.97,4,2,0.813,Software Engineering,HIGH
+0.0,5.12,40.0,2,0,0.832,Software Engineering,HIGH
+70.7,69.3,80.48,3,3,1.0,DevOps,LOW
+7.34,3.63,53.93,5,2,0.718,Security,HIGH
+55.96,57.35,72.78,2,1,0.843,Database,MEDIUM
+19.76,44.02,67.32,1,2,0.973,Backend,MEDIUM
+23.59,31.1,86.78,5,0,1.0,Database,HIGH
+15.61,4.19,64.41,5,0,0.691,Data Science,HIGH
+53.03,51.4,65.03,2,0,1.0,DevOps,MEDIUM
+53.1,42.95,74.36,4,0,1.0,Programming,MEDIUM
+26.66,30.09,82.34,3,0,1.0,Artificial Intelligence,HIGH
+85.77,90.72,76.56,5,1,0.768,Artificial Intelligence,LOW
+95.97,86.95,66.36,1,1,0.843,DevOps,LOW
+53.39,49.89,79.92,1,1,0.827,General,MEDIUM
+34.76,42.25,74.38,1,0,0.972,Software Engineering,MEDIUM
+47.21,42.34,61.33,6,0,1.0,DevOps,MEDIUM
+62.95,59.14,76.85,2,1,1.0,Security,MEDIUM
+87.44,91.45,84.43,1,0,0.879,Data Science,LOW
+70.13,63.07,63.13,1,4,0.847,Data Science,LOW
+48.55,38.86,64.88,0,1,1.0,Database,MEDIUM
+31.75,48.4,90.69,0,1,0.65,Security,MEDIUM
+82.25,65.13,70.34,2,2,0.853,Backend,LOW
+81.83,50.34,58.42,2,0,1.0,General,LOW
+35.88,48.82,67.23,2,0,0.804,Programming,MEDIUM
+82.26,76.75,76.76,3,1,1.0,Testing,LOW
+33.7,24.92,62.51,4,1,0.718,General,HIGH
+37.63,41.87,55.23,3,0,0.685,Data Science,MEDIUM
+10.4,3.43,60.62,2,0,1.0,Security,HIGH
+50.63,46.84,74.76,1,0,0.873,Database,MEDIUM
+42.24,45.91,61.96,0,1,0.977,DevOps,MEDIUM
+57.22,78.12,72.94,3,0,0.752,Software Engineering,LOW
+46.45,56.33,70.55,1,1,0.928,Software Engineering,MEDIUM
+68.4,66.03,78.33,1,1,0.818,Artificial Intelligence,LOW
+46.74,37.21,63.37,3,0,0.955,General,MEDIUM
+80.1,67.17,67.0,0,0,0.963,Backend,LOW
+67.43,53.15,69.37,2,0,0.921,Security,MEDIUM
+83.12,75.75,62.37,3,1,0.754,Database,LOW
+27.06,21.2,68.67,2,0,1.0,Security,HIGH
+53.73,49.0,70.7,2,2,0.796,Security,MEDIUM
+52.67,42.48,56.42,3,1,0.831,General,MEDIUM
+26.54,33.85,55.55,0,1,0.779,General,MEDIUM
+66.34,64.46,73.06,3,1,1.0,DevOps,LOW
+40.86,40.98,77.95,1,3,0.964,Artificial Intelligence,MEDIUM
+55.04,52.87,75.74,2,1,0.894,Software Engineering,MEDIUM
+43.83,46.02,67.17,1,2,0.936,Software Engineering,MEDIUM
+21.15,22.98,52.55,3,0,0.883,Backend,HIGH
+72.66,55.15,59.69,1,1,0.813,Security,LOW
+87.09,76.22,75.66,1,1,0.637,Security,LOW
+58.76,51.66,89.27,1,2,0.996,Programming,MEDIUM
+47.0,40.03,73.69,2,2,0.948,DevOps,MEDIUM
+13.14,12.07,52.37,4,0,0.725,Software Engineering,HIGH
+80.0,64.67,79.59,0,2,1.0,Security,LOW
+51.51,51.36,82.62,3,2,1.0,DevOps,MEDIUM
+0.72,0.0,73.29,2,2,0.999,Security,HIGH
+59.26,60.61,80.96,2,2,0.917,Software Engineering,MEDIUM
+33.92,42.16,60.54,1,0,1.0,Software Engineering,MEDIUM
+60.31,53.73,64.84,2,0,0.935,Artificial Intelligence,LOW
+76.64,62.67,73.13,1,2,1.0,Testing,LOW
+68.14,61.12,67.1,2,0,0.842,Software Engineering,LOW
+67.47,72.28,58.47,2,0,1.0,Security,LOW
+42.74,50.08,78.07,1,1,0.802,Data Science,MEDIUM
+21.8,24.32,66.6,0,0,0.78,General,HIGH
+35.93,28.7,46.61,4,2,0.829,Data Science,MEDIUM
+50.42,53.0,76.71,2,0,1.0,Software Engineering,MEDIUM
+40.08,45.05,65.69,1,0,1.0,Database,MEDIUM
+55.35,69.86,74.47,5,2,0.811,General,LOW
+26.75,33.76,63.89,2,0,0.695,Programming,MEDIUM
+10.11,17.07,70.15,3,3,0.891,Data Science,HIGH
+0.0,3.79,63.59,1,3,0.848,General,HIGH
+65.82,62.29,80.58,1,1,0.793,Backend,MEDIUM
+47.58,54.89,54.34,4,0,0.745,Programming,LOW
+55.56,52.46,64.37,1,1,0.813,Data Science,LOW
+97.84,84.36,78.67,1,1,1.0,Security,LOW
+30.26,25.95,65.87,1,2,0.898,General,HIGH
+61.65,68.37,72.2,2,1,1.0,DevOps,LOW
+27.66,35.07,62.17,3,2,0.742,Backend,MEDIUM
+67.97,65.77,83.3,3,1,1.0,General,MEDIUM
+50.03,51.32,75.78,0,1,0.57,Database,MEDIUM
+13.78,10.38,56.47,0,0,0.813,Programming,HIGH
+61.56,34.33,67.14,2,2,1.0,Software Engineering,MEDIUM
+55.14,64.86,77.73,2,1,0.759,DevOps,LOW
+41.71,51.05,72.33,2,0,0.962,Backend,MEDIUM
+50.69,47.38,72.31,1,2,1.0,Security,MEDIUM
+83.45,82.58,73.81,4,3,0.744,Data Science,LOW
+83.45,83.74,79.24,4,1,0.821,Programming,LOW
+62.89,68.55,64.69,0,1,0.727,DevOps,LOW
+2.17,22.82,61.91,1,0,1.0,Backend,HIGH
+30.2,33.98,48.83,2,0,0.873,Software Engineering,MEDIUM
+51.25,43.5,81.87,2,2,0.906,Data Science,MEDIUM
+55.47,58.52,73.38,3,0,0.869,Artificial Intelligence,MEDIUM
+38.58,32.34,52.13,0,0,1.0,DevOps,MEDIUM
+29.59,33.48,60.02,0,1,1.0,Security,MEDIUM
+29.77,34.83,64.4,2,1,0.999,Security,MEDIUM
+46.28,43.36,69.08,6,0,0.892,Testing,MEDIUM
+84.31,75.68,50.21,0,0,0.775,Data Science,LOW
+32.55,31.4,85.43,3,0,0.884,Backend,HIGH
+42.32,44.73,68.1,2,2,0.719,Security,MEDIUM
+57.98,46.92,71.79,0,0,0.653,Backend,MEDIUM
+78.23,79.47,69.61,4,2,0.961,Testing,LOW
+41.17,44.72,58.45,0,1,0.855,Backend,MEDIUM
+42.94,38.82,58.15,2,0,1.0,Data Science,MEDIUM
+82.52,81.32,70.72,2,0,1.0,Data Science,LOW
+61.44,63.06,53.08,1,2,1.0,Security,LOW
+38.52,26.75,60.01,4,0,0.6,Testing,HIGH
+57.12,53.46,73.95,3,2,1.0,Database,MEDIUM
+21.66,11.87,46.09,1,0,0.863,Security,HIGH
+77.86,83.01,76.51,1,0,0.972,Artificial Intelligence,LOW
+100.0,94.46,78.3,1,0,1.0,DevOps,LOW
+66.4,71.06,71.51,4,2,0.782,Programming,LOW
+56.65,62.89,72.52,1,1,0.591,Database,LOW
+36.91,31.06,67.48,2,2,0.942,Data Science,HIGH
+73.76,50.95,63.16,1,0,0.69,Testing,LOW
+32.92,27.21,61.83,0,3,1.0,Data Science,HIGH
+20.18,22.18,68.95,0,0,0.909,Backend,HIGH
+3.25,14.6,65.56,2,0,0.894,Testing,HIGH
+29.65,33.38,68.16,2,0,0.743,Testing,HIGH
+65.76,62.41,80.06,1,1,1.0,Database,MEDIUM
+45.59,49.14,68.38,0,0,1.0,General,MEDIUM
+62.03,69.29,71.24,4,1,0.878,Backend,LOW
+61.12,66.11,76.28,1,0,0.719,Security,LOW
+59.74,63.55,58.32,1,0,0.945,Backend,LOW
+59.34,71.61,76.82,5,1,0.898,Database,LOW
+33.79,34.47,69.02,2,0,0.739,Software Engineering,HIGH
+43.72,41.07,47.99,0,0,0.81,Data Science,LOW
+58.59,55.44,80.02,2,0,1.0,DevOps,MEDIUM
+75.83,73.9,86.23,3,3,1.0,Security,LOW
+45.21,51.13,66.55,0,0,1.0,Artificial Intelligence,MEDIUM
+46.27,44.4,55.75,1,2,0.858,Data Science,MEDIUM
+0.0,0.0,69.32,3,0,0.851,Backend,HIGH
+3.77,3.95,49.17,2,1,0.894,Software Engineering,HIGH
+31.02,48.57,73.63,3,1,1.0,Programming,MEDIUM
+76.51,87.65,82.75,2,1,1.0,General,LOW
+53.45,50.86,74.55,2,0,0.74,Security,MEDIUM
+39.19,46.7,66.03,1,1,0.755,Programming,MEDIUM
+75.89,63.19,57.23,2,1,0.713,Artificial Intelligence,LOW
+26.72,31.07,75.57,2,2,0.994,Programming,HIGH
+68.84,57.05,87.23,0,1,0.734,Data Science,MEDIUM
+74.47,66.73,65.42,0,1,0.826,Testing,LOW
+53.15,50.84,79.8,3,1,1.0,Programming,MEDIUM
+42.78,37.12,74.54,3,2,0.841,General,HIGH
+32.22,47.7,58.9,3,1,0.931,Database,LOW
+61.87,60.07,76.23,3,0,0.707,Testing,MEDIUM
+55.15,56.71,91.74,2,1,1.0,Security,MEDIUM
+48.91,69.63,71.57,1,3,0.869,Data Science,LOW
+38.94,49.84,71.14,2,1,1.0,Security,MEDIUM
+11.78,36.64,67.78,1,3,0.794,Testing,MEDIUM
+31.12,29.56,62.25,3,0,0.735,Database,HIGH
+61.07,66.54,56.93,1,2,0.662,DevOps,LOW
+38.28,43.11,65.81,0,0,0.604,Data Science,MEDIUM
+54.86,61.03,70.92,0,0,0.635,Testing,LOW
+65.3,61.33,80.56,0,0,0.866,DevOps,MEDIUM
+70.03,74.07,62.98,2,1,1.0,Software Engineering,LOW
+68.37,49.41,71.19,0,2,0.646,General,MEDIUM
+28.98,40.97,65.46,1,0,0.867,Backend,MEDIUM
+52.13,34.05,61.53,2,0,1.0,General,MEDIUM
+40.73,47.81,71.27,0,2,0.677,Artificial Intelligence,MEDIUM
+68.76,72.88,71.57,4,3,0.843,Security,LOW
+71.14,57.98,74.54,1,1,0.769,Database,MEDIUM
+59.77,59.31,54.81,1,4,0.872,Database,LOW
+35.96,29.68,61.68,2,0,0.954,DevOps,HIGH
+4.37,21.43,89.47,2,2,1.0,Software Engineering,HIGH
+62.3,57.58,66.82,1,0,0.862,Programming,LOW
+36.16,29.65,71.92,2,0,0.914,Artificial Intelligence,HIGH
+65.02,49.13,76.88,1,0,0.975,Data Science,MEDIUM
+73.2,66.18,85.75,3,3,0.715,Software Engineering,MEDIUM
+39.59,33.15,56.27,2,0,0.702,General,MEDIUM
+32.89,25.16,46.99,0,2,0.669,General,MEDIUM
+77.12,84.08,91.42,3,0,1.0,Testing,LOW
+55.5,43.53,59.03,3,2,0.684,Software Engineering,MEDIUM
+19.02,16.85,66.08,1,1,0.898,Backend,HIGH
+93.92,88.01,76.11,1,2,1.0,Database,LOW
+45.04,36.8,54.95,1,0,1.0,Testing,MEDIUM
+66.58,75.83,67.96,1,1,0.83,Artificial Intelligence,LOW
+72.45,71.53,73.67,0,5,0.699,Security,LOW
+39.12,45.83,47.28,1,0,0.636,Testing,LOW
+38.27,30.81,49.36,4,1,0.823,Database,MEDIUM
+35.55,39.96,67.16,0,0,0.633,Testing,MEDIUM
+72.88,63.7,77.88,1,0,0.803,General,LOW
+91.22,77.46,57.67,3,0,0.989,Backend,LOW
+80.12,84.51,77.7,2,2,0.729,Data Science,LOW
+55.81,59.81,76.73,2,2,0.813,Data Science,MEDIUM
+34.2,28.57,56.42,3,1,0.784,General,MEDIUM
+52.55,48.1,65.19,1,1,0.915,Artificial Intelligence,MEDIUM
+15.45,18.24,71.99,0,0,0.781,Security,HIGH
+1.66,0.0,76.73,1,1,0.778,Security,HIGH
+23.52,34.04,56.45,2,2,0.729,Backend,MEDIUM
+30.45,28.19,63.85,1,1,1.0,General,HIGH
+31.08,35.65,75.34,3,2,0.789,Security,HIGH
+23.61,23.35,65.42,3,0,1.0,Security,HIGH
+82.49,76.09,82.7,1,2,0.853,Software Engineering,LOW
+100.0,96.11,80.55,3,0,0.887,General,LOW
+24.23,21.9,62.23,2,0,1.0,Programming,HIGH
+52.84,56.18,80.77,0,3,0.985,Security,MEDIUM
+66.1,64.79,75.47,2,2,1.0,General,LOW
+58.83,47.91,64.27,1,2,0.903,DevOps,MEDIUM
+12.34,0.47,78.96,3,2,0.978,Software Engineering,HIGH
+14.11,22.28,60.01,2,1,1.0,Data Science,HIGH
+41.88,56.93,86.62,4,1,1.0,Backend,MEDIUM
+20.23,12.6,60.79,1,2,1.0,General,HIGH
+39.22,38.73,77.28,0,1,0.747,Database,MEDIUM
+36.94,44.97,69.86,0,1,0.905,Data Science,MEDIUM
+61.59,65.86,82.64,1,1,0.981,Data Science,MEDIUM
+58.31,38.62,66.33,1,3,1.0,Security,MEDIUM
+62.0,51.58,75.46,3,0,0.985,Data Science,MEDIUM
+26.26,34.77,64.54,2,0,0.74,Programming,MEDIUM
+100.0,91.74,74.27,5,1,0.772,Data Science,LOW
+56.66,48.78,68.45,3,1,0.805,Testing,MEDIUM
+29.5,38.45,73.68,3,2,0.707,Programming,MEDIUM
+53.97,52.15,82.37,6,0,0.753,Testing,MEDIUM
+64.76,62.76,93.96,2,0,0.99,Backend,MEDIUM
+0.0,5.81,65.49,2,1,0.755,Database,HIGH
+27.99,36.91,69.9,2,0,1.0,Artificial Intelligence,MEDIUM
+58.6,52.64,73.69,0,0,0.68,Database,MEDIUM
+62.45,44.87,60.55,1,0,0.984,Programming,MEDIUM
+70.47,78.21,61.31,0,3,0.966,Data Science,LOW
+52.0,64.43,67.09,0,0,0.892,Testing,LOW
+39.24,28.59,73.18,0,0,1.0,DevOps,HIGH
+39.56,36.95,68.7,3,1,0.702,Artificial Intelligence,MEDIUM
+53.11,70.03,76.9,1,0,0.749,Artificial Intelligence,LOW
+60.37,48.39,71.37,5,0,0.952,Artificial Intelligence,MEDIUM
+78.39,100.0,88.97,1,1,0.967,Database,LOW
+74.06,71.88,65.18,1,2,0.906,Security,LOW
+49.74,38.68,69.6,2,3,0.712,Software Engineering,MEDIUM
+14.35,20.25,70.21,1,1,1.0,DevOps,HIGH
+63.5,75.27,80.55,1,1,1.0,Artificial Intelligence,LOW
+11.75,21.27,50.57,1,0,0.798,DevOps,HIGH
+75.17,62.93,56.81,2,3,0.942,Backend,LOW
+51.17,35.49,65.32,2,1,1.0,Programming,MEDIUM
+56.17,50.48,54.62,2,0,0.861,Data Science,LOW
+29.26,40.14,54.92,3,1,0.697,Security,MEDIUM
+77.25,61.84,84.47,4,1,1.0,Security,MEDIUM
+95.41,96.01,72.02,4,1,0.938,Backend,LOW
+30.11,49.03,65.89,2,0,0.891,Data Science,MEDIUM
+71.54,56.13,79.31,2,0,0.771,DevOps,MEDIUM
+13.65,31.84,78.97,1,1,1.0,Backend,HIGH
+56.14,52.6,62.33,0,1,0.936,Database,LOW
+12.53,27.86,64.61,1,1,0.81,Artificial Intelligence,HIGH
+71.09,59.34,73.55,1,1,0.888,Programming,LOW
+59.21,58.39,79.06,1,0,0.943,Backend,MEDIUM
+63.25,81.73,70.2,1,1,0.922,Database,LOW
+41.99,38.11,68.14,0,0,0.86,Programming,MEDIUM
+93.94,98.81,61.11,1,2,0.617,General,LOW
+43.92,38.3,56.93,4,0,0.73,Programming,MEDIUM
+35.99,37.62,62.77,3,2,0.951,Programming,MEDIUM
+48.3,46.48,85.83,2,2,0.994,Data Science,MEDIUM
+91.24,79.26,74.57,0,0,0.857,Security,LOW
+53.13,43.82,83.0,2,1,1.0,Programming,MEDIUM
+46.47,50.02,55.23,0,0,0.592,Security,LOW
+82.77,78.67,61.15,0,1,0.965,Backend,LOW
+62.32,65.95,84.64,2,1,0.571,General,MEDIUM
+45.95,48.38,74.53,2,0,0.735,General,MEDIUM
+58.59,64.69,70.91,5,1,1.0,Software Engineering,LOW
+46.53,52.57,68.74,1,3,0.665,Testing,MEDIUM
+0.0,16.59,73.84,2,1,0.675,Security,HIGH
+73.55,62.86,64.89,0,1,0.887,Artificial Intelligence,LOW
+99.53,88.34,76.11,0,0,0.875,Testing,LOW
+71.63,65.32,88.56,1,1,0.911,Security,MEDIUM
+56.11,44.34,62.63,2,0,0.649,DevOps,MEDIUM
+47.84,48.57,71.08,0,2,0.811,Artificial Intelligence,MEDIUM
+70.22,65.16,63.06,1,0,0.897,Data Science,LOW
+38.45,42.8,81.39,4,0,0.778,Software Engineering,MEDIUM
+21.26,31.11,59.82,0,0,0.5,Artificial Intelligence,MEDIUM
+35.43,39.55,85.08,3,1,0.682,Software Engineering,HIGH
+6.45,25.4,63.18,3,1,0.776,Artificial Intelligence,HIGH
+51.03,46.95,70.55,4,1,0.815,DevOps,MEDIUM
+75.65,55.55,89.82,4,1,0.97,Artificial Intelligence,MEDIUM
+40.76,53.23,73.9,1,1,0.655,Security,MEDIUM
+90.37,79.79,87.8,1,2,0.938,Backend,LOW
+52.4,53.58,49.49,4,1,1.0,Testing,LOW
+57.71,48.41,67.9,1,1,0.701,DevOps,MEDIUM
+48.93,49.93,64.87,1,3,0.982,Programming,MEDIUM
+25.04,40.78,60.09,3,1,0.956,Artificial Intelligence,MEDIUM
+48.98,34.62,66.47,1,1,0.993,Security,MEDIUM
+24.98,30.48,63.11,1,3,0.811,DevOps,HIGH
+56.29,43.59,68.19,0,0,1.0,Backend,MEDIUM
+53.36,55.4,59.36,1,0,0.792,Backend,LOW
+46.13,50.68,49.83,1,1,0.919,Database,LOW
+58.46,43.88,63.29,1,5,1.0,Software Engineering,MEDIUM
+59.17,68.89,88.97,2,2,0.866,Security,MEDIUM
+28.15,23.33,72.07,6,2,0.85,Backend,HIGH
+21.76,31.1,72.28,0,1,0.846,Testing,HIGH
+18.1,33.24,62.73,1,1,1.0,General,MEDIUM
+30.51,31.26,64.57,2,0,0.952,Programming,HIGH
+31.47,41.71,74.65,5,1,0.957,Backend,MEDIUM
+19.8,27.51,70.35,1,1,0.825,Security,HIGH
+45.37,42.89,58.34,1,0,0.739,Data Science,MEDIUM
+54.0,70.72,70.69,1,3,0.779,Software Engineering,LOW
+39.0,24.17,74.86,3,0,0.819,Programming,HIGH
+41.91,38.41,48.46,3,0,0.92,Backend,MEDIUM
+69.86,58.93,67.38,3,2,0.913,Database,LOW
+49.9,39.01,72.52,3,1,0.857,Data Science,MEDIUM
+76.17,59.51,79.44,4,0,0.873,General,MEDIUM
+19.76,32.89,59.05,0,0,0.836,Backend,MEDIUM
+84.17,76.26,75.25,0,2,0.907,Backend,LOW
+82.72,71.88,81.11,1,0,0.868,Software Engineering,LOW
+39.15,28.1,61.31,7,1,0.5,Artificial Intelligence,HIGH
+31.08,24.06,58.94,0,5,0.969,Security,HIGH
+22.33,18.68,67.17,2,0,0.837,Software Engineering,HIGH
+20.62,21.75,59.22,0,0,0.915,Testing,HIGH
+28.83,33.89,69.64,4,1,0.68,Security,HIGH
+53.21,38.49,74.53,3,3,0.94,Data Science,MEDIUM
+67.75,64.67,67.51,1,0,0.949,Data Science,LOW
+67.93,55.22,50.11,2,1,0.801,Backend,LOW
+5.99,2.22,74.59,0,0,0.695,Software Engineering,HIGH
+57.28,41.71,66.08,1,2,0.794,Programming,MEDIUM
+20.22,49.69,72.21,5,1,1.0,Backend,MEDIUM
+49.17,45.46,70.62,1,0,0.651,DevOps,MEDIUM
+42.57,48.59,61.86,2,0,0.918,Testing,MEDIUM
+40.61,54.17,75.87,7,1,0.623,General,MEDIUM
+47.55,42.09,80.03,2,2,0.635,Artificial Intelligence,MEDIUM
+30.72,42.05,50.28,0,1,0.648,DevOps,LOW
+57.0,70.26,58.35,3,1,1.0,Software Engineering,LOW
+28.06,40.3,69.26,2,0,0.528,Artificial Intelligence,MEDIUM
+100.0,89.7,76.56,2,2,0.754,Backend,LOW
+56.33,47.38,70.92,1,3,1.0,Security,MEDIUM
+12.79,46.54,61.38,2,0,0.733,Software Engineering,MEDIUM
+73.85,65.59,78.03,0,0,0.591,Data Science,LOW
+27.75,31.22,62.19,2,1,0.927,Data Science,MEDIUM
+79.2,79.38,60.34,1,0,0.842,DevOps,LOW
+41.73,36.86,69.5,6,2,1.0,Software Engineering,MEDIUM
+36.6,45.83,76.42,0,0,0.86,DevOps,MEDIUM
+20.34,11.73,64.24,3,0,0.5,Security,HIGH
+57.66,56.91,62.55,2,2,0.685,DevOps,LOW
+75.84,76.5,65.48,5,0,1.0,Programming,LOW
+65.34,52.51,82.37,3,1,0.884,Programming,MEDIUM
+28.9,33.5,47.71,1,0,0.841,Programming,MEDIUM
+70.85,61.5,89.37,3,1,1.0,Artificial Intelligence,MEDIUM
+69.37,61.41,73.77,0,0,0.786,Backend,LOW
+69.11,69.11,82.12,1,1,0.972,DevOps,LOW
+15.77,25.11,73.99,1,0,1.0,Backend,HIGH
+10.16,18.02,64.76,2,0,1.0,Data Science,HIGH
+74.81,92.52,79.77,1,0,0.666,Programming,LOW
+23.18,22.32,62.12,3,0,0.976,General,HIGH
+21.17,26.08,69.53,0,1,0.78,Data Science,HIGH
+45.23,42.22,67.81,5,1,0.993,Programming,MEDIUM
+54.64,50.5,72.74,6,0,0.946,Security,MEDIUM
+55.63,52.96,55.31,4,0,0.907,Programming,LOW
+100.0,99.3,75.72,0,1,1.0,Security,LOW
+29.84,34.64,64.22,0,2,0.805,Testing,MEDIUM
+50.32,63.73,83.85,5,2,0.981,Testing,MEDIUM
+42.15,34.58,72.58,0,1,1.0,Security,HIGH
+52.36,56.9,62.73,2,1,1.0,Artificial Intelligence,LOW
+75.04,66.22,65.32,4,2,0.866,Database,LOW
+37.51,34.24,63.16,4,1,0.921,Security,MEDIUM
+33.82,47.63,76.05,2,1,0.962,Backend,MEDIUM
+53.23,56.01,78.59,1,1,0.905,General,MEDIUM
+64.49,56.3,65.46,2,1,0.843,Testing,LOW
+69.58,76.0,64.85,2,1,0.546,Testing,LOW
+61.73,55.82,82.11,3,0,0.922,Database,MEDIUM
+0.0,32.12,56.47,5,1,0.761,Artificial Intelligence,MEDIUM
+12.61,14.48,55.2,2,2,1.0,General,HIGH
+47.28,51.16,56.15,2,0,1.0,Backend,LOW
+38.67,14.26,49.87,2,0,0.941,Database,HIGH
+52.6,58.37,70.88,3,1,0.574,Programming,LOW
+47.39,59.02,87.87,4,3,0.976,Artificial Intelligence,MEDIUM
+42.8,43.78,60.56,0,1,0.723,Artificial Intelligence,MEDIUM
+60.62,68.76,63.73,5,2,0.927,Data Science,LOW
+54.81,45.79,71.47,5,3,0.885,Programming,MEDIUM
+66.26,53.2,61.8,3,2,0.716,DevOps,LOW
+17.43,25.63,62.77,2,2,1.0,Data Science,HIGH
+24.29,14.58,65.7,5,3,1.0,Software Engineering,HIGH
+35.4,20.89,72.24,4,3,0.758,Database,HIGH
+31.79,43.37,58.82,3,1,0.919,Programming,MEDIUM
+49.63,54.74,64.64,2,1,1.0,Backend,LOW
+63.27,51.11,59.63,3,2,0.692,General,LOW
+24.68,37.16,64.53,2,1,0.876,Testing,MEDIUM
+53.57,69.94,75.13,1,1,1.0,Database,LOW
+31.17,42.23,46.44,3,1,0.815,Testing,LOW
+31.69,25.05,57.19,3,0,1.0,General,HIGH
+95.96,87.92,69.6,3,1,0.756,Programming,LOW
+46.06,44.81,60.51,3,2,0.688,Software Engineering,MEDIUM
+62.44,62.93,84.77,4,0,0.962,Backend,MEDIUM
+5.33,0.23,85.1,1,3,1.0,DevOps,HIGH
+81.59,66.67,67.08,2,2,0.755,Artificial Intelligence,LOW
+89.84,84.61,89.66,1,1,0.933,Testing,LOW
+43.06,34.64,71.01,3,1,0.819,General,HIGH
+61.21,81.83,56.75,0,1,0.78,General,LOW
+15.13,14.9,64.69,4,1,0.784,Security,HIGH
+93.69,78.85,62.28,1,0,0.78,Artificial Intelligence,LOW
+37.12,23.7,52.51,4,3,0.854,DevOps,HIGH
+71.43,51.41,76.26,3,0,0.807,Database,MEDIUM
+75.9,74.87,81.05,1,1,0.86,Software Engineering,LOW
+22.01,13.48,56.94,1,2,1.0,Database,HIGH
+47.24,57.54,67.0,3,3,1.0,Backend,LOW
+46.43,46.62,62.74,1,0,0.982,Software Engineering,MEDIUM
+33.45,35.53,76.61,1,0,1.0,General,HIGH
+24.45,17.99,73.0,1,1,1.0,Artificial Intelligence,HIGH
+86.97,82.83,68.95,3,2,0.886,Programming,LOW
+63.45,34.51,54.64,1,3,0.818,Testing,MEDIUM
+78.79,81.95,71.1,1,1,0.912,Data Science,LOW
+6.25,0.0,52.66,1,0,0.638,Software Engineering,HIGH
+58.3,73.81,86.04,3,1,1.0,Artificial Intelligence,LOW
+39.42,22.13,53.34,2,0,0.726,DevOps,HIGH
+20.54,34.76,65.72,2,0,0.832,General,MEDIUM
+81.32,74.87,62.16,4,1,0.906,Artificial Intelligence,LOW
+56.33,55.0,64.43,1,2,0.951,General,LOW
+35.74,31.41,62.49,1,0,0.609,Backend,MEDIUM
+51.71,51.32,76.0,2,0,0.98,Database,MEDIUM
+50.87,54.46,72.06,2,2,1.0,Testing,MEDIUM
+60.46,65.04,71.91,3,0,1.0,Artificial Intelligence,LOW
+34.38,28.14,69.21,1,0,1.0,DevOps,HIGH
+52.23,52.91,75.96,3,1,0.807,Artificial Intelligence,MEDIUM
+40.91,44.53,64.79,1,1,0.815,Software Engineering,MEDIUM
+23.81,29.77,80.55,1,1,1.0,Database,HIGH
+21.06,24.34,51.88,0,1,0.927,Testing,HIGH
+65.5,59.17,54.9,2,1,0.764,Software Engineering,LOW
+73.97,74.3,87.12,0,0,0.782,Database,LOW
+77.42,60.1,80.77,1,2,0.647,Database,MEDIUM
+50.22,43.07,75.74,0,1,0.946,Artificial Intelligence,MEDIUM
+27.41,39.66,72.16,2,1,1.0,Security,MEDIUM
+59.51,51.59,66.24,6,2,0.814,Security,MEDIUM
+85.28,65.1,79.87,2,0,0.957,Database,LOW
+6.34,10.37,87.74,1,0,0.551,Database,HIGH
+18.28,23.81,71.54,0,1,0.922,Security,HIGH
+41.35,53.38,75.18,1,0,0.851,General,MEDIUM
+37.45,40.34,75.22,3,2,0.901,Software Engineering,MEDIUM
+20.76,27.39,62.34,3,1,0.744,Programming,HIGH
+7.37,32.6,54.71,2,0,0.805,Artificial Intelligence,MEDIUM
+94.19,68.73,72.77,1,0,1.0,Database,LOW
+57.74,47.44,75.27,2,2,0.729,Security,MEDIUM
+3.01,18.78,48.09,0,2,1.0,General,HIGH
+50.29,42.22,75.14,1,1,0.803,DevOps,MEDIUM
+80.95,75.97,72.0,4,1,0.721,Artificial Intelligence,LOW
+27.29,28.54,74.31,0,1,0.888,DevOps,HIGH
+44.5,70.07,61.28,6,2,0.792,Testing,LOW
+66.8,61.64,71.26,4,1,0.98,Data Science,LOW
+48.82,54.59,69.88,1,3,0.701,Database,MEDIUM
+49.65,44.69,73.47,2,1,1.0,Artificial Intelligence,MEDIUM
+69.94,76.93,88.36,5,0,0.847,Artificial Intelligence,LOW
+32.74,40.79,59.93,1,2,1.0,Data Science,MEDIUM
+71.32,49.11,60.17,5,0,0.974,Software Engineering,LOW
+73.43,68.8,66.5,2,3,0.675,Backend,LOW
+31.74,43.69,67.15,1,1,0.904,Data Science,MEDIUM
+43.06,62.23,64.54,4,1,0.746,General,LOW
+41.07,50.19,69.57,1,2,1.0,Data Science,MEDIUM
+31.85,38.1,86.02,2,0,1.0,DevOps,HIGH
+57.33,53.96,57.61,2,1,0.874,Programming,LOW
+68.76,53.18,74.35,1,1,1.0,Software Engineering,MEDIUM
+75.32,50.08,69.24,2,0,0.956,Artificial Intelligence,MEDIUM
+1.05,16.26,48.13,2,2,0.908,Data Science,HIGH
+93.73,89.64,73.14,1,3,0.786,Artificial Intelligence,LOW
+54.0,60.58,72.08,1,3,0.826,General,LOW
+64.27,49.46,56.9,3,0,1.0,Testing,LOW
+89.44,87.15,67.85,2,1,0.648,General,LOW
+53.99,48.41,65.52,4,0,0.774,Backend,MEDIUM
+45.8,42.71,81.67,1,0,1.0,Software Engineering,MEDIUM
+1.19,0.0,63.59,0,2,1.0,Artificial Intelligence,HIGH
+48.79,42.09,59.25,0,0,0.888,Testing,MEDIUM
+58.88,54.14,62.15,2,0,1.0,Data Science,LOW
+83.63,72.06,78.59,1,2,1.0,Backend,LOW
+29.28,44.35,79.12,2,0,0.872,Artificial Intelligence,MEDIUM
+35.24,36.85,47.79,3,0,0.672,Artificial Intelligence,MEDIUM
+98.61,87.5,56.34,3,1,0.941,Database,LOW
+20.09,29.1,60.73,0,2,0.864,Backend,HIGH
+43.02,50.03,62.17,2,0,0.841,Security,LOW
+51.92,58.31,70.88,2,2,1.0,Security,LOW
+73.48,64.68,65.97,2,2,0.948,Data Science,LOW
+54.22,56.95,68.89,4,1,1.0,Backend,LOW
+37.57,46.41,68.34,3,1,0.971,Testing,MEDIUM
+54.53,58.36,69.89,0,0,0.751,Database,LOW
+51.46,60.67,64.72,2,1,1.0,Data Science,LOW
+43.92,28.94,69.74,2,1,0.76,Testing,HIGH
+84.36,79.15,85.4,3,1,0.826,Testing,LOW
+67.03,64.08,72.4,1,1,0.771,DevOps,LOW
+14.75,10.2,66.73,2,0,0.916,Artificial Intelligence,HIGH
+42.82,46.11,68.05,1,1,0.739,Database,MEDIUM
+37.28,44.24,85.35,1,1,0.926,General,MEDIUM
+46.31,59.58,89.85,4,0,0.875,General,MEDIUM
+31.4,39.77,80.61,4,2,0.67,Security,HIGH
+45.04,54.59,82.84,3,0,0.669,Artificial Intelligence,MEDIUM
+21.01,16.35,74.47,2,1,0.731,Programming,HIGH
+47.82,45.51,71.09,0,1,0.951,Security,MEDIUM
+73.91,57.73,58.78,1,0,0.72,Database,LOW
+50.58,52.53,78.2,2,0,1.0,Backend,MEDIUM
+27.53,45.46,73.75,2,0,0.793,Software Engineering,MEDIUM
+42.13,45.03,72.58,0,0,0.963,General,MEDIUM
+93.32,78.53,90.26,2,0,0.843,General,LOW
+73.27,75.48,68.51,2,0,0.739,Artificial Intelligence,LOW
+51.68,62.3,58.8,6,1,0.83,Artificial Intelligence,LOW
+62.71,46.77,70.56,1,1,1.0,Programming,MEDIUM
+52.97,54.86,65.47,2,0,1.0,Testing,LOW
+43.17,42.75,61.4,2,3,0.934,Security,MEDIUM
+48.08,43.22,63.43,2,0,1.0,Security,MEDIUM
+29.03,38.53,70.03,2,0,0.817,General,MEDIUM
+51.18,51.17,72.52,3,2,0.716,General,MEDIUM
+29.53,37.23,67.9,1,0,0.769,Data Science,MEDIUM
+25.59,27.88,61.49,2,3,0.875,Artificial Intelligence,HIGH
+43.71,47.75,69.38,1,0,1.0,General,MEDIUM
+29.88,40.91,60.83,2,0,0.735,Security,MEDIUM
+50.04,46.85,59.3,2,2,0.651,Software Engineering,MEDIUM
+24.42,20.94,62.54,3,2,0.941,Data Science,HIGH
+41.23,34.38,83.62,2,1,0.683,Testing,HIGH
+73.45,65.61,72.2,2,0,1.0,Database,LOW
+68.73,65.81,83.58,3,2,1.0,DevOps,MEDIUM
+55.45,48.63,72.24,0,2,0.867,Testing,MEDIUM
+16.54,16.17,66.51,1,0,0.742,Data Science,HIGH
+41.16,21.87,72.2,0,1,0.885,Security,HIGH
+56.17,64.7,90.99,2,1,1.0,Software Engineering,MEDIUM
+96.79,84.81,75.09,2,1,0.882,Database,LOW
+73.06,66.55,68.4,1,2,0.982,Data Science,LOW
+74.77,70.04,81.45,3,0,0.942,Database,LOW
+40.47,45.34,66.65,1,0,0.882,Programming,MEDIUM
+15.44,16.57,70.02,1,1,0.82,Database,HIGH
+55.01,48.53,59.15,4,2,1.0,Software Engineering,LOW
+37.2,25.47,40.4,1,1,0.786,Database,MEDIUM
+77.12,62.89,58.17,0,0,0.78,DevOps,LOW
+23.48,25.32,51.14,1,2,0.876,Backend,HIGH
+12.59,2.63,71.29,3,2,0.911,DevOps,HIGH
+38.64,19.26,68.86,1,1,0.759,DevOps,HIGH
+46.71,39.84,58.39,4,0,0.999,Security,MEDIUM
+76.96,81.01,57.43,1,1,0.922,Data Science,LOW
+80.17,68.24,54.51,3,0,0.858,Artificial Intelligence,LOW
+66.11,60.35,74.44,2,2,0.551,DevOps,LOW
+23.93,35.39,62.92,4,3,1.0,Artificial Intelligence,MEDIUM
+63.98,51.0,69.57,3,1,1.0,Programming,MEDIUM
+39.95,50.8,63.46,1,1,0.99,General,LOW
+33.71,29.71,81.41,4,1,0.798,Data Science,HIGH
+62.62,52.87,66.65,1,2,0.75,Artificial Intelligence,MEDIUM
+58.79,68.41,97.03,2,2,0.855,Programming,MEDIUM
+1.57,3.68,55.4,0,2,0.752,Backend,HIGH
+54.65,52.94,84.3,3,1,1.0,Testing,MEDIUM
+43.0,41.07,79.32,2,1,0.896,Database,MEDIUM
+63.26,57.37,55.96,1,3,0.984,Database,LOW
+37.67,42.43,75.29,1,2,1.0,DevOps,MEDIUM
+21.16,36.89,86.14,2,0,0.682,Software Engineering,HIGH
+11.77,4.58,58.31,0,0,0.933,Data Science,HIGH
+40.97,24.57,75.1,2,4,0.924,Testing,HIGH
+55.83,50.88,68.27,5,1,0.63,Data Science,MEDIUM
+74.73,71.66,78.28,1,1,0.58,Software Engineering,LOW
+49.18,45.49,71.36,0,1,0.902,Artificial Intelligence,MEDIUM
+72.87,66.44,65.9,1,1,0.835,Artificial Intelligence,LOW
+15.53,14.29,65.62,2,0,0.806,Database,HIGH
+64.19,36.47,63.41,1,1,0.59,Software Engineering,MEDIUM
+47.16,58.89,82.79,0,0,1.0,General,MEDIUM
+21.76,24.97,79.37,3,3,0.719,Testing,HIGH
+51.17,53.7,80.29,1,1,0.957,General,MEDIUM
+84.25,80.91,88.15,4,1,1.0,DevOps,LOW
+53.69,33.86,76.21,2,1,0.885,Database,HIGH
+58.79,67.56,78.8,4,1,0.742,Testing,LOW
+41.42,38.78,79.79,3,0,1.0,DevOps,HIGH
+55.33,58.15,59.85,2,0,0.866,DevOps,LOW
+38.79,33.48,69.67,1,1,0.785,Artificial Intelligence,HIGH
+41.56,49.55,83.66,3,1,0.678,General,MEDIUM
+56.03,52.78,72.83,1,0,0.901,General,MEDIUM
+19.24,20.73,55.89,1,0,0.817,Artificial Intelligence,HIGH
+67.89,59.98,66.57,1,1,1.0,Data Science,LOW
+45.39,24.95,53.24,3,2,0.654,Security,HIGH
+39.28,37.62,70.1,3,0,0.985,DevOps,MEDIUM
+56.5,59.57,55.48,3,1,0.728,DevOps,LOW
+75.92,55.4,87.74,2,1,1.0,Testing,MEDIUM
+23.15,24.69,66.27,4,2,0.963,DevOps,HIGH
+65.08,75.01,91.98,2,3,0.768,Data Science,LOW
+83.41,63.41,89.21,3,0,0.977,Programming,MEDIUM
+50.37,38.28,66.75,3,0,0.779,Programming,MEDIUM
+82.02,86.94,86.64,3,1,1.0,DevOps,LOW
+24.82,40.49,48.63,0,1,0.923,Artificial Intelligence,LOW
+38.12,25.41,64.53,3,1,0.949,Security,HIGH
+46.72,43.58,48.45,1,1,0.642,Data Science,LOW
+34.56,47.88,82.53,5,0,1.0,Data Science,MEDIUM
+72.58,44.57,71.41,0,0,1.0,Data Science,MEDIUM
+58.76,54.85,59.62,3,0,0.793,DevOps,LOW
+65.91,81.36,62.35,0,1,1.0,General,LOW
+48.46,51.84,67.85,1,1,1.0,Backend,MEDIUM
+69.47,58.92,86.22,2,1,0.747,Programming,MEDIUM
+50.61,48.16,62.11,1,3,0.682,Backend,MEDIUM
+75.28,66.72,61.61,3,0,0.898,Testing,LOW
+38.56,24.35,51.49,3,0,0.678,Data Science,HIGH
+73.27,79.38,71.67,3,1,0.916,Data Science,LOW
+84.28,75.13,71.42,3,1,0.906,Security,LOW
+63.39,58.95,69.44,1,2,1.0,General,LOW
+64.42,71.71,75.46,2,1,1.0,Testing,LOW
+44.96,41.15,53.95,5,2,1.0,Software Engineering,MEDIUM
+3.44,11.04,60.57,3,3,0.883,Programming,HIGH
+64.5,63.57,55.02,7,0,0.938,Data Science,LOW
+77.22,79.62,81.57,1,0,1.0,Backend,LOW
+30.98,36.16,72.36,1,0,1.0,Database,HIGH
+35.84,40.13,56.71,0,1,0.812,Backend,MEDIUM
+44.48,39.44,68.67,0,2,0.965,Programming,MEDIUM
+66.01,58.7,74.9,3,1,1.0,Testing,MEDIUM
+44.74,49.12,68.3,1,1,0.588,Database,MEDIUM
+58.4,68.11,83.41,3,2,0.847,Database,LOW
+23.44,30.88,68.59,4,2,0.776,Backend,HIGH
+29.49,24.6,56.72,0,3,1.0,General,HIGH
+41.67,45.88,70.74,1,0,0.907,Software Engineering,MEDIUM
+39.39,38.07,59.4,2,1,0.854,General,MEDIUM
+50.51,45.39,67.96,1,1,0.953,Artificial Intelligence,MEDIUM
+50.94,45.84,68.21,1,0,1.0,General,MEDIUM
+14.59,22.85,68.25,3,0,0.77,Backend,HIGH
+41.26,37.67,56.4,0,3,0.882,Programming,MEDIUM
+50.06,36.26,65.7,5,1,0.984,Software Engineering,MEDIUM
+46.61,42.88,79.28,1,0,0.925,Testing,MEDIUM
+73.27,69.12,81.35,2,0,0.88,Security,LOW
+71.96,46.54,75.83,0,1,0.674,Software Engineering,MEDIUM
+61.6,69.07,85.54,6,1,0.863,Testing,LOW
+58.54,53.87,71.68,0,0,1.0,General,MEDIUM
+29.68,38.79,70.74,2,1,0.999,Security,MEDIUM
+43.39,56.05,68.47,2,2,0.975,Database,LOW
+88.09,56.23,70.62,2,1,1.0,Artificial Intelligence,MEDIUM
+72.27,70.11,75.54,0,0,0.839,Testing,LOW
+34.87,35.5,65.14,2,0,0.672,DevOps,MEDIUM
+72.97,56.63,72.04,4,1,1.0,DevOps,MEDIUM
+42.97,46.49,54.95,4,3,0.751,DevOps,LOW
+14.78,13.39,67.01,4,0,0.808,Software Engineering,HIGH
+65.58,71.83,73.83,7,2,0.867,Artificial Intelligence,LOW
+21.91,39.27,69.62,1,0,1.0,DevOps,MEDIUM
+65.75,76.96,69.26,1,2,0.935,Testing,LOW
+66.15,48.34,51.2,6,2,0.885,Artificial Intelligence,LOW
+5.2,36.02,61.94,4,2,1.0,Data Science,MEDIUM
+90.43,82.52,96.06,5,1,1.0,Database,LOW
+30.35,23.93,54.29,3,0,1.0,Security,HIGH
+9.96,15.33,60.7,2,0,0.722,Testing,HIGH
+25.93,35.16,56.23,4,0,0.811,Software Engineering,MEDIUM
+100.0,100.0,89.65,2,1,0.916,Data Science,LOW
+55.78,71.48,58.79,0,2,1.0,General,LOW
+59.42,68.33,88.67,5,0,1.0,Database,MEDIUM
+26.3,45.59,78.85,1,1,0.855,Data Science,MEDIUM
+45.68,60.34,71.05,3,4,1.0,Software Engineering,LOW
+80.62,76.19,68.67,2,2,0.732,Security,LOW
+33.74,16.96,66.63,0,0,0.966,Backend,HIGH
+26.57,13.72,56.87,2,0,0.879,Backend,HIGH
+100.0,88.11,75.78,2,3,0.915,Testing,LOW
+68.77,75.84,63.9,0,1,0.861,Testing,LOW
+58.08,40.52,72.61,4,2,1.0,Security,MEDIUM
+62.32,48.23,66.46,2,0,0.903,DevOps,MEDIUM
+92.38,83.3,76.96,2,1,1.0,Data Science,LOW
+85.4,82.84,77.67,2,0,0.797,Programming,LOW
+33.77,27.08,59.79,2,1,0.911,Database,HIGH
+43.62,49.84,53.23,0,1,0.642,Data Science,LOW
+76.54,71.25,70.03,2,0,0.997,Database,LOW
+39.83,33.92,48.04,2,4,1.0,Data Science,MEDIUM
+42.98,53.31,71.6,3,3,1.0,Programming,MEDIUM
+26.7,42.88,62.02,1,0,0.923,Backend,MEDIUM
+65.06,42.86,41.22,2,1,0.891,DevOps,LOW
+18.96,44.2,68.78,3,2,0.726,Testing,MEDIUM
+41.93,41.53,66.4,2,0,0.729,Testing,MEDIUM
+50.92,47.92,65.77,2,1,0.703,Software Engineering,MEDIUM
+24.42,25.03,73.83,2,1,0.738,Database,HIGH
+41.04,64.75,61.13,1,0,0.77,DevOps,LOW
+71.17,68.39,78.32,2,1,0.838,Artificial Intelligence,LOW
+4.88,3.77,79.83,3,0,0.54,Testing,HIGH
+45.92,44.09,68.77,3,1,0.694,Backend,MEDIUM
+61.77,42.0,64.8,5,1,1.0,Database,MEDIUM
+68.2,51.03,61.18,4,3,0.864,Database,LOW
+76.28,61.07,73.51,5,2,1.0,Backend,LOW
+34.51,31.16,69.61,1,0,0.978,Database,HIGH
+63.53,50.72,71.13,1,2,1.0,General,MEDIUM
+55.18,54.91,71.68,0,1,0.924,Security,MEDIUM
+18.42,41.56,66.29,0,1,0.803,Data Science,MEDIUM
+12.56,32.74,83.3,3,0,1.0,Programming,HIGH
+68.65,69.63,72.06,4,1,0.788,Software Engineering,LOW
+18.41,44.02,67.99,1,0,0.878,Artificial Intelligence,MEDIUM
+58.63,67.22,58.24,3,0,1.0,DevOps,LOW
+56.77,56.87,77.48,3,2,0.993,Database,MEDIUM
+32.3,52.3,91.48,0,0,0.585,Artificial Intelligence,MEDIUM
+62.64,60.81,88.22,1,2,0.731,Database,MEDIUM
+76.14,72.19,65.99,2,0,0.772,Software Engineering,LOW
+69.2,64.8,67.81,2,1,0.843,Testing,LOW
+73.23,79.53,97.36,3,1,0.952,Artificial Intelligence,LOW
+54.0,60.67,85.53,2,3,0.954,DevOps,MEDIUM
+45.11,50.69,80.25,1,3,0.973,Security,MEDIUM
+25.34,29.64,67.32,2,1,1.0,Programming,HIGH
+40.0,38.9,74.27,1,0,1.0,DevOps,MEDIUM
+35.25,26.92,60.54,1,3,0.984,Software Engineering,HIGH
+19.36,23.49,66.34,1,1,1.0,Backend,HIGH
+24.83,44.58,83.34,1,0,0.713,DevOps,MEDIUM
+61.71,65.88,81.23,2,1,0.93,General,LOW
+6.02,15.68,71.19,3,0,0.768,Data Science,HIGH
+77.73,66.86,81.18,1,0,0.643,Database,LOW
+82.73,76.93,69.82,2,3,1.0,DevOps,LOW
+47.3,46.05,87.94,1,0,0.883,General,MEDIUM
+21.4,34.58,58.96,2,1,0.901,Artificial Intelligence,MEDIUM
+53.39,42.56,89.5,3,2,0.742,Artificial Intelligence,HIGH
+66.05,60.23,57.65,1,0,0.796,DevOps,LOW
+70.37,47.74,60.5,3,1,0.824,Testing,MEDIUM
+29.63,35.51,68.45,2,0,0.723,Database,MEDIUM
+28.56,43.47,69.84,0,1,0.84,Security,MEDIUM
+60.66,62.57,77.16,1,4,0.651,General,LOW
+78.97,67.59,83.19,2,0,0.5,General,LOW
+10.65,36.15,65.64,0,2,0.908,Programming,MEDIUM
+73.46,81.34,70.44,2,2,0.669,Testing,LOW
+25.64,22.77,71.47,5,0,0.603,Security,HIGH
+50.92,50.44,63.15,1,1,1.0,Security,MEDIUM
+39.08,40.71,69.78,2,0,1.0,Artificial Intelligence,MEDIUM
+38.06,43.59,68.5,3,2,0.665,Programming,MEDIUM
+56.61,46.03,82.46,3,3,0.853,Data Science,MEDIUM
+82.66,70.51,59.05,1,1,1.0,Database,LOW
+29.91,27.99,53.94,0,1,1.0,Data Science,MEDIUM
+62.44,62.7,57.14,3,1,0.771,General,LOW
+55.06,52.21,69.36,1,0,1.0,Security,MEDIUM
+44.78,56.5,88.74,1,1,0.981,Software Engineering,MEDIUM
+59.84,52.68,79.63,0,2,0.791,DevOps,MEDIUM
+83.66,74.43,79.99,2,2,1.0,General,LOW
+37.72,50.22,77.51,4,3,0.996,Software Engineering,MEDIUM
+43.55,34.27,69.6,6,1,0.751,DevOps,HIGH
+78.71,60.05,61.56,4,0,0.902,Database,LOW
+77.21,73.87,79.59,2,2,0.943,General,LOW
+16.04,0.96,61.17,1,5,1.0,Programming,HIGH
+66.58,65.0,52.16,2,2,0.791,Backend,LOW
+22.38,30.88,61.16,2,0,0.958,Programming,MEDIUM
+100.0,100.0,88.86,1,1,0.836,Security,LOW
+19.74,31.33,64.65,1,0,0.808,Security,HIGH
+39.84,41.47,55.54,7,0,0.82,Artificial Intelligence,MEDIUM
+24.55,52.7,82.63,2,3,0.77,Artificial Intelligence,MEDIUM
+76.31,65.24,72.04,1,1,0.86,Security,LOW
+39.8,27.36,80.98,2,0,1.0,General,HIGH
+56.89,50.12,87.06,6,0,1.0,Testing,MEDIUM
+35.39,37.68,85.28,2,1,1.0,Testing,HIGH
+55.93,41.43,68.87,1,1,0.832,Security,MEDIUM
+64.13,69.93,77.52,4,0,1.0,DevOps,LOW
+85.95,71.44,86.63,1,0,0.938,Software Engineering,LOW
+86.85,76.6,89.73,0,0,0.715,General,LOW
+77.15,67.55,55.65,2,3,0.874,Database,LOW
+16.07,24.61,71.75,0,1,1.0,Artificial Intelligence,HIGH
+47.38,38.97,62.48,1,0,0.548,Backend,MEDIUM
+35.19,33.83,84.71,0,0,0.865,Backend,HIGH
+85.16,89.56,70.72,2,0,0.879,Artificial Intelligence,LOW
+69.43,67.51,89.47,0,1,1.0,Data Science,MEDIUM
+44.58,37.7,88.04,1,0,1.0,General,HIGH
+36.33,34.68,74.48,0,2,1.0,Testing,HIGH
+54.22,60.9,64.06,2,1,0.5,DevOps,LOW
+79.72,84.23,82.37,3,1,0.936,Programming,LOW
+10.44,11.45,56.07,3,2,0.971,DevOps,HIGH
+22.73,29.79,72.73,1,1,0.913,Programming,HIGH
+37.53,37.48,73.09,2,2,1.0,Data Science,MEDIUM
+2.78,9.31,76.39,7,0,1.0,Security,HIGH
+48.32,58.29,72.61,1,0,0.954,Testing,LOW
+28.38,37.82,62.09,2,3,0.824,Software Engineering,MEDIUM
+75.37,80.4,87.48,2,1,0.925,Testing,LOW
+52.59,43.59,61.82,2,1,0.937,Database,MEDIUM
+78.7,68.17,58.65,0,3,0.929,Software Engineering,LOW
+32.99,27.79,83.83,5,3,0.948,Testing,HIGH
+72.69,77.76,86.49,2,0,0.699,Database,LOW
+39.49,24.57,81.21,1,1,0.812,General,HIGH
+42.78,49.26,57.77,1,0,0.513,Database,LOW
+72.29,77.86,91.33,3,2,0.854,Data Science,LOW
+38.24,47.69,81.73,1,2,0.925,Software Engineering,MEDIUM
+72.34,55.75,83.75,2,2,1.0,Data Science,MEDIUM
+70.04,83.42,72.45,2,1,0.876,DevOps,LOW
+75.55,65.56,90.08,1,0,0.856,DevOps,MEDIUM
+48.44,34.48,71.88,3,1,0.736,Database,HIGH
+21.26,11.99,81.57,4,0,0.887,Database,HIGH
+36.24,40.92,64.36,3,0,0.599,Security,MEDIUM
+51.48,71.32,95.45,2,1,0.922,Programming,MEDIUM
+73.0,73.02,83.73,3,2,1.0,Backend,LOW
+74.13,71.99,42.5,4,1,0.861,Data Science,LOW
+67.43,60.13,71.34,1,0,1.0,Artificial Intelligence,LOW
+43.38,38.43,74.18,2,0,0.775,DevOps,MEDIUM
+32.74,39.67,86.71,3,0,1.0,Security,HIGH
+21.72,15.06,58.42,1,0,0.923,Artificial Intelligence,HIGH
+66.43,60.83,59.29,0,1,0.602,Software Engineering,LOW
+73.06,64.96,80.68,1,1,0.909,Artificial Intelligence,LOW
+92.14,94.34,63.71,1,1,0.911,Software Engineering,LOW
+45.96,51.32,73.79,4,2,0.898,Database,MEDIUM
+93.62,80.64,91.13,4,2,0.889,Software Engineering,LOW
+34.13,44.89,63.45,4,3,1.0,Security,MEDIUM
+3.11,2.0,71.97,6,1,0.643,Programming,HIGH
+54.25,52.84,75.3,2,1,0.951,Backend,MEDIUM
+31.23,52.84,63.06,4,1,0.827,Programming,LOW
+17.72,25.3,60.08,3,1,1.0,Database,HIGH
+59.34,56.34,84.93,0,0,1.0,Testing,MEDIUM
+55.08,43.02,66.72,5,0,0.852,Software Engineering,MEDIUM
+45.26,65.96,73.0,2,1,1.0,Security,LOW
+16.23,34.16,61.31,0,1,1.0,Programming,MEDIUM
+42.08,24.4,60.65,0,0,0.994,Backend,HIGH
+21.7,19.27,49.38,3,2,0.899,General,HIGH
+40.81,48.74,50.17,4,0,0.95,General,LOW
+49.66,59.0,75.1,6,0,0.959,Data Science,MEDIUM
+74.3,74.19,85.26,3,2,0.913,General,LOW
+54.07,55.74,76.37,1,0,0.936,Backend,MEDIUM
+30.2,34.55,61.79,6,2,0.543,Security,MEDIUM
+76.06,70.38,71.12,4,3,0.881,DevOps,LOW
+42.15,29.14,73.5,2,1,0.921,Artificial Intelligence,HIGH
+54.82,50.29,68.51,1,1,0.903,Backend,MEDIUM
+58.4,45.25,66.1,0,2,0.748,Software Engineering,MEDIUM
+42.63,33.08,82.51,4,0,0.729,Programming,HIGH
+0.0,0.0,66.23,3,1,0.909,Programming,HIGH
+47.6,50.92,73.24,4,1,0.798,Artificial Intelligence,MEDIUM
+94.78,83.74,64.15,3,1,0.723,Testing,LOW
+21.32,21.73,67.52,0,1,1.0,Backend,HIGH
+55.91,65.49,69.99,3,1,1.0,Backend,LOW
+31.23,32.19,70.13,1,2,1.0,Data Science,HIGH
+71.97,67.59,78.12,3,1,0.961,DevOps,LOW
+36.54,48.48,53.95,0,0,0.752,Testing,LOW
+82.42,98.96,60.68,4,1,1.0,Programming,LOW
+65.29,50.39,68.63,2,1,0.726,Security,MEDIUM
+49.39,48.74,70.57,1,0,1.0,Software Engineering,MEDIUM
+12.28,16.91,65.23,1,0,1.0,Database,HIGH
+87.04,77.79,66.7,1,2,1.0,Database,LOW
+18.86,16.93,65.67,3,1,1.0,DevOps,HIGH
+40.49,52.85,72.68,4,1,0.621,Artificial Intelligence,MEDIUM
+14.78,26.09,75.43,1,1,1.0,General,HIGH
+45.22,50.23,71.94,0,4,0.93,Programming,MEDIUM
+37.17,39.18,62.4,2,2,0.764,DevOps,MEDIUM
+66.51,60.86,85.86,2,3,0.827,Testing,MEDIUM
+55.25,51.28,64.13,2,0,0.635,Software Engineering,MEDIUM
+62.24,58.99,77.98,2,0,0.779,Software Engineering,MEDIUM
+100.0,94.82,68.13,2,0,0.513,Data Science,LOW
+21.11,23.34,70.29,0,0,0.883,Backend,HIGH
+63.82,60.51,81.99,1,1,0.994,Backend,MEDIUM
+43.16,57.76,55.31,0,5,1.0,General,LOW
+51.99,45.88,72.87,2,1,0.951,DevOps,MEDIUM
+22.04,25.28,65.92,2,1,0.96,DevOps,HIGH
+66.56,67.15,77.93,0,3,0.914,Data Science,LOW
+38.55,34.6,54.7,0,2,0.508,Artificial Intelligence,MEDIUM
+56.75,50.43,79.8,1,3,1.0,Security,MEDIUM
+35.97,31.23,77.15,1,0,0.554,Backend,HIGH
+58.68,52.78,87.08,0,2,0.935,Testing,MEDIUM
+39.75,43.17,61.05,1,0,1.0,Testing,MEDIUM
+14.19,27.31,75.12,2,0,0.997,Database,HIGH
+97.27,70.1,86.72,1,2,0.612,Testing,LOW
+74.83,73.57,87.03,2,1,0.876,General,LOW
+49.03,51.56,84.49,2,2,0.853,Backend,MEDIUM
+77.26,77.58,75.61,1,0,1.0,DevOps,LOW
+2.6,1.46,64.41,0,1,1.0,Backend,HIGH
+70.87,56.94,68.93,2,5,0.983,Artificial Intelligence,LOW
+75.75,66.38,97.01,4,1,0.829,Programming,MEDIUM
+46.06,60.92,76.98,1,1,0.836,Testing,MEDIUM
+49.81,50.8,67.92,0,0,0.916,DevOps,MEDIUM
+43.83,48.68,67.09,6,1,0.962,Artificial Intelligence,MEDIUM
+79.02,73.1,76.14,1,0,1.0,Security,LOW
+86.18,74.21,82.52,4,0,0.743,Security,LOW
+55.78,66.08,74.55,2,1,1.0,Database,LOW
+43.48,40.41,84.15,2,2,1.0,Database,HIGH
+72.14,68.06,71.04,3,0,0.5,Database,LOW
+64.2,70.97,88.49,2,2,1.0,Programming,LOW
+35.76,35.08,63.02,2,1,0.619,DevOps,MEDIUM
+58.96,53.74,45.69,1,3,0.858,Artificial Intelligence,LOW
+18.83,19.06,40.0,3,0,0.821,Database,HIGH
+0.0,0.0,52.57,0,2,1.0,General,HIGH
+37.99,45.03,56.23,3,0,0.739,Database,LOW
+13.9,34.58,90.16,2,0,0.827,Database,HIGH
+53.61,42.08,66.39,3,1,0.796,Data Science,MEDIUM
+1.18,5.09,54.29,1,0,0.767,Database,HIGH
+65.58,62.23,64.22,2,1,0.72,Database,LOW
+36.91,42.6,58.87,1,2,1.0,Data Science,MEDIUM
+74.7,54.85,65.03,2,4,0.853,DevOps,LOW
+86.63,77.84,87.05,0,0,0.97,Artificial Intelligence,LOW
+48.65,56.65,72.25,3,0,1.0,Artificial Intelligence,MEDIUM
+60.34,66.69,72.95,2,1,1.0,Programming,LOW
+54.62,63.82,63.63,2,1,0.975,Artificial Intelligence,LOW
+59.52,60.49,73.09,4,0,0.903,Software Engineering,LOW
+59.37,67.7,61.96,1,0,0.851,DevOps,LOW
+58.09,62.18,65.22,4,1,0.883,Testing,LOW
+35.32,47.27,64.31,4,3,0.851,DevOps,MEDIUM
+71.89,74.65,83.16,0,0,0.958,General,LOW
+66.18,49.63,71.06,2,3,0.824,General,MEDIUM
+72.46,63.96,67.51,0,0,1.0,Testing,LOW
+39.62,46.78,71.55,3,2,1.0,Artificial Intelligence,MEDIUM
+46.69,55.43,64.94,3,0,0.813,Data Science,LOW
+86.39,70.3,75.17,1,1,0.747,Database,LOW
+29.57,45.02,72.28,2,2,1.0,Artificial Intelligence,MEDIUM
+0.0,10.08,68.36,4,2,1.0,Artificial Intelligence,HIGH
+76.0,86.66,86.63,2,2,0.89,Security,LOW
+23.0,19.41,66.71,0,2,1.0,Security,HIGH
+61.27,61.2,81.96,3,0,0.861,Artificial Intelligence,MEDIUM
+49.09,43.39,80.98,2,1,0.627,Software Engineering,MEDIUM
+26.95,27.5,83.22,2,1,1.0,Security,HIGH
+30.82,28.89,71.07,2,0,0.734,Software Engineering,HIGH
+51.49,51.67,62.84,2,1,1.0,Security,LOW
+58.3,66.79,87.25,2,2,1.0,Artificial Intelligence,MEDIUM
+61.96,61.18,71.01,2,2,0.891,DevOps,LOW
+10.27,23.72,76.11,4,1,1.0,Software Engineering,HIGH
+52.27,43.52,72.33,1,2,0.853,Backend,MEDIUM
+17.64,7.08,79.04,0,1,0.774,Testing,HIGH
+28.93,45.88,75.38,0,2,1.0,Data Science,MEDIUM
+100.0,100.0,60.51,2,1,0.808,Software Engineering,LOW
+67.53,59.51,95.27,1,1,0.788,Backend,MEDIUM
+39.29,58.59,66.93,4,2,0.965,Database,LOW
+46.91,55.48,90.11,4,1,0.725,Backend,MEDIUM
+12.06,23.02,68.4,6,0,0.796,Security,HIGH
+0.0,7.85,56.25,1,5,0.835,Programming,HIGH
+90.72,70.29,61.69,2,0,0.991,General,LOW
+27.84,30.21,55.87,2,3,0.918,Software Engineering,MEDIUM
+100.0,100.0,76.82,1,1,0.936,DevOps,LOW
+48.86,41.02,73.27,2,0,0.69,General,MEDIUM
+41.66,29.92,66.62,3,1,0.697,Software Engineering,HIGH
+15.71,27.95,58.61,2,2,0.696,Programming,HIGH
+43.31,35.37,74.08,3,0,0.669,Software Engineering,HIGH
+50.1,52.62,73.56,2,1,1.0,General,MEDIUM
+69.71,53.98,76.25,0,3,1.0,General,MEDIUM
+82.81,76.77,100.0,2,1,0.754,Data Science,MEDIUM
+88.03,78.14,84.82,4,0,0.816,Testing,LOW
+30.13,30.95,68.79,2,2,1.0,Data Science,HIGH
+71.59,71.75,90.1,2,0,0.867,Database,MEDIUM
+31.3,39.34,62.42,2,2,1.0,Backend,MEDIUM
+52.87,57.33,60.25,1,0,0.888,Backend,LOW
+64.1,63.33,77.7,1,0,1.0,Security,LOW
+11.66,34.82,83.93,1,0,1.0,Programming,HIGH
+46.77,43.44,70.03,1,2,0.764,General,MEDIUM
+28.06,38.3,76.42,0,1,1.0,DevOps,MEDIUM

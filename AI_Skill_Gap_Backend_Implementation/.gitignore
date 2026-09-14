@@ -1,0 +1,8 @@
+__pycache__/
+.venv/
+.env
+*.pyc
+.pytest_cache/
+models/*.joblib
+storage/uploads/*
+!storage/uploads/.gitkeep
