@@ -91,7 +91,7 @@ def infer_skill_category(skill_label: str) -> str:
 
 def get_or_create_skill(name: str, source_uri: str = None, category: str = None) -> Skill:
     """Return existing Skill or create a new one. Normalizes name to title-case."""
-    name = name.strip()
+    name = name.strip()[:140]
     s = Skill.query.filter(db.func.lower(Skill.name) == name.lower()).first()
     if not s:
         cat = category or infer_skill_category(name)
@@ -223,7 +223,7 @@ IT_SKILL_KEYWORDS = {
 def _coursera_skill_to_canonical(raw_skill: str) -> str | None:
     """Normalize a Coursera skill tag to a canonical-ish label."""
     s = raw_skill.strip().lower()
-    if not s:
+    if not s or len(s) > 50:
         return None
     # Filter to IT skills
     if not any(kw in s for kw in IT_SKILL_KEYWORDS):
@@ -248,7 +248,7 @@ def _coursera_skill_to_canonical(raw_skill: str) -> str | None:
         "algorithms": "Algorithms & Data Structures",
         "data structures": "Algorithms & Data Structures",
     }
-    return norm.get(s, raw_skill.strip().title())
+    return norm.get(s, raw_skill.strip()[:50].title())
 
 
 def ingest_coursera(coursera_zip: str) -> dict:
@@ -273,9 +273,9 @@ def ingest_coursera(coursera_zip: str) -> dict:
                 if not raw_skills_str:
                     continue
 
-                # Parse skills field (semicolon or comma separated)
+                # Parse skills field (semicolon, comma, or double-space separated)
                 raw_skills = [
-                    s.strip() for s in re.split(r"[;,]", raw_skills_str) if s.strip()
+                    s.strip() for s in re.split(r"[;,]|\s{2,}", raw_skills_str) if s.strip()
                 ]
                 canonical_skills = [
                     _coursera_skill_to_canonical(s) for s in raw_skills
