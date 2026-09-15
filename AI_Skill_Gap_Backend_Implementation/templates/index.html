@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+ <meta charset="UTF-8"/>
+ <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+ <title>AI Skill Gap System — Home</title>
+ <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+ <style>
+ :root {
+ --bg:#f0f4ff; --surface:#ffffff; --surface2:#f8faff; --border:#dde3f0;
+ --primary:#4f46e5; --primary-d:#3730a3; --accent:#0284c7;
+ --success:#059669; --warning:#d97706; --danger:#dc2626;
+ --text:#0f172a; --muted:#64748b;
+ --radius:10px; --shadow:0 2px 12px rgba(79,70,229,0.08),0 1px 3px rgba(0,0,0,0.06);
+ }
+ *{box-sizing:border-box;margin:0;padding:0;}
+ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;background-image:radial-gradient(ellipse at 20% 0%,rgba(79,70,229,0.06) 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,rgba(2,132,199,0.05) 0%,transparent 60%);}
+
+ /* TOP NAV */
+ header{background:var(--surface);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
+ .logo{display:flex;align-items:center;gap:.6rem;}
+ .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;color:#fff;}
+ .logo-text{font-weight:700;font-size:1rem;letter-spacing:-.02em;}
+ .logo-sub{font-size:.7rem;color:var(--muted);}
+ .page-nav{display:flex;gap:.25rem;margin-left:1.5rem;flex:1;}
+ .pnav-btn{padding:.5rem 1rem;border-radius:7px;border:none;font-family:inherit;font-size:.82rem;font-weight:500;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;background:transparent;color:var(--muted);transition:all .15s;}
+ .pnav-btn:hover{background:var(--surface2);color:var(--text);}
+ .pnav-btn.active{background:rgba(99,102,241,.15);color:var(--primary);font-weight:600;}
+ .header-right{display:flex;align-items:center;gap:.75rem;margin-left:auto;}
+ .status-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .8rem;border-radius:99px;font-size:.72rem;font-weight:500;border:1px solid var(--border);background:var(--surface2);}
+ .dot{width:8px;height:8px;border-radius:50%;background:var(--warning);}
+ .dot.ok{background:var(--success);}
+ .dot.err{background:var(--danger);}
+ .ctx-badge{padding:.3rem .75rem;border-radius:99px;font-size:.72rem;font-weight:600;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.3);color:var(--primary);}
+
+ /* MAIN LAYOUT */
+ .page{display:grid;grid-template-columns:340px 1fr;gap:1.5rem;padding:1.5rem;max-width:1600px;margin:0 auto;}
+ @media(max-width:1100px){.page{grid-template-columns:1fr;}}
+
+ /* SIDEBAR */
+ .sidebar{display:flex;flex-direction:column;gap:1rem;}
+ .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;box-shadow:var(--shadow);}
+ .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;}
+ .card-title{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:.5rem;}
+ .card-title .icon{font-size:1rem;}
+ .card-desc{font-size:.78rem;color:var(--muted);margin-bottom:.9rem;line-height:1.5;}
+
+ label{display:block;font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.3rem;}
+ input,select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:.55rem .75rem;color:var(--text);font-family:inherit;font-size:.84rem;outline:none;transition:border-color .2s;margin-bottom:.75rem;}
+ input:focus,select:focus{border-color:var(--primary);}
+
+ .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:7px;border:none;font-family:inherit;font-size:.83rem;font-weight:600;cursor:pointer;transition:all .15s;}
+ .btn-primary{background:var(--primary);color:#fff;}
+ .btn-primary:hover{background:var(--primary-d);}
+ .btn-secondary{background:var(--surface2);border:1px solid var(--border);color:var(--text);}
+ .btn-secondary:hover{border-color:var(--primary);color:var(--primary);}
+ .btn-success{background:var(--success);color:#fff;}
+ .btn-sm{padding:.35rem .75rem;font-size:.75rem;}
+ .btn-full{width:100%;}
+
+ /* MATCH SCORES */
+ .main-content{display:flex;flex-direction:column;gap:1rem;}
+ .match-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;}
+ .match-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;position:relative;overflow:hidden;transition:border-color .2s,transform .15s;}
+ .match-card:hover{border-color:var(--primary);transform:translateY(-2px);}
+ .match-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--accent));}
+ .match-role{font-weight:700;font-size:.95rem;margin-bottom:.3rem;}
+ .match-score-row{display:flex;align-items:baseline;gap:.5rem;margin:.5rem 0;}
+ .match-score{font-size:2.2rem;font-weight:800;line-height:1;}
+ .match-score.high{color:var(--success);}
+ .match-score.mid{color:var(--warning);}
+ .match-score.low{color:var(--danger);}
+ .match-verdict{font-size:.75rem;color:var(--muted);font-weight:500;}
+ .progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin:.5rem 0;}
+ .progress-fill{height:100%;border-radius:3px;transition:width .8s ease;}
+ .progress-fill.high{background:var(--success);}
+ .progress-fill.mid{background:var(--warning);}
+ .progress-fill.low{background:var(--danger);}
+ .match-missing{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.5rem;}
+ .missing-chip{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:var(--danger);font-size:.68rem;padding:.2rem .5rem;border-radius:5px;font-weight:500;}
+ .cat-bars{margin-top:.6rem;}
+ .cat-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;}
+ .cat-name{font-size:.65rem;color:var(--muted);width:90px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+ .cat-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+ .cat-fill{height:100%;background:var(--accent);border-radius:2px;}
+ .cat-pct{font-size:.65rem;color:var(--muted);width:30px;text-align:right;}
+
+ /* DASHBOARD STATS */
+ .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+ .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;text-align:center;}
+ .stat-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem;}
+ .stat-value{font-size:2rem;font-weight:800;}
+ .stat-value.accent{color:var(--accent);}
+ .stat-value.warn{color:var(--warning);}
+ .stat-value.ok{color:var(--success);}
+
+ .skill-chip{display:inline-flex;align-items:center;gap:.3rem;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.25);color:var(--primary);padding:.25rem .65rem;border-radius:6px;font-size:.75rem;font-weight:500;margin:.2rem;}
+
+ /* AUTH SECTION */
+ .auth-tabs{display:flex;gap:.25rem;margin-bottom:1rem;}
+ .auth-tab{flex:1;padding:.5rem;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--muted);font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;}
+ .auth-tab.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+ .section-header{font-size:1.1rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;letter-spacing:-.02em;}
+ .section-header::after{content:'';flex:1;height:1px;background:var(--border);}
+
+ .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.75rem 1.25rem;font-size:.85rem;font-weight:500;box-shadow:var(--shadow);z-index:999;animation:slideUp .2s ease;display:none;}
+ .toast.show{display:block;}
+ .toast.success{border-left:3px solid var(--success);}
+ .toast.error{border-left:3px solid var(--danger);}
+ @keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+ .empty-state{text-align:center;padding:2.5rem 1rem;color:var(--muted);}
+ .empty-state .es-icon{font-size:2.5rem;margin-bottom:.75rem;}
+ .empty-state .es-text{font-size:.85rem;}
+ </style>
+</head>
+<body>
+
+<header>
+ <div class="logo">
+ <div class="logo-icon">AI</div>
+ <div><div class="logo-text">Skill Gap System</div><div class="logo-sub">MCA Final Year Project</div></div>
+ </div>
+ <nav class="page-nav">
+ <a href="/test" class="pnav-btn active"> Home &amp; Setup</a>
+ <a href="/skills" class="pnav-btn"> Skills &amp; Gap Analysis</a>
+ <a href="/learning" class="pnav-btn"> Learning &amp; Analytics</a>
+ </nav>
+ <div class="header-right">
+ <div class="status-pill"><span class="dot" id="health-dot"></span><span id="health-text">Checking...</span></div>
+ <div class="ctx-badge" id="ctx-student">No Student</div>
+ <div class="ctx-badge" style="background:rgba(56,189,248,.1);border-color:rgba(56,189,248,.3);color:var(--accent);" id="ctx-role">No Role</div>
+ </div>
+</header>
+
+<div class="page">
+ <!-- SIDEBAR -->
+ <div class="sidebar">
+
+ <!-- Auth Card -->
+ <div class="card">
+ <div class="card-title"><span class="icon"></span> Auth — Login / Register</div>
+ <div class="card-desc">Create an account or log in to get your JWT token. Token is saved automatically.</div>
+ <div class="auth-tabs">
+ <button class="auth-tab active" onclick="showAuthTab('login')">Login</button>
+ <button class="auth-tab" onclick="showAuthTab('register')">Register</button>
+ </div>
+ <div id="auth-login">
+ <label>Email</label>
+ <input type="email" id="auth-email" placeholder="you@example.com"/>
+ <label>Password</label>
+ <input type="password" id="auth-pass" placeholder="••••••"/>
+ <button class="btn btn-primary btn-full" onclick="doLogin()">Login &amp; Get Token</button>
+ </div>
+ <div id="auth-register" style="display:none;">
+ <label>Full Name</label>
+ <input type="text" id="reg-name" placeholder="e.g. Raghavendra"/>
+ <label>Email</label>
+ <input type="email" id="reg-email" placeholder="you@example.com"/>
+ <label>Password (min 6 chars)</label>
+ <input type="password" id="reg-pass" placeholder="••••••"/>
+ <label>Course</label>
+ <input type="text" id="reg-course" placeholder="e.g. MCA"/>
+ <button class="btn btn-success btn-full" onclick="doRegister()">Create Account</button>
+ </div>
+ <div id="auth-status" style="font-size:.75rem;color:var(--muted);margin-top:.75rem;"></div>
+ </div>
+
+ <!-- Quick Student Select -->
+ <div class="card">
+ <div class="card-title"><span class="icon"></span> Active Student</div>
+ <div class="card-desc">Select which student to work with across all pages.</div>
+ <label>Choose Student</label>
+ <select id="student-selector" onchange="onStudentSelect()">
+ <option value="">-- Loading... --</option>
+ </select>
+ <label>Or Create New</label>
+ <input type="text" id="new-s-name" placeholder="Full Name"/>
+ <input type="email" id="new-s-email" placeholder="Email"/>
+ <input type="text" id="new-s-course" placeholder="Course (e.g. MCA)"/>
+ <button class="btn btn-secondary btn-full" onclick="createStudent()">+ Create Student</button>
+ </div>
+
+ <!-- Role Select -->
+ <div class="card">
+ <div class="card-title"><span class="icon"></span> Target Job Role</div>
+ <div class="card-desc">Select the job role to analyze skills against.</div>
+ <label>Choose Role</label>
+ <select id="role-selector" onchange="onRoleSelect()">
+ <option value="">-- Loading... --</option>
+ </select>
+ <div id="role-detail" style="display:none;margin-top:.5rem;">
+ <div style="font-size:.72rem;color:var(--muted);">O*NET SOC: <span id="role-onet" style="color:var(--accent);font-family:monospace;"></span></div>
+ </div>
+ </div>
+
+ </div>
+
+ <!-- MAIN -->
+ <div class="main-content">
+
+ <!-- Dashboard Stats -->
+ <div id="dash-section" style="display:none;">
+ <div class="section-header"> Student Dashboard</div>
+ <div class="stats-row" style="margin-bottom:1rem;">
+ <div class="stat-card"><div class="stat-label">Avg Proficiency</div><div class="stat-value accent" id="d-prof">--</div></div>
+ <div class="stat-card"><div class="stat-label">Total Skills</div><div class="stat-value ok" id="d-skills">--</div></div>
+ <div class="stat-card"><div class="stat-label">Active Gaps</div><div class="stat-value warn" id="d-gaps">--</div></div>
+ </div>
+ <div class="card" style="margin-bottom:1rem;">
+ <div class="card-head"><div class="card-title"><span class="icon"></span> Your Current Skills</div></div>
+ <div id="d-skill-chips" style="padding:.25rem 0;"></div>
+ </div>
+ </div>
+
+ <!-- Role Match Scores -->
+ <div>
+ <div class="section-header" style="margin-top:.5rem;"> Job Role Match Scores</div>
+ <div id="match-placeholder" class="empty-state">
+ <div class="es-icon"></div>
+ <div class="es-text">Select a student to see how well they match each job role</div>
+ <button class="btn btn-primary" style="margin-top:1rem;" onclick="loadMatchScores()">Calculate Match Scores</button>
+ </div>
+ <div id="match-grid" class="match-grid" style="display:none;"></div>
+ </div>
+
+ </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+ // ── Shared state (persisted in sessionStorage) ──────────────────────────────
+ const SS = {
+ get sid() { return parseInt(sessionStorage.getItem('sg_sid')||'0')||null; },
+ set sid(v){ sessionStorage.setItem('sg_sid', v); },
+ get rid() { return parseInt(sessionStorage.getItem('sg_rid')||'0')||null; },
+ set rid(v){ sessionStorage.setItem('sg_rid', v); },
+ get token(){ return sessionStorage.getItem('sg_token')||''; },
+ set token(v){ sessionStorage.setItem('sg_token', v); },
+ get sname(){ return sessionStorage.getItem('sg_sname')||''; },
+ set sname(v){ sessionStorage.setItem('sg_sname', v); },
+ get rname(){ return sessionStorage.getItem('sg_rname')||''; },
+ set rname(v){ sessionStorage.setItem('sg_rname', v); },
+ };
+
+ function toast(msg, type='success') {
+ const t = document.getElementById('toast');
+ t.textContent = msg; t.className = `toast show ${type}`;
+ setTimeout(()=>t.className='toast', 3000);
+ }
+
+ async function api(url, opts={}) {
+ const hdrs = {'Content-Type':'application/json'};
+ if (SS.token) hdrs['Authorization'] = `Bearer ${SS.token}`;
+ if (opts.body instanceof FormData) delete hdrs['Content-Type'];
+ try {
+ const r = await fetch(url, {headers:hdrs, ...opts});
+ const d = r.headers.get('content-type')?.includes('json') ? await r.json() : await r.text();
+ return {ok:r.ok, status:r.status, data:d};
+ } catch(e) { return {ok:false, status:0, data:{error:String(e)}}; }
+ }
+
+ function updateCtx() {
+ document.getElementById('ctx-student').textContent = SS.sname ? ` ${SS.sname}` : 'No Student';
+ document.getElementById('ctx-role').textContent = SS.rname ? ` ${SS.rname}` : 'No Role';
+ }
+
+ // ── Health ─────────────────────────────────────────────────────────────────
+ async function checkHealth() {
+ const r = await api('/api/health');
+ const dot = document.getElementById('health-dot');
+ const txt = document.getElementById('health-text');
+ if (r.ok && r.data.status === 'ok') {
+ dot.className = 'dot ok'; txt.textContent = 'Backend Online';
+ } else {
+ dot.className = 'dot err'; txt.textContent = 'Backend Offline';
+ }
+ }
+
+ // ── Auth ───────────────────────────────────────────────────────────────────
+ function showAuthTab(tab) {
+ document.getElementById('auth-login').style.display = tab==='login' ? '' : 'none';
+ document.getElementById('auth-register').style.display = tab==='register' ? '' : 'none';
+ document.querySelectorAll('.auth-tab').forEach((b,i)=>b.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+ }
+
+ async function doLogin() {
+ const email = document.getElementById('auth-email').value.trim();
+ const pass = document.getElementById('auth-pass').value;
+ if (!email||!pass) return toast('Enter email and password','error');
+ const r = await api('/api/auth/login',{method:'POST',body:JSON.stringify({email,password:pass})});
+ if (r.ok && r.data.access_token) {
+ SS.token = r.data.access_token;
+ if (r.data.student_id) { SS.sid = r.data.student_id; SS.sname = r.data.user?.name||'Student'; updateCtx(); }
+ document.getElementById('auth-status').textContent = ` Logged in as ${r.data.user?.name}`;
+ toast(`Welcome back, ${r.data.user?.name}!`);
+ loadAll();
+ } else {
+ toast(r.data.error||'Login failed','error');
+ }
+ }
+
+ async function doRegister() {
+ const name = document.getElementById('reg-name').value.trim();
+ const email = document.getElementById('reg-email').value.trim();
+ const pass = document.getElementById('reg-pass').value;
+ const course= document.getElementById('reg-course').value.trim();
+ if (!name||!email||!pass) return toast('Fill all required fields','error');
+ const r = await api('/api/auth/register',{method:'POST',body:JSON.stringify({name,email,password:pass,course})});
+ if (r.ok && r.data.access_token) {
+ SS.token = r.data.access_token;
+ SS.sid = r.data.student_id;
+ SS.sname = name; updateCtx();
+ document.getElementById('auth-status').textContent = ` Account created! Student ID: ${r.data.student_id}`;
+ toast('Account created successfully!');
+ loadAll();
+ } else {
+ toast(r.data.error||'Registration failed','error');
+ }
+ }
+
+ // ── Students ───────────────────────────────────────────────────────────────
+ async function loadStudents() {
+ const r = await api('/api/students');
+ const sel = document.getElementById('student-selector');
+ sel.innerHTML = '<option value="">-- Select Student --</option>';
+ if (r.ok && Array.isArray(r.data)) {
+ r.data.forEach(s => {
+ const o = document.createElement('option');
+ o.value = s.id;
+ o.textContent = `#${s.id} ${s.name} (${s.email})`;
+ if (s.id == SS.sid) o.selected = true;
+ sel.appendChild(o);
+ });
+ }
+ }
+
+ async function createStudent() {
+ const name = document.getElementById('new-s-name').value.trim();
+ const email = document.getElementById('new-s-email').value.trim();
+ const course= document.getElementById('new-s-course').value.trim();
+ if (!name||!email) return toast('Name and Email are required','error');
+ const r = await api('/api/students',{method:'POST',body:JSON.stringify({name,email,course,year:new Date().getFullYear()+1})});
+ if (r.ok && r.data.id) {
+ SS.sid=r.data.id; SS.sname=name; updateCtx();
+ toast(`Student "${name}" created! ID: ${r.data.id}`);
+ await loadStudents();
+ document.getElementById('student-selector').value = r.data.id;
+ loadDashboard(); loadMatchScores();
+ } else { toast(r.data.error||'Failed','error'); }
+ }
+
+ function onStudentSelect() {
+ const sel = document.getElementById('student-selector');
+ if (!sel.value) return;
+ SS.sid = sel.value;
+ SS.sname = sel.options[sel.selectedIndex].text.replace(/^#\d+ /,'').split(' (')[0];
+ updateCtx(); loadDashboard(); loadMatchScores();
+ }
+
+ // ── Roles ──────────────────────────────────────────────────────────────────
+ async function loadRoles() {
+ const r = await api('/api/roles');
+ const sel = document.getElementById('role-selector');
+ sel.innerHTML = '<option value="">-- Select Role --</option>';
+ if (r.ok && Array.isArray(r.data)) {
+ r.data.forEach(role => {
+ const o = document.createElement('option');
+ o.value = role.id; o.textContent = role.name;
+ o.dataset.onet = role.onet_code||'';
+ if (role.id == SS.rid) o.selected = true;
+ sel.appendChild(o);
+ });
+ }
+ if (SS.rid) onRoleSelect(true);
+ }
+
+ function onRoleSelect(silent=false) {
+ const sel = document.getElementById('role-selector');
+ if (!sel.value) return;
+ SS.rid = sel.value;
+ SS.rname = sel.options[sel.selectedIndex].text;
+ const onet = sel.options[sel.selectedIndex].dataset.onet;
+ document.getElementById('role-onet').textContent = onet||'N/A';
+ document.getElementById('role-detail').style.display='';
+ updateCtx();
+ if (!silent) loadMatchScores();
+ }
+
+ // ── Dashboard ──────────────────────────────────────────────────────────────
+ async function loadDashboard() {
+ if (!SS.sid) return;
+ const r = await api(`/api/students/${SS.sid}/dashboard`);
+ if (!r.ok) return;
+ const d = r.data;
+ document.getElementById('dash-section').style.display='';
+ const skills = d.current_skills||[];
+ const gaps = d.top_gaps||[];
+ const avgProf = skills.length ? Math.round(skills.reduce((a,s)=>a+(s.proficiency||0),0)/skills.length) : 0;
+ document.getElementById('d-prof').textContent = avgProf+'%';
+ document.getElementById('d-skills').textContent = skills.length;
+ document.getElementById('d-gaps').textContent = gaps.length;
+ const chips = document.getElementById('d-skill-chips');
+ chips.innerHTML = skills.length
+ ? skills.map(s=>`<span class="skill-chip"><strong>${s.skill||s.name}</strong> ${Math.round(s.proficiency||0)}%</span>`).join('')
+ : '<span style="font-size:.8rem;color:var(--muted);">No skills yet — go to Skills & Gap Analysis to add skills.</span>';
+ }
+
+ // ── Role Match Scores ──────────────────────────────────────────────────────
+ async function loadMatchScores() {
+ if (!SS.sid) return toast('Select a student first','error');
+ const grid = document.getElementById('match-grid');
+ const ph = document.getElementById('match-placeholder');
+ grid.innerHTML = '<div style="color:var(--muted);font-size:.85rem;padding:1rem;">Calculating match scores...</div>';
+ grid.style.display=''; ph.style.display='none';
+
+ const r = await api(`/api/students/${SS.sid}/role-match`);
+ if (!r.ok) { grid.innerHTML=`<div style="color:var(--danger);">${r.data.error||'Error'}</div>`; return; }
+ const matches = r.data.matches||[];
+ if (!matches.length) { grid.innerHTML='<div class="empty-state"><div class="es-icon"></div><div class="es-text">No match data. Add skills first.</div></div>'; return; }
+
+ grid.innerHTML = matches.map(m => {
+ const score = m.match_score||0;
+ const cls = score>=70?'high':score>=40?'mid':'low';
+ const pct = score.toFixed(1);
+ const cats = Object.entries(m.by_category||{}).slice(0,4);
+ const missing= (m.top_missing||[]).slice(0,4);
+ return `
+ <div class="match-card">
+ <div class="match-role">${m.role}</div>
+ <div style="font-size:.65rem;color:var(--muted);font-family:monospace;">${m.onet_code||''}</div>
+ <div class="match-score-row">
+ <div class="match-score ${cls}">${pct}%</div>
+ <div>
+ <div class="match-verdict">${m.verdict}</div>
+ <div style="font-size:.65rem;color:var(--muted);">${m.skill_coverage}/${m.total_skills} skills covered</div>
+ </div>
+ </div>
+ <div class="progress-bar"><div class="progress-fill ${cls}" style="width:${score}%;"></div></div>
+ ${cats.length?`<div class="cat-bars">${cats.map(([k,v])=>`
+ <div class="cat-row">
+ <div class="cat-name">${k}</div>
+ <div class="cat-bar"><div class="cat-fill" style="width:${Math.min(v,100)}%;"></div></div>
+ <div class="cat-pct">${v.toFixed(0)}%</div>
+ </div>`).join('')}</div>`:''}
+ ${missing.length?`<div class="match-missing">${missing.map(s=>`<span class="missing-chip"> ${s}</span>`).join('')}</div>`:''}
+ </div>`;
+ }).join('');
+ }
+
+ // ── Init ───────────────────────────────────────────────────────────────────
+ async function loadAll() {
+ await Promise.all([loadStudents(), loadRoles()]);
+ if (SS.sid) { loadDashboard(); loadMatchScores(); }
+ updateCtx();
+ }
+
+ window.addEventListener('DOMContentLoaded', async () => {
+ await checkHealth();
+ await loadAll();
+ setInterval(checkHealth, 30000);
+ });
+</script>
+</body>
+</html>

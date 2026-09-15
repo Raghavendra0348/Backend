@@ -2,8 +2,13 @@
 SQLAlchemy data models for the AI Skill Gap Prediction System.
 Matches the canonical data model specified in PRD Section 14.
 """
-from datetime import datetime
+from datetime import datetime, timezone
 from extensions import db
+
+
+def _utcnow():
+    """Return the current UTC time as a timezone-aware datetime (Python 3.12+ safe)."""
+    return datetime.now(timezone.utc)
 
 
 class Student(db.Model):
@@ -14,8 +19,8 @@ class Student(db.Model):
     course = db.Column(db.String(100))
     year = db.Column(db.Integer)
     target_career = db.Column(db.String(200))  # PRD FR-001
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=_utcnow)
+    updated_at = db.Column(db.DateTime, default=_utcnow, onupdate=_utcnow)
 
     def to_dict(self):
         return {
@@ -53,7 +58,7 @@ class StudentSkill(db.Model):
     )  # self_reported | assessment | resume | reassessment | demo
     confidence = db.Column(db.Float, default=1.0)   # 0–1; resume = 0.75, self = 1.0
     updated_at = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+        db.DateTime, default=_utcnow, onupdate=_utcnow
     )
     __table_args__ = (db.UniqueConstraint("student_id", "skill_id"),)
 
@@ -65,7 +70,7 @@ class Assessment(db.Model):
     skill_id = db.Column(db.Integer, db.ForeignKey("skills.id"), nullable=False)
     score = db.Column(db.Float, nullable=False)
     max_score = db.Column(db.Float, nullable=False, default=100)
-    assessed_at = db.Column(db.DateTime, default=datetime.utcnow)
+    assessed_at = db.Column(db.DateTime, default=_utcnow)
     attempt_no = db.Column(db.Integer, default=1)
 
 
@@ -76,7 +81,7 @@ class Project(db.Model):
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text)
     skills_used = db.Column(db.Text)  # Comma-separated skill names (from resume or manual)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=_utcnow)
 
 
 class Certification(db.Model):
@@ -99,7 +104,7 @@ class Resume(db.Model):
     processing_status = db.Column(
         db.String(50), default="pending"
     )  # pending | processed | failed
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=_utcnow)
 
 
 class JobRole(db.Model):
@@ -110,12 +115,14 @@ class JobRole(db.Model):
     source_identifier = db.Column(db.String(500))             # ESCO URI or O*NET SOC code
     description = db.Column(db.Text)
     isco_group = db.Column(db.String(20))                     # ISCO group code (ESCO only)
+    onet_code = db.Column(db.String(32), nullable=True)       # O*NET-SOC code (e.g. 15-1252.00)
 
     def to_dict(self):
         return {
             "id": self.id, "name": self.name, "source": self.source,
             "source_identifier": self.source_identifier,
-            "description": self.description, "isco_group": self.isco_group
+            "description": self.description, "isco_group": self.isco_group,
+            "onet_code": self.onet_code,
         }
 
 
@@ -171,7 +178,7 @@ class SkillGap(db.Model):
     severity = db.Column(db.String(20), nullable=False)     # LOW | MEDIUM | HIGH
     priority_score = db.Column(db.Float, nullable=False)
     model_version = db.Column(db.String(100), default="deterministic-baseline-v1")
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=_utcnow)
 
     def to_dict(self, skill_name=None, role_name=None):
         return {
@@ -197,7 +204,7 @@ class Recommendation(db.Model):
     url = db.Column(db.String(1000))
     score = db.Column(db.Float, nullable=False)
     reason = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=_utcnow)
 
 
 class LearningProgress(db.Model):
@@ -212,7 +219,7 @@ class LearningProgress(db.Model):
     )  # not_started | in_progress | completed
     completion = db.Column(db.Float, default=0)   # 0–100
     updated_at = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+        db.DateTime, default=_utcnow, onupdate=_utcnow
     )
 
 
@@ -225,4 +232,68 @@ class Reassessment(db.Model):
     new_level = db.Column(db.Float)
     improvement = db.Column(db.Float)   # new_level - old_level (computed on save)
     evidence_type = db.Column(db.String(50), default="reassessment")
-    assessed_at = db.Column(db.DateTime, default=datetime.utcnow)
+    assessed_at = db.Column(db.DateTime, default=_utcnow)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Auth
+# ──────────────────────────────────────────────────────────────────────────────
+class User(db.Model):
+    """
+    Authentication account — linked 1:1 to a Student profile.
+    Keeps auth (password hashes) separate from academic data.
+    """
+    __tablename__ = "users"
+    id            = db.Column(db.Integer, primary_key=True)
+    email         = db.Column(db.String(180), unique=True, nullable=False)
+    name          = db.Column(db.String(120), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    role          = db.Column(db.String(30), default="student")    # student | admin
+    student_id    = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=True)
+    created_at    = db.Column(db.DateTime, default=_utcnow)
+    last_login    = db.Column(db.DateTime, nullable=True)
+
+    def to_dict(self):
+        return {
+            "id":         self.id,
+            "name":       self.name,
+            "email":      self.email,
+            "role":       self.role,
+            "student_id": self.student_id,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "last_login": self.last_login.isoformat()  if self.last_login  else None,
+        }
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Personalized Learning Path
+# ──────────────────────────────────────────────────────────────────────────────
+class LearningPath(db.Model):
+    """
+    A generated, ordered learning roadmap for a student targeting a specific role.
+    Regenerated each time POST /students/<id>/learning-path is called.
+    """
+    __tablename__ = "learning_paths"
+    id               = db.Column(db.Integer, primary_key=True)
+    student_id       = db.Column(db.Integer, db.ForeignKey("students.id"),  nullable=False)
+    job_role_id      = db.Column(db.Integer, db.ForeignKey("job_roles.id"), nullable=False)
+    total_courses    = db.Column(db.Integer, default=0)
+    total_hours      = db.Column(db.Integer, default=0)
+    match_score_at_generation = db.Column(db.Float, default=0.0)
+    created_at       = db.Column(db.DateTime, default=_utcnow)
+    __table_args__   = (db.UniqueConstraint("student_id", "job_role_id"),)
+
+
+class LearningPathStep(db.Model):
+    """
+    A single step (course) within a LearningPath.
+    step_order determines the sequence; phase groups steps into phases.
+    """
+    __tablename__  = "learning_path_steps"
+    id             = db.Column(db.Integer, primary_key=True)
+    path_id        = db.Column(db.Integer, db.ForeignKey("learning_paths.id"), nullable=False)
+    step_order     = db.Column(db.Integer, nullable=False)   # 1, 2, 3, ...
+    course_id      = db.Column(db.Integer, db.ForeignKey("courses.id"),   nullable=False)
+    skill_id       = db.Column(db.Integer, db.ForeignKey("skills.id"),    nullable=False)
+    phase          = db.Column(db.String(10), nullable=False)  # HIGH | MEDIUM | LOW
+    estimated_hours = db.Column(db.Integer, default=25)

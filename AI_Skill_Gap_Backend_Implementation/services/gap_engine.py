@@ -29,7 +29,7 @@ _THRESHOLDS = {"LOW": 20.0, "MEDIUM": 50.0}
 
 # Lazy-loaded ML model
 _model = None
-_MODEL_VERSION = "deterministic-baseline-v1"
+_MODEL_VERSION = "gradient-boosted-v2"
 
 
 def _load_model():
@@ -67,6 +67,7 @@ def _predict_with_model(
     assessment_score: float,
     current: float,
     required: float,
+    gap_percent: float,
     project_count: int,
     cert_count: int,
     importance: float,
@@ -79,13 +80,14 @@ def _predict_with_model(
     try:
         import pandas as pd
         row = pd.DataFrame([{
-            "assessment_score": assessment_score,
-            "current_proficiency": current,
+            "gap_percent":          gap_percent,   # primary feature (v2 model)
+            "assessment_score":     assessment_score,
+            "current_proficiency":  current,
             "required_proficiency": required,
-            "project_count": project_count,
-            "certification_count": cert_count,
-            "role_importance": importance,
-            "skill_category": skill_category,
+            "project_count":        project_count,
+            "certification_count":  cert_count,
+            "role_importance":      importance,
+            "skill_category":       skill_category,
         }])
         return str(model.predict(row)[0])
     except Exception as exc:
@@ -149,7 +151,7 @@ def analyze(student_id: int, role_id: int) -> list[dict]:
         if model and gap > 0:
             severity = _predict_with_model(
                 model, assessment_score, current, required,
-                project_count, cert_count, importance, skill_cat
+                gap_pct, project_count, cert_count, importance, skill_cat
             ) or classify_gap(gap_pct)
         else:
             severity = classify_gap(gap_pct)

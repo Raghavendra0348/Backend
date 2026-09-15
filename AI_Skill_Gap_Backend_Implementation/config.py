@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -6,7 +7,12 @@ load_dotenv()
 
 
 class Config:
-    SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-change-in-production")
+    SECRET_KEY     = os.getenv("SECRET_KEY", "dev-secret-change-in-production")
+    # JWT uses SECRET_KEY by default; override with JWT_SECRET_KEY for separation
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", os.getenv("SECRET_KEY",
+                               "jwt-dev-secret-key-change-me-in-production-min-32chars"))
+    JWT_ACCESS_TOKEN_EXPIRES  = timedelta(days=7)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
 
     # Default to SQLite for zero-friction local development.
     # Set DATABASE_URL=mysql+pymysql://user:pass@host/skill_gap_db in .env for MySQL.
@@ -27,6 +33,18 @@ class Config:
         str(_BASE / "ESCO dataset - v1.2.1 - classification - en - csv")
     )
     ONET_DATA_DIR = os.getenv("ONET_DATA_DIR", str(_BASE / "Dataset"))
+    ONET_KNOWLEDGE_XLSX = os.getenv(
+        "ONET_KNOWLEDGE_XLSX",
+        str(_BASE / "Dataset" / "Knowledge (1).xlsx")
+    )
+    ONET_ACTIVITIES_XLSX = os.getenv(
+        "ONET_ACTIVITIES_XLSX",
+        str(_BASE / "Dataset" / "Work Activities (1).xlsx")
+    )
+    ONET_OCCUPATIONS_XLSX = os.getenv(
+        "ONET_OCCUPATIONS_XLSX",
+        str(_BASE / "Dataset" / "Occupation Data (1).xlsx")
+    )
     COURSERA_ZIP = os.getenv(
         "COURSERA_ZIP",
         str(_BASE / "Dataset" / "archive (1).zip")

@@ -29,6 +29,17 @@ from models import (
 # ─────────────────────────────────────────────────────────────────────────────
 # IT Occupation URIs to ingest from ESCO (carefully selected for IT students)
 # ─────────────────────────────────────────────────────────────────────────────
+
+# Cross-walk: ESCO occupation name → O*NET-SOC code (PRD Section: Dual Taxonomy)
+ONET_IT_MAPPING: dict[str, str] = {
+    "software developer":     "15-1252.00",
+    "data scientist":         "15-2051.00",
+    "web developer":          "15-1254.00",
+    "database administrator": "15-1242.00",
+    "ict system analyst":     "15-1211.00",
+    "cloud devops engineer":  "15-1241.00",  # Primary; also 15-1244.00
+}
+
 ESCO_IT_OCCUPATION_URIS = {
     "software developer":
         "http://data.europa.eu/esco/occupation/f2b15a0e-e65a-438a-affb-29b9d50b77d1",
@@ -199,6 +210,203 @@ def ingest_esco(esco_dir: str) -> dict:
     skills_created = Skill.query.filter_by(source="ESCO").count()
     print(f"  [ESCO] {skills_created} ESCO skills total, {job_skills_created} new JobSkill records.")
     return {"roles": roles_created, "skills": skills_created, "job_skills": job_skills_created}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# O*NET Ingestion
+# ─────────────────────────────────────────────────────────────────────────────
+def ingest_onet(
+    knowledge_path: str,
+    activities_path: str,
+    occupations_path: str,
+    im_threshold_knowledge: float = 2.5,
+    im_threshold_activities: float = 3.0,
+) -> dict:
+    """
+    Ingest O*NET Knowledge and Work Activity competencies for the 6 IT roles.
+
+    Normalization formulas (PRD Section: Dual Taxonomy):
+        importance  = clamp(IM / 5.0, 0.1, 1.0)
+        req_level   = round(LV / 7.0 * 5.0), clamped to [1, 5]
+
+    Each competency is stored as a Skill with:
+        category = "O*NET Knowledge"  or  "O*NET Work Activity"
+        source   = "O*NET"
+
+    Idempotent: skips existing JobSkill rows.
+    """
+    try:
+        import openpyxl
+    except ImportError:
+        print("  [O*NET] openpyxl not installed. Skipping O*NET ingestion.")
+        return {"skills": 0, "job_skills": 0, "roles_updated": 0}
+
+    for path in (knowledge_path, activities_path, occupations_path):
+        if not Path(path).exists():
+            print(f"  [O*NET] WARNING: {path} not found. Skipping O*NET ingestion.")
+            return {"skills": 0, "job_skills": 0, "roles_updated": 0}
+
+    # ── Step 1: Load O*NET occupation data to patch JobRole.onet_code ──────────
+    print(f"  [O*NET] Loading occupation data from {occupations_path}...")
+    onet_occupation_map: dict[str, dict] = {}   # onet_code → {title, description}
+    wb_occ = openpyxl.load_workbook(occupations_path, read_only=True, data_only=True)
+    ws_occ = wb_occ.active
+    occ_rows = list(ws_occ.iter_rows(values_only=True))
+    occ_header = [str(h).strip() for h in occ_rows[0]]
+    for raw in occ_rows[1:]:
+        row = dict(zip(occ_header, raw))
+        code = str(row.get("O*NET-SOC Code") or "").strip()
+        if code:
+            onet_occupation_map[code] = {
+                "title":       str(row.get("Title") or "").strip(),
+                "description": str(row.get("Description") or "").strip()[:500],
+            }
+    wb_occ.close()
+
+    # ── Step 2: Patch JobRole rows with their O*NET code ──────────────────────
+    roles_updated = 0
+    # Build canonical name → db JobRole mapping
+    role_db_map: dict[str, "JobRole"] = {}  # canonical lower name → JobRole obj
+    for canonical_name, onet_code in ONET_IT_MAPPING.items():
+        # Match against ESCO-sourced roles (case-insensitive substring)
+        roles = JobRole.query.filter(JobRole.source == "ESCO").all()
+        for r in roles:
+            if canonical_name in r.name.lower():
+                if r.onet_code != onet_code:
+                    r.onet_code = onet_code
+                    roles_updated += 1
+                role_db_map[canonical_name] = r
+                break
+    db.session.flush()
+    print(f"  [O*NET] Patched {roles_updated} JobRole rows with O*NET-SOC codes.")
+
+    # ── Step 3: Helper to read and process one O*NET XLSX file ────────────────
+    def _process_onet_file(
+        xlsx_path: str,
+        skill_category: str,
+        im_threshold: float,
+    ) -> tuple[int, int]:
+        """
+        Read the O*NET xlsx, filter to IT SOC codes above IM threshold,
+        normalise scores, and upsert Skill + JobSkill records.
+        Returns (skills_created, job_skills_created).
+        """
+        wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True)
+        ws = wb.active
+        rows = list(ws.iter_rows(values_only=True))
+        header = [str(h).strip() for h in rows[0]]
+        wb.close()
+
+        # Build: onet_code → element_name → {IM, LV}
+        # We need BOTH IM and LV rows for the same element to compute req_level.
+        ElementData = dict  # {"IM": float, "LV": float}
+        per_occ: dict[str, dict[str, ElementData]] = {}
+
+        target_codes = set(ONET_IT_MAPPING.values())
+        for raw in rows[1:]:
+            row = dict(zip(header, raw))
+            code = str(row.get("O*NET-SOC Code") or "").strip()
+            if code not in target_codes:
+                continue
+            element_name = str(row.get("Element Name") or "").strip()
+            scale_id = str(row.get("Scale ID") or "").strip()
+            suppress = str(row.get("Recommend Suppress") or "N").strip()
+            if suppress == "Y" or not element_name:
+                continue
+            try:
+                data_value = float(row.get("Data Value") or 0)
+            except (TypeError, ValueError):
+                continue
+
+            per_occ.setdefault(code, {}).setdefault(element_name, {})
+            per_occ[code][element_name][scale_id] = data_value
+
+        skills_created_count = 0
+        job_skills_created_count = 0
+
+        # Build inverse map: onet_code → canonical role name
+        code_to_role: dict[str, "JobRole"] = {}
+        for canonical_name, role_obj in role_db_map.items():
+            if role_obj.onet_code:
+                code_to_role[role_obj.onet_code] = role_obj
+            # Also match secondary code for DevOps
+            for onet_code in ("15-1241.00", "15-1244.00"):
+                if canonical_name == "cloud devops engineer":
+                    code_to_role[onet_code] = role_obj
+
+        for onet_code, elements in per_occ.items():
+            role_obj = code_to_role.get(onet_code)
+            if not role_obj:
+                continue
+
+            for element_name, scales in elements.items():
+                im_value = scales.get("IM", 0.0)
+                lv_value = scales.get("LV", 0.0)
+
+                if im_value < im_threshold:
+                    continue  # Below importance threshold — skip
+
+                # Normalization formulas from PRD
+                importance = min(1.0, max(0.1, im_value / 5.0))
+                req_level_raw = round((lv_value / 7.0) * 5.0) if lv_value > 0 else 3
+                req_level = float(max(1, min(5, req_level_raw)))
+                # Scale req_level from [1,5] to [0,100] for our proficiency system
+                required_level_100 = req_level * 20.0  # 1→20, 2→40, 3→60, 4→80, 5→100
+
+                # Upsert skill
+                skill_name = element_name[:140]
+                sk = Skill.query.filter(
+                    db.func.lower(Skill.name) == skill_name.lower()
+                ).first()
+                if not sk:
+                    sk = Skill(
+                        name=skill_name,
+                        category=skill_category,
+                        source="O*NET",
+                        source_identifier=f"onet:{onet_code}:{element_name[:50]}",
+                    )
+                    db.session.add(sk)
+                    db.session.flush()
+                    skills_created_count += 1
+                elif sk.source == "CANONICAL" or sk.source == "ESCO":
+                    pass  # Don't overwrite ESCO/canonical skills
+
+                # Upsert job_skill
+                existing = JobSkill.query.filter_by(
+                    job_role_id=role_obj.id, skill_id=sk.id
+                ).first()
+                if not existing:
+                    db.session.add(JobSkill(
+                        job_role_id=role_obj.id,
+                        skill_id=sk.id,
+                        required_level=required_level_100,
+                        importance=importance,
+                        relation_type="essential",
+                        source="O*NET",
+                    ))
+                    job_skills_created_count += 1
+
+        db.session.commit()
+        return skills_created_count, job_skills_created_count
+
+    # ── Step 4: Process both O*NET files ──────────────────────────────────────
+    print(f"  [O*NET] Processing Knowledge file (IM >= {im_threshold_knowledge})...")
+    k_skills, k_js = _process_onet_file(
+        knowledge_path, "O*NET Knowledge", im_threshold_knowledge
+    )
+    print(f"  [O*NET] Knowledge: {k_skills} new skills, {k_js} new JobSkill records.")
+
+    print(f"  [O*NET] Processing Work Activities file (IM >= {im_threshold_activities})...")
+    w_skills, w_js = _process_onet_file(
+        activities_path, "O*NET Work Activity", im_threshold_activities
+    )
+    print(f"  [O*NET] Work Activities: {w_skills} new skills, {w_js} new JobSkill records.")
+
+    total_skills = k_skills + w_skills
+    total_js = k_js + w_js
+    print(f"  [O*NET] Total: {total_skills} new competency skills, "
+          f"{total_js} new JobSkill records, {roles_updated} roles updated.")
+    return {"skills": total_skills, "job_skills": total_js, "roles_updated": roles_updated}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -439,26 +647,37 @@ def run_ingestion() -> dict:
     """
     Run the full ingestion pipeline in order:
     1. ESCO IT occupations and skills
-    2. Coursera courses
-    3. Student profiles
+    2. O*NET Knowledge and Work Activities (dual taxonomy)
+    3. Coursera courses
+    4. Student profiles
     """
     cfg = current_app.config
     print("\n=== Starting Data Ingestion Pipeline ===")
 
     summary = {}
 
-    print("\n[1/3] ESCO v1.2.1 Ingestion")
+    print("\n[1/4] ESCO v1.2.1 Ingestion")
     summary["esco"] = ingest_esco(cfg["ESCO_DATA_DIR"])
 
-    print("\n[2/3] Coursera Dataset Ingestion")
+    print("\n[2/4] O*NET Dual-Taxonomy Ingestion")
+    summary["onet"] = ingest_onet(
+        knowledge_path=cfg["ONET_KNOWLEDGE_XLSX"],
+        activities_path=cfg["ONET_ACTIVITIES_XLSX"],
+        occupations_path=cfg["ONET_OCCUPATIONS_XLSX"],
+    )
+
+    print("\n[3/4] Coursera Dataset Ingestion")
     summary["coursera"] = ingest_coursera(cfg["COURSERA_ZIP"])
 
-    print("\n[3/3] Student Dataset Ingestion")
+    print("\n[4/4] Student Dataset Ingestion")
     summary["students"] = ingest_students(cfg["STUDENT_DATASET_XLSX"])
 
     print("\n=== Ingestion Complete ===")
     print(f"  ESCO:     {summary['esco']['roles']} IT roles, "
           f"{summary['esco']['job_skills']} job-skill mappings")
+    print(f"  O*NET:    {summary['onet']['skills']} competency skills, "
+          f"{summary['onet']['job_skills']} job-skill mappings, "
+          f"{summary['onet']['roles_updated']} roles updated with SOC code")
     print(f"  Coursera: {summary['coursera']['courses']} courses, "
           f"{summary['coursera']['course_skills']} course-skill mappings")
     print(f"  Students: {summary['students']['students']} students, "

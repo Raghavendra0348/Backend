@@ -24,3 +24,4 @@ flask --app app run --debug --port 5000
 
 
 
+.venv/bin/python -m flask --app app run --port 5000 --debug

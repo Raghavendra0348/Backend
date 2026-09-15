@@ -1,7 +1,10 @@
-from flask import Flask
+from flask import Flask, render_template
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 from config import Config
 from extensions import db
 from routes import api
+from auth import auth_bp
 from seed import seed_database
 
 
@@ -11,7 +14,32 @@ def create_app(test_config=None):
     if test_config:
         app.config.update(test_config)
     db.init_app(app)
-    app.register_blueprint(api, url_prefix="/api")
+    JWTManager(app)
+    # Enable CORS for all /api/* routes so any frontend can call the API
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    app.register_blueprint(api,     url_prefix="/api")
+    app.register_blueprint(auth_bp, url_prefix="/api/auth")
+
+    @app.get("/")
+    @app.get("/test")
+    def test_bench():
+        """Main home page — student setup, auth, role selection, job match scores."""
+        return render_template("index.html")
+
+    @app.get("/skills")
+    def skills_page():
+        """Skills, Resume Parser, Job Role Skills, and ML Gap Analysis page."""
+        return render_template("skills.html")
+
+    @app.get("/learning")
+    def learning_page():
+        """Learning Path, Recommendations, Progress, and Analytics page."""
+        return render_template("learning.html")
+
+    @app.get("/favicon.ico")
+    def favicon():
+        """Handle browser favicon request without 404."""
+        return "", 204
 
     @app.cli.command("init-db")
     def init_db():
@@ -35,6 +63,20 @@ def create_app(test_config=None):
             from data.ingest import run_ingestion
             db.create_all()
             run_ingestion()
+
+    @app.cli.command("ingest-onet")
+    def ingest_onet_cmd():
+        """Ingest O*NET Knowledge and Work Activity competencies for the 6 IT roles."""
+        with app.app_context():
+            from data.ingest import ingest_onet
+            db.create_all()
+            cfg = app.config
+            result = ingest_onet(
+                knowledge_path=cfg["ONET_KNOWLEDGE_XLSX"],
+                activities_path=cfg["ONET_ACTIVITIES_XLSX"],
+                occupations_path=cfg["ONET_OCCUPATIONS_XLSX"],
+            )
+            print(f"\nO*NET ingestion complete: {result}")
 
     @app.cli.command("train-model")
     def train_model():

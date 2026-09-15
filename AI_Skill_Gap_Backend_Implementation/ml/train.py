@@ -1,14 +1,15 @@
 """
-ml/train.py — Train and evaluate ML gap classification models.
+ml/train.py — Train and evaluate ML gap classification models (v2).
 
 Models trained:
   - Logistic Regression (interpretable baseline)
   - Decision Tree
   - Random Forest
+  - Gradient Boosting (new — often best on tabular data)
 
 Evaluation: Accuracy, Precision, Recall, F1 (macro & weighted), Confusion Matrix.
 Best model by weighted F1 is saved as skill_gap_model.joblib.
-Metrics saved as ml/metrics_report.json.
+Metrics saved as ml/models/metrics_report.json.
 
 Usage:
     python ml/train.py --input ml/skill_gap_dataset.csv --output ml/models/skill_gap_model.joblib
@@ -22,7 +23,7 @@ import joblib
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
@@ -30,10 +31,12 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import StratifiedKFold, cross_val_score, train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 
+# gap_percent is now the most predictive feature — always include it
 NUMERIC_FEATURES = [
+    "gap_percent",            # NEW — direct signal for severity
     "assessment_score",
     "current_proficiency",
     "required_proficiency",
@@ -69,14 +72,14 @@ def build_pipeline(clf) -> Pipeline:
 def evaluate(name: str, pipeline: Pipeline, X_te, y_te) -> dict:
     """Run evaluation on held-out test set. Returns metrics dict."""
     y_pred = pipeline.predict(X_te)
-    acc = accuracy_score(y_te, y_pred)
+    acc    = accuracy_score(y_te, y_pred)
     report = classification_report(y_te, y_pred, output_dict=True, zero_division=0)
-    cm = confusion_matrix(y_te, y_pred, labels=CLASSES).tolist()
-    f1_w = f1_score(y_te, y_pred, average="weighted", zero_division=0)
+    cm     = confusion_matrix(y_te, y_pred, labels=CLASSES).tolist()
+    f1_w   = f1_score(y_te, y_pred, average="weighted", zero_division=0)
 
-    print(f"\n{'='*55}")
+    print(f"\n{'='*60}")
     print(f"  {name}")
-    print(f"{'='*55}")
+    print(f"{'='*60}")
     print(f"  Accuracy:          {acc:.4f}")
     print(f"  F1 (weighted):     {f1_w:.4f}")
     print(f"\nClassification Report:")
@@ -87,26 +90,36 @@ def evaluate(name: str, pipeline: Pipeline, X_te, y_te) -> dict:
         print(f"  {row}")
 
     return {
-        "model": name,
-        "accuracy": round(acc, 4),
-        "f1_weighted": round(f1_w, 4),
-        "classification_report": report,
-        "confusion_matrix": {"labels": CLASSES, "matrix": cm},
+        "model":                   name,
+        "accuracy":                round(acc, 4),
+        "f1_weighted":             round(f1_w, 4),
+        "classification_report":   report,
+        "confusion_matrix":        {"labels": CLASSES, "matrix": cm},
     }
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Train ML skill gap classifiers")
-    ap.add_argument("--input",  required=True,  help="Path to training CSV")
-    ap.add_argument("--output", default="ml/models/skill_gap_model.joblib",
+    ap = argparse.ArgumentParser(description="Train ML skill gap classifiers (v2)")
+    ap.add_argument("--input",     required=True,  help="Path to training CSV")
+    ap.add_argument("--output",    default="ml/models/skill_gap_model.joblib",
                     help="Output path for best model (.joblib)")
     ap.add_argument("--test-size", type=float, default=0.2)
-    ap.add_argument("--seed",  type=int, default=42)
+    ap.add_argument("--seed",      type=int,   default=42)
     args = ap.parse_args()
 
-    # ── Load data ──────────────────────────────────────────────────────────
+    # ── Load data ──────────────────────────────────────────────────────────────
     print(f"Loading dataset: {args.input}")
     df = pd.read_csv(args.input)
+
+    # Handle datasets generated without gap_percent (backward compat)
+    if "gap_percent" not in df.columns:
+        print("  [INFO] gap_percent column not found — computing from current/required...")
+        df["gap_percent"] = df.apply(
+            lambda r: max(0, r["required_proficiency"] - r["current_proficiency"])
+                      / r["required_proficiency"] * 100
+            if r["required_proficiency"] > 0 else 0.0,
+            axis=1
+        ).round(2)
 
     missing = [c for c in NUMERIC_FEATURES + CATEGORICAL_FEATURES + [TARGET]
                if c not in df.columns]
@@ -120,31 +133,36 @@ def main():
     X = df[NUMERIC_FEATURES + CATEGORICAL_FEATURES]
     y = df[TARGET]
 
-    # ── Train/test split ───────────────────────────────────────────────────
+    # ── Train/test split ──────────────────────────────────────────────────────
     X_tr, X_te, y_tr, y_te = train_test_split(
         X, y, test_size=args.test_size, random_state=args.seed, stratify=y
     )
     print(f"\nTrain: {len(X_tr)} rows | Test: {len(X_te)} rows")
 
-    # ── Candidate models ───────────────────────────────────────────────────
+    # ── Candidate models ──────────────────────────────────────────────────────
     candidates = {
         "Logistic Regression": build_pipeline(
-            LogisticRegression(max_iter=1000, class_weight="balanced",
-                               random_state=args.seed)
+            LogisticRegression(max_iter=2000, class_weight="balanced",
+                               C=1.0, random_state=args.seed)
         ),
         "Decision Tree": build_pipeline(
-            DecisionTreeClassifier(max_depth=8, class_weight="balanced",
+            DecisionTreeClassifier(max_depth=10, class_weight="balanced",
                                    random_state=args.seed)
         ),
         "Random Forest": build_pipeline(
-            RandomForestClassifier(n_estimators=200, max_depth=12,
+            RandomForestClassifier(n_estimators=300, max_depth=15,
                                    class_weight="balanced", n_jobs=-1,
                                    random_state=args.seed)
         ),
+        "Gradient Boosting": build_pipeline(
+            GradientBoostingClassifier(n_estimators=200, max_depth=5,
+                                       learning_rate=0.1, subsample=0.8,
+                                       random_state=args.seed)
+        ),
     }
 
-    # ── Train and evaluate all models ──────────────────────────────────────
-    metrics_all = []
+    # ── Train and evaluate all models ─────────────────────────────────────────
+    metrics_all      = []
     trained_pipelines = {}
 
     for name, pipeline in candidates.items():
@@ -152,36 +170,41 @@ def main():
         pipeline.fit(X_tr, y_tr)
         trained_pipelines[name] = pipeline
 
-        # 5-fold CV for robustness check
+        # 5-fold Stratified CV for robustness
         cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=args.seed)
         cv_scores = cross_val_score(pipeline, X_tr, y_tr, cv=cv,
-                                    scoring="f1_weighted")
-        print(f"  5-Fold CV F1 (weighted): {cv_scores.mean():.4f} ± {cv_scores.std():.4f}")
+                                    scoring="f1_weighted", n_jobs=-1)
+        print(f"  5-Fold CV F1 (weighted): "
+              f"{cv_scores.mean():.4f} ± {cv_scores.std():.4f}")
 
         m = evaluate(name, pipeline, X_te, y_te)
         m["cv_f1_mean"] = round(float(cv_scores.mean()), 4)
         m["cv_f1_std"]  = round(float(cv_scores.std()),  4)
         metrics_all.append(m)
 
-    # ── Select best model ──────────────────────────────────────────────────
-    best = max(metrics_all, key=lambda x: x["f1_weighted"])
+    # ── Select best model ──────────────────────────────────────────────────────
+    best          = max(metrics_all, key=lambda x: x["f1_weighted"])
     best_pipeline = trained_pipelines[best["model"]]
-    print(f"\n✓ Best model: {best['model']} (F1 weighted = {best['f1_weighted']:.4f})")
+    print(f"\n✓ Best model: {best['model']} "
+          f"(F1 weighted = {best['f1_weighted']:.4f})")
 
-    # ── Save model ─────────────────────────────────────────────────────────
+    # ── Save model ─────────────────────────────────────────────────────────────
     out_path = Path(args.output)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(best_pipeline, str(out_path))
     print(f"✓ Model saved → {out_path}")
 
-    # ── Save metrics report ─────────────────────────────────────────────────
+    # ── Save metrics report ────────────────────────────────────────────────────
     metrics_path = out_path.parent / "metrics_report.json"
     report = {
-        "dataset": args.input,
-        "n_train": len(X_tr),
-        "n_test":  len(X_te),
-        "best_model": best["model"],
-        "models": metrics_all,
+        "dataset":        args.input,
+        "n_train":        len(X_tr),
+        "n_test":         len(X_te),
+        "features":       NUMERIC_FEATURES + CATEGORICAL_FEATURES,
+        "best_model":     best["model"],
+        "best_f1":        best["f1_weighted"],
+        "best_accuracy":  best["accuracy"],
+        "models":         metrics_all,
     }
     with open(str(metrics_path), "w") as mf:
         json.dump(report, mf, indent=2)

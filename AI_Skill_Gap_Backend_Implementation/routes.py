@@ -3,6 +3,7 @@ routes.py — Complete REST API blueprint for the AI Skill Gap System.
 
 Endpoints (PRD Section 17 + Guide Section 15):
   GET  /api/health
+  GET  /api/skills                          — Skill catalogue with search
   POST /api/students                        — Create student
   GET  /api/students/<id>                   — Get student + skills
   PUT  /api/students/<id>                   — Update student profile
@@ -19,6 +20,12 @@ Endpoints (PRD Section 17 + Guide Section 15):
   POST /api/students/<id>/progress          — Record learning progress
   POST /api/students/<id>/reassessment      — Submit reassessment + recalculate
   GET  /api/students/<id>/dashboard         — Full dashboard summary
+  --- NEW ---
+  GET  /api/students/<id>/role-match        — Job role match score (all roles or one)
+  POST /api/students/<id>/learning-path     — Generate personalized learning path
+  GET  /api/students/<id>/learning-path     — Retrieve saved learning path
+  GET  /api/students/<id>/analytics         — Skill progress analytics & trends
+  GET  /api/cache/stats                     — Cache statistics (debug)
 """
 import logging
 from pathlib import Path
@@ -38,11 +45,16 @@ from services.resume_parser import (
     candidate_skills, extract_certifications_text,
     extract_projects_text, extract_text,
 )
+import cache as _cache
+from services.role_matcher import compute_role_match
+from services.learning_path import generate_learning_path, get_learning_path
+from services.analytics import compute_analytics
 
 log = logging.getLogger(__name__)
 api = Blueprint("api", __name__)
 
 ALLOWED_EXTENSIONS = {".pdf", ".docx"}
+VALID_PROGRESS_STATUSES = ("not_started", "in_progress", "completed")
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -52,6 +64,42 @@ ALLOWED_EXTENSIONS = {".pdf", ".docx"}
 def health():
     """Backend health check."""
     return jsonify({"status": "ok"})
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Skills catalogue
+# ──────────────────────────────────────────────────────────────────────────────
+@api.get("/skills")
+def list_skills():
+    """
+    List all canonical skills.
+    Optional query params:
+      ?search=<text>     — filter by name (case-insensitive substring)
+      ?category=<cat>    — filter by exact category
+      ?limit=<int>       — max results (default 100, max 500)
+    """
+    search   = (request.args.get("search") or "").strip()
+    category = (request.args.get("category") or "").strip()
+    limit    = min(int(request.args.get("limit", 100)), 500)
+
+    q = Skill.query
+    if search:
+        q = q.filter(Skill.name.ilike(f"%{search}%"))
+    if category:
+        q = q.filter(Skill.category == category)
+    skills = q.order_by(Skill.name).limit(limit).all()
+
+    # Also return distinct categories for UI dropdowns
+    categories = [
+        r[0] for r in
+        db.session.query(Skill.category).distinct().order_by(Skill.category).all()
+        if r[0]
+    ]
+    return jsonify({
+        "total": len(skills),
+        "categories": categories,
+        "skills": [s.to_dict() for s in skills],
+    })
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -76,6 +124,14 @@ def create_student():
     db.session.add(s)
     db.session.commit()
     return jsonify({"id": s.id, "name": s.name}), 201
+
+
+@api.get("/students")
+def list_students():
+    """List recent students (up to limit, default 50)."""
+    limit = min(int(request.args.get("limit", 50)), 100)
+    students = Student.query.order_by(Student.id.desc()).limit(limit).all()
+    return jsonify([s.to_dict() for s in students])
 
 
 @api.get("/students/<int:sid>")
@@ -132,8 +188,17 @@ def add_skill(sid):
 
     d = request.get_json() or {}
     skill_id = d.get("skill_id")
+    if not skill_id and d.get("skill_name"):
+        sk_name = d.get("skill_name").strip()
+        sk = Skill.query.filter(db.func.lower(Skill.name) == sk_name.lower()).first()
+        if not sk:
+            sk = Skill(name=sk_name, category="General", source="MANUAL")
+            db.session.add(sk)
+            db.session.flush()
+        skill_id = sk.id
+
     if not skill_id or not db.session.get(Skill, skill_id):
-        return jsonify({"error": "skill_id is required and must exist"}), 400
+        return jsonify({"error": "skill_id or valid skill_name is required"}), 400
 
     try:
         prof = float(d.get("proficiency", 0))
@@ -164,8 +229,17 @@ def assessment(sid):
     """FR-009 — Submit assessment result; derives and persists proficiency."""
     d = request.get_json() or {}
     skill_id = d.get("skill_id")
+    if not skill_id and d.get("skill_name"):
+        sk_name = d.get("skill_name").strip()
+        sk = Skill.query.filter(db.func.lower(Skill.name) == sk_name.lower()).first()
+        if not sk:
+            sk = Skill(name=sk_name, category="General", source="MANUAL")
+            db.session.add(sk)
+            db.session.flush()
+        skill_id = sk.id
+
     if not skill_id or not db.session.get(Skill, skill_id):
-        return jsonify({"error": "skill_id is required and must exist"}), 400
+        return jsonify({"error": "skill_id or valid skill_name is required"}), 400
 
     try:
         score   = float(d.get("score", 0))
@@ -246,9 +320,9 @@ def upload_resume(sid):
     if not db.session.get(Student, sid):
         return jsonify({"error": "student not found"}), 404
 
-    f = request.files.get("file")
+    f = request.files.get("file") or request.files.get("resume")
     if not f:
-        return jsonify({"error": "file is required"}), 400
+        return jsonify({"error": "file is required (form field 'file' or 'resume')"}), 400
 
     ext = Path(f.filename or "").suffix.lower()
     if ext not in ALLOWED_EXTENSIONS:
@@ -302,29 +376,72 @@ def list_roles():
 
 @api.get("/roles/<int:rid>/skills")
 def role_skills(rid):
-    """Return the required skills (with levels and importance) for a role."""
+    """
+    Return the required skills for a role with dual-taxonomy breakdown.
+
+    Query params:
+        category: 'technical' | 'knowledge' | 'activity' | 'all'  (default: 'all')
+            - 'technical'  → ESCO hard skills only
+            - 'knowledge'  → O*NET Knowledge competencies only
+            - 'activity'   → O*NET Work Activity competencies only
+            - 'all'        → All skills (ESCO + O*NET)
+    """
     role = db.session.get(JobRole, rid)
     if not role:
         return jsonify({"error": "role not found"}), 404
+
+    category_filter = request.args.get("category", "all").lower()
+
     rows = (
         db.session.query(JobSkill, Skill)
         .join(Skill, Skill.id == JobSkill.skill_id)
         .filter(JobSkill.job_role_id == rid)
         .all()
     )
+
+    # Apply category filter
+    filtered_rows = []
+    for js, sk in rows:
+        cat = (sk.category or "").lower()
+        if category_filter == "technical" and "o*net" in cat:
+            continue
+        elif category_filter == "knowledge" and cat != "o*net knowledge":
+            continue
+        elif category_filter == "activity" and cat != "o*net work activity":
+            continue
+        filtered_rows.append((js, sk))
+
+    # Count by taxonomy
+    total_technical = sum(1 for _, sk in rows if "o*net" not in (sk.category or "").lower())
+    total_knowledge  = sum(1 for _, sk in rows if (sk.category or "").lower() == "o*net knowledge")
+    total_activity   = sum(1 for _, sk in rows if (sk.category or "").lower() == "o*net work activity")
+
     return jsonify({
         "role": role.to_dict(),
+        # Convenience flat fields (backward-compatible)
+        "role_id":   role.id,
+        "role_name": role.name,
+        "onet_code": role.onet_code,
+        "esco_uri":  role.source_identifier,
+        # Taxonomy breakdown counts
+        "technical_skills_count":  total_technical,
+        "onet_competencies_count": total_knowledge + total_activity,
+        "total_skills":            len(rows),
+        "filtered_count":          len(filtered_rows),
+        "category_filter":         category_filter,
+        # Skills list (filtered)
         "required_skills": [
             {
-                "skill_id":      sk.id,
-                "skill":         sk.name,
-                "category":      sk.category,
+                "skill_id":       sk.id,
+                "skill":          sk.name,
+                "category":       sk.category,
+                "source":         sk.source,
                 "required_level": js.required_level,
-                "importance":    js.importance,
-                "relation_type": js.relation_type,
-                "source":        js.source,
+                "importance":     js.importance,
+                "relation_type":  js.relation_type,
+                "source":         js.source,
             }
-            for js, sk in rows
+            for js, sk in filtered_rows
         ],
     })
 
@@ -337,9 +454,9 @@ def gap_analyze():
     """FR-060 — Run gap analysis for a student against a target role."""
     d = request.get_json() or {}
     student_id  = d.get("student_id")
-    job_role_id = d.get("job_role_id")
+    job_role_id = d.get("job_role_id") or d.get("role_id")
     if not student_id or not job_role_id:
-        return jsonify({"error": "student_id and job_role_id are required"}), 400
+        return jsonify({"error": "student_id and job_role_id (or role_id) are required"}), 400
     if not db.session.get(Student, student_id):
         return jsonify({"error": "student not found"}), 404
     if not db.session.get(JobRole, job_role_id):
@@ -351,18 +468,16 @@ def gap_analyze():
 
 @api.get("/students/<int:sid>/gaps")
 def get_gaps(sid):
-    """Retrieve most recent gap analysis for a student (requires job_role_id param)."""
-    role_id = request.args.get("job_role_id", type=int)
-    if not role_id:
-        return jsonify({"error": "job_role_id query parameter is required"}), 400
-
-    rows = (
+    """Retrieve most recent gap analysis for a student."""
+    role_id = request.args.get("job_role_id", type=int) or request.args.get("role_id", type=int)
+    query = (
         db.session.query(SkillGap, Skill)
         .join(Skill, Skill.id == SkillGap.skill_id)
-        .filter(SkillGap.student_id == sid, SkillGap.job_role_id == role_id)
-        .order_by(SkillGap.priority_score.desc())
-        .all()
+        .filter(SkillGap.student_id == sid)
     )
+    if role_id:
+        query = query.filter(SkillGap.job_role_id == role_id)
+    rows = query.order_by(SkillGap.priority_score.desc()).all()
     return jsonify([gap.to_dict(skill_name=skill.name) for gap, skill in rows])
 
 
@@ -383,24 +498,33 @@ def get_recommendations(sid):
 def record_progress(sid):
     """FR-080 — Record a learning progress update."""
     d = request.get_json() or {}
+    course_id = d.get("course_id")
     title = (d.get("title") or "").strip()
+    if not title and course_id:
+        c = db.session.get(Course, course_id)
+        if c:
+            title = c.title
     if not title:
-        return jsonify({"error": "title is required"}), 400
+        title = f"Course #{course_id}" if course_id else "Learning Module"
 
     try:
-        completion = float(d.get("completion", 0))
+        completion = float(d.get("completion") if d.get("completion") is not None else d.get("completion_pct", 0))
     except (TypeError, ValueError):
         return jsonify({"error": "completion must be a number"}), 400
     if not 0 <= completion <= 100:
         return jsonify({"error": "completion must be between 0 and 100"}), 400
 
-    status = d.get("status", "not_started")
-    if status not in ("not_started", "in_progress", "completed"):
-        return jsonify({"error": "status must be not_started|in_progress|completed"}), 400
+    status = (d.get("status") or "").lower().strip()
+    valid_statuses = ("not_started", "in_progress", "completed")
+    if d.get("status") is not None and status not in valid_statuses:
+        return jsonify({"error": f"status must be one of: {', '.join(valid_statuses)}"}), 400
+    if not status:
+        # Auto-derive status from completion if not provided
+        status = "completed" if completion >= 100 else ("in_progress" if completion > 0 else "not_started")
 
     p = LearningProgress(
         student_id=sid,
-        course_id=d.get("course_id"),
+        course_id=course_id,
         skill_id=d.get("skill_id"),
         title=title, status=status, completion=completion,
     )
@@ -421,13 +545,27 @@ def reassessment(sid):
     """
     d = request.get_json() or {}
     skill_id = d.get("skill_id")
+    if not skill_id and d.get("skill_name"):
+        sk_name = d.get("skill_name").strip()
+        sk = Skill.query.filter(db.func.lower(Skill.name) == sk_name.lower()).first()
+        if not sk:
+            sk = Skill(name=sk_name, category="General", source="MANUAL")
+            db.session.add(sk)
+            db.session.flush()
+        skill_id = sk.id
+
     if not skill_id or not db.session.get(Skill, skill_id):
-        return jsonify({"error": "skill_id is required and must exist"}), 400
+        return jsonify({"error": "skill_id or valid skill_name is required"}), 400
 
     try:
-        new_level = float(d.get("new_level", 0))
-    except (TypeError, ValueError):
-        return jsonify({"error": "new_level must be a number"}), 400
+        if "new_level" in d:
+            new_level = float(d["new_level"])
+        elif "score" in d and "max_score" in d:
+            new_level = round(float(d["score"]) / float(d["max_score"]) * 100, 2)
+        else:
+            new_level = float(d.get("new_level", 0))
+    except (TypeError, ValueError, ZeroDivisionError):
+        return jsonify({"error": "new_level or score/max_score must be numbers"}), 400
     if not 0 <= new_level <= 100:
         return jsonify({"error": "new_level must be between 0 and 100"}), 400
 
@@ -593,3 +731,144 @@ def dashboard(sid):
             for ra, skill in history
         ],
     })
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# 📊 Job Role Match Score
+# ──────────────────────────────────────────────────────────────────────────────
+@api.get("/students/<int:sid>/role-match")
+def role_match(sid):
+    """
+    Compute how well a student matches each job role.
+
+    Optional query param:
+        ?job_role_id=<int>  — limit to one specific role
+
+    Returns a list sorted by match_score descending.
+    Each entry includes:
+        match_score     (0–100),  ready (bool),
+        by_category     (per-skill-category percentages),
+        top_missing     (top 5 skills not yet acquired),
+        verdict         (human-readable label)
+    """
+    s = db.session.get(Student, sid)
+    if not s:
+        return jsonify({"error": "student not found"}), 404
+
+    job_role_id = request.args.get("job_role_id", type=int)
+
+    # Check cache
+    cached = _cache.get_match(sid)
+    if cached is not None and not job_role_id:
+        return jsonify({"matches": cached, "cached": True})
+
+    matches = compute_role_match(sid, job_role_id)
+
+    if not job_role_id:          # Only cache the all-roles result
+        _cache.set_match(sid, matches)
+
+    return jsonify({"student_id": sid, "matches": matches})
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# 🗺️ Personalized Learning Path
+# ──────────────────────────────────────────────────────────────────────────────
+@api.post("/students/<int:sid>/learning-path")
+def create_learning_path(sid):
+    """
+    Generate (or regenerate) a personalized learning path.
+
+    Required query param:
+        ?job_role_id=<int>
+
+    The path is grouped into phases by gap severity:
+        Phase 1 — HIGH severity (critical gaps)
+        Phase 2 — MEDIUM severity (core gaps)
+        Phase 3 — LOW severity (polish)
+
+    Requires gap analysis to have been run first.
+    """
+    s = db.session.get(Student, sid)
+    if not s:
+        return jsonify({"error": "student not found"}), 404
+
+    job_role_id = request.args.get("job_role_id", type=int)
+    if not job_role_id:
+        return jsonify({"error": "job_role_id query param is required"}), 400
+
+    if not db.session.get(JobRole, job_role_id):
+        return jsonify({"error": "job role not found"}), 404
+
+    result = generate_learning_path(sid, job_role_id)
+    if "error" in result:
+        return jsonify(result), 400
+
+    # Invalidate match cache (path generation changes context)
+    _cache.invalidate_student(sid)
+
+    return jsonify(result), 201
+
+
+@api.get("/students/<int:sid>/learning-path")
+def get_student_learning_path(sid):
+    """
+    Retrieve the most recently generated learning path for a student.
+
+    Required query param:
+        ?job_role_id=<int>
+    """
+    s = db.session.get(Student, sid)
+    if not s:
+        return jsonify({"error": "student not found"}), 404
+
+    job_role_id = request.args.get("job_role_id", type=int)
+    if not job_role_id:
+        return jsonify({"error": "job_role_id query param is required"}), 400
+
+    # Check cache
+    cached = _cache.get_path(sid, job_role_id)
+    if cached is not None:
+        return jsonify({**cached, "cached": True})
+
+    path = get_learning_path(sid, job_role_id)
+    if not path:
+        return jsonify({
+            "message": "No learning path found. Run POST /students/<id>/learning-path first."
+        }), 404
+
+    _cache.set_path(sid, job_role_id, path)
+    return jsonify(path)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# 📈 Skill Progress Analytics
+# ──────────────────────────────────────────────────────────────────────────────
+@api.get("/students/<int:sid>/analytics")
+def student_analytics(sid):
+    """
+    Skill progress analytics for a student.
+
+    Returns:
+        summary:              total skills, avg proficiency, reassessment stats
+        top_improved_skills:  top 5 most-improved skills with gain amounts
+        regressed_skills:     skills that went down (regression detection)
+        skill_trends:         time-series {skill_name: [{date, level}]}
+        assessment_history:   all assessment scores with dates
+        gap_severity_counts:  {HIGH: N, MEDIUM: N, LOW: N}
+        best_fit_role:        role with fewest HIGH severity gaps
+    """
+    s = db.session.get(Student, sid)
+    if not s:
+        return jsonify({"error": "student not found"}), 404
+
+    analytics = compute_analytics(sid)
+    return jsonify({"student_id": sid, **analytics})
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# ⚡ Cache Statistics (debug)
+# ──────────────────────────────────────────────────────────────────────────────
+@api.get("/cache/stats")
+def cache_stats():
+    """Return current in-memory cache sizes and TTLs. Useful for debugging."""
+    return jsonify(_cache.cache_stats())
