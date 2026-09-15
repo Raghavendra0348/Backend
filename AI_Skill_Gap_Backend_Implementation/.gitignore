@@ -3,6 +3,23 @@ __pycache__/
 .env
 *.pyc
 .pytest_cache/
-models/*.joblib
+
+# Trained ML model (large binary — regenerate with flask train-model)
+ml/models/*.joblib
+
+# SQLite dev database (use DATABASE_URL env var for production MySQL)
+instance/*.db
+instance/
+
+# User-uploaded resume files
 storage/uploads/*
 !storage/uploads/.gitkeep
+
+# Generated ML training dataset (regenerate with ml/generate_dataset.py)
+ml/skill_gap_dataset.csv
+
+# OS / editor artifacts
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
