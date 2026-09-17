@@ -14,10 +14,22 @@ import pytest
 from pathlib import Path
 
 # ── O*NET file presence check ─────────────────────────────────────────────────
-_DATASET_DIR = Path(__file__).parents[4] / "Dataset"
-ONET_KNOWLEDGE_PATH   = _DATASET_DIR / "Knowledge (1).xlsx"
-ONET_ACTIVITIES_PATH  = _DATASET_DIR / "Work Activities (1).xlsx"
-ONET_OCCUPATIONS_PATH = _DATASET_DIR / "Occupation Data (1).xlsx"
+_DATASET_DIR = Path(__file__).resolve().parents[2] / "Dataset"
+ONET_KNOWLEDGE_PATH = (
+    _DATASET_DIR / "onet" / "Knowledge.xlsx"
+    if (_DATASET_DIR / "onet" / "Knowledge.xlsx").exists()
+    else _DATASET_DIR / "Knowledge (1).xlsx"
+)
+ONET_ACTIVITIES_PATH = (
+    _DATASET_DIR / "onet" / "Work_Activities.xlsx"
+    if (_DATASET_DIR / "onet" / "Work_Activities.xlsx").exists()
+    else _DATASET_DIR / "Work Activities (1).xlsx"
+)
+ONET_OCCUPATIONS_PATH = (
+    _DATASET_DIR / "onet" / "Occupation_Data.xlsx"
+    if (_DATASET_DIR / "onet" / "Occupation_Data.xlsx").exists()
+    else _DATASET_DIR / "Occupation Data (1).xlsx"
+)
 ONET_FILES_EXIST = (
     ONET_KNOWLEDGE_PATH.exists()
     and ONET_ACTIVITIES_PATH.exists()

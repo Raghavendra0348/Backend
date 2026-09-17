@@ -60,7 +60,9 @@ def compute_role_match(student_id: int, job_role_id: int | None = None) -> list[
         for js, skill in js_rows:
             req   = float(js.required_level) if js.required_level else 50.0
             imp   = float(js.importance)     if js.importance     else 1.0
-            curr  = student_skills.get(skill.id, 0.0)
+            from services.skill_normalizer import get_equivalent_skill_ids
+            eq_ids = get_equivalent_skill_ids(skill.id)
+            curr = max([student_skills.get(eid, 0.0) for eid in eq_ids] or [0.0])
 
             achieved = min(curr, req) * imp
             required = req * imp

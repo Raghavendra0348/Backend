@@ -90,6 +90,13 @@ AI_Skill_Gap_Backend_Implementation/
 ├── pytest.ini
 ├── requirements.txt
 └── PROJECT_COMPLETION_STATUS.md
+
+Dataset/ (Parent Dataset Repository — Clean & Structured)
+├── README.md               # Dataset catalog and schemas
+├── onet/                   # O*NET Knowledge, Occupation Data & Work Activities (XLSX)
+├── coursera/               # Coursera course catalogue (Coursera.csv & Coursera.zip)
+├── students/               # Student profiles (Indian Names) & academic risk datasets
+└── esco/                   # Official ESCO v1.2.1 classification CSVs & archive
 ```
 
 ---

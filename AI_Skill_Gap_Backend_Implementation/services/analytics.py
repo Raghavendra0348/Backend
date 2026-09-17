@@ -139,6 +139,60 @@ def compute_analytics(student_id: int) -> dict:
         if total_improvements > 0 else 0.0
     )
 
+    # ── 8. Learning path progress ───────────────────────────────────────────────
+    from models import LearningPath, LearningPathStep, Course
+    path_progress = []
+    paths = LearningPath.query.filter_by(student_id=student_id).all()
+    for lp in paths:
+        role = db.session.get(JobRole, lp.job_role_id)
+        steps = (
+            db.session.query(LearningPathStep, Course)
+            .join(Course, Course.id == LearningPathStep.course_id)
+            .filter(LearningPathStep.path_id == lp.id)
+            .all()
+        )
+        total_steps = len(steps)
+        # Check if any LearningProgress record exists for each course
+        from models import LearningProgress
+        completed_steps = 0
+        for step, course in steps:
+            prog = LearningProgress.query.filter_by(
+                student_id=student_id, course_id=course.id, status="completed"
+            ).first()
+            if prog:
+                completed_steps += 1
+
+        path_progress.append({
+            "role": role.name if role else "Unknown",
+            "role_id": lp.job_role_id,
+            "total_steps": total_steps,
+            "completed_steps": completed_steps,
+            "completion_pct": round(completed_steps / total_steps * 100, 1) if total_steps > 0 else 0,
+            "total_hours": lp.total_hours,
+            "remaining_hours": round(lp.total_hours * (1 - completed_steps / total_steps), 0) if total_steps > 0 else lp.total_hours,
+            "match_score": lp.match_score_at_generation,
+        })
+
+    # ── 9. Skill category breakdown ───────────────────────────────────────────
+    from models import Skill as SkillModel
+    category_stats: dict[str, dict] = {}
+    for ss in current_skills:
+        sk = db.session.get(SkillModel, ss.skill_id)
+        cat = (sk.category if sk else "General") or "General"
+        if cat not in category_stats:
+            category_stats[cat] = {"count": 0, "total_prof": 0.0}
+        category_stats[cat]["count"] += 1
+        category_stats[cat]["total_prof"] += float(ss.proficiency)
+
+    skill_categories = [
+        {
+            "category": cat,
+            "skill_count": data["count"],
+            "avg_proficiency": round(data["total_prof"] / data["count"], 1),
+        }
+        for cat, data in sorted(category_stats.items())
+    ]
+
     return {
         "summary": {
             "total_skills":          len(current_skills),
@@ -156,4 +210,6 @@ def compute_analytics(student_id: int) -> dict:
         "assessment_history":    assessment_scores,
         "gap_severity_counts":   gap_counts,
         "best_fit_role":         best_role,
+        "learning_path_progress": path_progress,
+        "skill_categories":      skill_categories,
     }

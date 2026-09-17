@@ -27,33 +27,360 @@ from models import (
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# IT Occupation URIs to ingest from ESCO (carefully selected for IT students)
+# ─────────────────────────────────────────────────────────────────────────────
+# Definitive 15 IT Roles × 15 Core Skills Taxonomy (Dual Taxonomy: ESCO + O*NET)
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Cross-walk: ESCO occupation name → O*NET-SOC code (PRD Section: Dual Taxonomy)
-ONET_IT_MAPPING: dict[str, str] = {
-    "software developer":     "15-1252.00",
-    "data scientist":         "15-2051.00",
-    "web developer":          "15-1254.00",
-    "database administrator": "15-1242.00",
-    "ict system analyst":     "15-1211.00",
-    "cloud devops engineer":  "15-1241.00",  # Primary; also 15-1244.00
+TAXONOMY_15_ROLES = {
+    "Web Developer": {
+        "esco_uri": "http://data.europa.eu/esco/occupation/9d44fa85-9f5b-426b-80df-596908e2f89f",
+        "isco_group": "2513",
+        "onet_code": "15-1254.00",
+        "description": "Web developers build, format, design, and maintain user-facing websites, web applications, and web services using front-end and back-end web standards.",
+        "essential_skills": [
+            "HTML5", "CSS3", "JavaScript", "TypeScript", "React",
+            "Node.js", "REST APIs", "SQL", "Git", "Responsive Web Design"
+        ],
+        "optional_skills": [
+            "Web Accessibility", "Web Security / OWASP", "Browser DevTools",
+            "Web Performance Optimization", "Web Testing"
+        ],
+        "skills": [
+            "HTML5", "CSS3", "JavaScript", "TypeScript", "React",
+            "Node.js", "REST APIs", "SQL", "Git", "Responsive Web Design",
+            "Web Accessibility", "Web Security / OWASP", "Browser DevTools",
+            "Web Performance Optimization", "Web Testing"
+        ]
+    },
+    "Software Developer": {
+        "esco_uri": "http://data.europa.eu/esco/occupation/f2b15a0e-e65a-438a-affb-29b9d50b77d1",
+        "isco_group": "2512",
+        "onet_code": "15-1252.00",
+        "description": "Software developers analyze requirements, design software systems, write high-quality code, test programs, and maintain applications.",
+        "essential_skills": [
+            "Python", "Java", "Data Structures & Algorithms", "SQL", "Git",
+            "REST API Development", "Docker", "Linux / Shell Scripting",
+            "Unit Testing", "Software Architecture"
+        ],
+        "optional_skills": [
+            "C++ / OOP", "Design Patterns", "CI/CD", "Agile / Scrum", "Debugging & Profiling"
+        ],
+        "skills": [
+            "Python", "Java", "C++ / OOP", "Data Structures & Algorithms", "SQL",
+            "Git", "REST API Development", "Docker", "Linux / Shell Scripting",
+            "Unit Testing", "Software Architecture", "Design Patterns", "CI/CD",
+            "Agile / Scrum", "Debugging & Profiling"
+        ]
+    },
+    "Data Scientist": {
+        "esco_uri": "http://data.europa.eu/esco/occupation/2079755f-d809-49e6-8037-4de6180e54c0",
+        "isco_group": "2511",
+        "onet_code": "15-2051.00",
+        "description": "Data scientists find and interpret complex data patterns, build statistical models, design machine learning algorithms, and derive predictive insights.",
+        "essential_skills": [
+            "Python", "SQL", "Pandas", "NumPy", "Scikit-learn",
+            "Statistics", "Probability", "Data Cleaning", "Feature Engineering",
+            "Machine Learning"
+        ],
+        "optional_skills": [
+            "Model Evaluation", "Data Visualization", "NLP Fundamentals",
+            "Apache Spark", "MLOps Fundamentals"
+        ],
+        "skills": [
+            "Python", "SQL", "Pandas", "NumPy", "Scikit-learn",
+            "Statistics", "Probability", "Data Cleaning", "Feature Engineering",
+            "Machine Learning", "Model Evaluation", "Data Visualization",
+            "NLP Fundamentals", "Apache Spark", "MLOps Fundamentals"
+        ]
+    },
+    "Cloud / DevOps Engineer": {
+        "esco_uri": "http://data.europa.eu/esco/occupation/1a4739eb-e36b-4e0e-88ad-6f29630cff3b",
+        "isco_group": "2512",
+        "onet_code": "15-1241.00",
+        "description": "Cloud DevOps engineers bridge software development and operations by automating CI/CD pipelines, provisioning infrastructure as code, and managing cloud environments.",
+        "essential_skills": [
+            "Linux Administration", "Bash Scripting", "Docker", "Kubernetes",
+            "AWS / Azure / GCP", "Terraform", "Infrastructure as Code", "CI/CD",
+            "Git", "Cloud IAM"
+        ],
+        "optional_skills": [
+            "Python Automation", "TCP/IP Networking", "Monitoring & Observability",
+            "Logging", "SRE Fundamentals"
+        ],
+        "skills": [
+            "Linux Administration", "Bash Scripting", "Docker", "Kubernetes",
+            "AWS / Azure / GCP", "Terraform", "Infrastructure as Code", "CI/CD",
+            "Git", "Python Automation", "TCP/IP Networking", "Cloud IAM",
+            "Monitoring & Observability", "Logging", "SRE Fundamentals"
+        ]
+    },
+    "Database Administrator": {
+        "esco_uri": "http://data.europa.eu/esco/occupation/8e040a43-855f-4a0b-8d07-73bcf3d6a6ef",
+        "isco_group": "2521",
+        "onet_code": "15-1242.00",
+        "description": "Database administrators design, deploy, maintain, optimize, secure, and troubleshoot enterprise relational and distributed database systems.",
+        "essential_skills": [
+            "SQL", "PostgreSQL Administration", "MySQL Administration",
+            "Database Schema Design", "Database Normalization", "Query Optimization",
+            "Indexing", "Backup & Recovery", "Database Security", "Linux Administration"
+        ],
+        "optional_skills": [
+            "Database Performance Monitoring", "Disaster Recovery", "Replication",
+            "High Availability", "Database Migration"
+        ],
+        "skills": [
+            "SQL", "PostgreSQL Administration", "MySQL Administration",
+            "Database Schema Design", "Database Normalization", "Query Optimization",
+            "Indexing", "Database Performance Monitoring", "Backup & Recovery",
+            "Disaster Recovery", "Database Security", "Replication",
+            "High Availability", "Database Migration", "Linux Administration"
+        ]
+    },
+    "ICT System Analyst": {
+        "esco_uri": "http://data.europa.eu/esco/occupation/0e286591-2a6d-495e-9a2e-ffbaef0b9df2",
+        "isco_group": "2511",
+        "onet_code": "15-1211.00",
+        "description": "ICT system analysts specify, design, and evaluate technical solutions to satisfy business and organizational requirements.",
+        "essential_skills": [
+            "Requirements Engineering", "Requirements Analysis", "System Modeling",
+            "Business Process Modeling", "Gap Analysis", "SQL", "REST API Concepts",
+            "System Integration", "Agile / Scrum", "Technical Documentation"
+        ],
+        "optional_skills": [
+            "UML", "Software Architecture Analysis", "Functional Testing",
+            "User Acceptance Testing", "User Stories"
+        ],
+        "skills": [
+            "Requirements Engineering", "Requirements Analysis", "UML",
+            "System Modeling", "Business Process Modeling", "Gap Analysis",
+            "SQL", "REST API Concepts", "System Integration",
+            "Software Architecture Analysis", "Functional Testing",
+            "User Acceptance Testing", "Agile / Scrum", "User Stories",
+            "Technical Documentation"
+        ]
+    },
+    "Mobile Application Developer": {
+        "esco_uri": "http://data.europa.eu/esco/occupation/59da3142-2b21-4f18-b2ef-3759ad33eaad",
+        "isco_group": "2514",
+        "onet_code": "15-1255.00",
+        "description": "Mobile application developers architect, build, optimize, and publish native and cross-platform applications for iOS and Android devices.",
+        "essential_skills": [
+            "Kotlin", "Java / Android", "Swift / iOS", "React Native",
+            "REST API Integration", "JSON / API Communication", "SQLite",
+            "Mobile UI/UX", "Mobile State Management", "App Store / Google Play Deployment"
+        ],
+        "optional_skills": [
+            "Flutter", "Material Design", "Push Notifications",
+            "Mobile Security", "Mobile Testing"
+        ],
+        "skills": [
+            "Kotlin", "Java / Android", "Swift / iOS", "Flutter",
+            "React Native", "Mobile UI/UX", "Material Design",
+            "REST API Integration", "JSON / API Communication", "SQLite",
+            "Mobile State Management", "Push Notifications", "Mobile Security",
+            "Mobile Testing", "App Store / Google Play Deployment"
+        ]
+    },
+    "UI / Frontend Developer": {
+        "esco_uri": "http://data.europa.eu/esco/occupation/4c0c1694-b26a-4d22-b5e1-eb11f59235a9",
+        "isco_group": "2512",
+        "onet_code": "15-1255.00",
+        "description": "UI / Frontend developers translate UI/UX designs into accessible, performant, responsive, and interactive graphical web interfaces.",
+        "essential_skills": [
+            "HTML5", "CSS3", "JavaScript", "TypeScript", "React",
+            "Tailwind CSS / UI Libraries", "Responsive Design", "State Management",
+            "Design Systems", "Frontend Performance"
+        ],
+        "optional_skills": [
+            "Mobile-First Development", "WCAG Accessibility", "Figma-to-Code",
+            "Browser DevTools", "Web Testing"
+        ],
+        "skills": [
+            "HTML5", "CSS3", "JavaScript", "TypeScript", "React",
+            "Tailwind CSS / UI Libraries", "Responsive Design", "State Management",
+            "Design Systems", "Frontend Performance",
+            "Mobile-First Development", "WCAG Accessibility", "Figma-to-Code",
+            "Browser DevTools", "Web Testing"
+        ]
+    },
+    "Cybersecurity / Security Administrator": {
+        "esco_uri": "http://data.europa.eu/esco/occupation/e5658e39-e93d-4c3d-bd83-fba01f84faeb",
+        "isco_group": "2529",
+        "onet_code": "15-1212.00",
+        "description": "Cybersecurity administrators protect organizational networks, servers, and data systems from threats, vulnerabilities, and unauthorized access.",
+        "essential_skills": [
+            "Cybersecurity Fundamentals", "Network Security", "Firewalls", "VPN",
+            "Vulnerability Assessment", "Incident Response", "Threat Detection",
+            "Identity & Access Management", "Linux Security", "Cryptography"
+        ],
+        "optional_skills": [
+            "SIEM", "Security Log Analysis", "Windows Security",
+            "SSL/TLS", "Security Compliance"
+        ],
+        "skills": [
+            "Cybersecurity Fundamentals", "Network Security", "Firewalls", "VPN",
+            "Vulnerability Assessment", "Incident Response", "Threat Detection",
+            "SIEM", "Security Log Analysis", "Identity & Access Management",
+            "Linux Security", "Windows Security", "Cryptography", "SSL/TLS",
+            "Security Compliance"
+        ]
+    },
+    "Software QA / Test Engineer": {
+        "esco_uri": "http://data.europa.eu/esco/occupation/106f79e4-6264-45f1-9e7a-297435cd684b",
+        "isco_group": "2519",
+        "onet_code": "15-1253.00",
+        "description": "Software QA and test engineers design, automate, and execute testing strategies to ensure software functionality, reliability, and performance.",
+        "essential_skills": [
+            "Software Testing Fundamentals", "Test Case Design", "Test Planning",
+            "Manual Testing", "Functional Testing", "Regression Testing",
+            "API Testing", "Test Automation", "Unit Testing", "Bug Tracking / Jira"
+        ],
+        "optional_skills": [
+            "Integration Testing", "Selenium", "Playwright / Cypress",
+            "Performance Testing", "Load Testing"
+        ],
+        "skills": [
+            "Software Testing Fundamentals", "Test Case Design", "Test Planning",
+            "Manual Testing", "Functional Testing", "Regression Testing",
+            "Integration Testing", "API Testing", "Selenium",
+            "Playwright / Cypress", "Test Automation", "Unit Testing",
+            "Performance Testing", "Load Testing", "Bug Tracking / Jira"
+        ]
+    },
+    "Data Engineer": {
+        "esco_uri": "http://data.europa.eu/esco/occupation/2079755f-d809-49e6-8037-4de6180e54c0",
+        "isco_group": "2511",
+        "onet_code": "15-1243.00",
+        "description": "Data engineers build scalable data collection pipelines, transform and clean data streams, and maintain analytical data warehouses.",
+        "essential_skills": [
+            "Python", "SQL", "Data Modeling", "ETL / ELT", "Apache Spark",
+            "Data Pipelines", "Apache Airflow", "Data Warehousing",
+            "PostgreSQL / MySQL", "Docker"
+        ],
+        "optional_skills": [
+            "Apache Kafka", "Data Lakes", "NoSQL Databases",
+            "Cloud Data Services", "Data Quality"
+        ],
+        "skills": [
+            "Python", "SQL", "Data Modeling", "ETL / ELT", "Apache Spark",
+            "Apache Kafka", "Data Pipelines", "Apache Airflow",
+            "Data Warehousing", "Data Lakes", "PostgreSQL / MySQL",
+            "NoSQL Databases", "Cloud Data Services", "Docker", "Data Quality"
+        ]
+    },
+    "Backend Developer": {
+        "esco_uri": "http://data.europa.eu/esco/occupation/f2b15a0e-e65a-438a-affb-29b9d50b77d1",
+        "isco_group": "2512",
+        "onet_code": "15-1252.00",
+        "description": "Backend developers architect server-side logic, database interactions, microservices, and robust APIs powering client-side applications.",
+        "essential_skills": [
+            "Node.js", "Python / FastAPI", "Java / Spring Boot",
+            "REST API Development", "SQL", "PostgreSQL", "Redis / Caching",
+            "Authentication", "Authorization", "Docker"
+        ],
+        "optional_skills": [
+            "Express.js / Fastify", "GraphQL", "JWT / OAuth",
+            "Microservices", "Backend Performance Optimization"
+        ],
+        "skills": [
+            "Node.js", "Express.js / Fastify", "Java / Spring Boot",
+            "Python / FastAPI", "REST API Development", "GraphQL", "SQL",
+            "PostgreSQL", "Redis / Caching", "Authentication", "Authorization",
+            "JWT / OAuth", "Microservices", "Docker",
+            "Backend Performance Optimization"
+        ]
+    },
+    "Machine Learning Engineer": {
+        "esco_uri": "http://data.europa.eu/esco/occupation/781a6350-e686-45b9-b075-e4c8d5a05ff7",
+        "isco_group": "2512",
+        "onet_code": "15-2051.01",
+        "description": "Machine learning engineers build, train, optimize, deploy, and monitor production machine learning models and neural networks.",
+        "essential_skills": [
+            "Python", "NumPy", "Pandas", "Scikit-learn", "PyTorch",
+            "Machine Learning Algorithms", "Deep Learning", "Feature Engineering",
+            "Model Serving", "Docker"
+        ],
+        "optional_skills": [
+            "TensorFlow", "Model Evaluation", "Hyperparameter Optimization",
+            "NLP / Computer Vision", "MLOps"
+        ],
+        "skills": [
+            "Python", "NumPy", "Pandas", "Scikit-learn", "PyTorch",
+            "TensorFlow", "Machine Learning Algorithms", "Deep Learning",
+            "Feature Engineering", "Model Evaluation",
+            "Hyperparameter Optimization", "NLP / Computer Vision",
+            "Model Serving", "Docker", "MLOps"
+        ]
+    },
+    "Network & Systems Administrator": {
+        "esco_uri": "http://data.europa.eu/esco/occupation/81480b40-a318-47f3-9b2c-56b69ed67d95",
+        "isco_group": "2522",
+        "onet_code": "15-1244.00",
+        "description": "Network and systems administrators configure, support, monitor, and troubleshoot network infrastructure, routers, switches, and server operating systems.",
+        "essential_skills": [
+            "Linux Administration", "Windows Server Administration", "TCP/IP",
+            "DNS", "DHCP", "Routing", "Switching", "Firewalls",
+            "Network Troubleshooting", "Active Directory"
+        ],
+        "optional_skills": [
+            "VLAN", "VPN", "Network Monitoring", "PowerShell",
+            "Backup & Disaster Recovery"
+        ],
+        "skills": [
+            "Linux Administration", "Windows Server Administration", "TCP/IP",
+            "DNS", "DHCP", "Routing", "Switching", "VLAN", "VPN",
+            "Firewalls", "Network Monitoring", "Network Troubleshooting",
+            "Active Directory", "PowerShell", "Backup & Disaster Recovery"
+        ]
+    },
+    "Solutions / Software Architect": {
+        "esco_uri": "http://data.europa.eu/esco/occupation/d0aa0792-4345-474b-9365-686cf4869d2e",
+        "isco_group": "2512",
+        "onet_code": "15-1252.00",
+        "description": "Solutions and software architects design large-scale, distributed system architectures, establishing technical standards, scalability patterns, and security frameworks.",
+        "essential_skills": [
+            "Software Architecture", "System Design", "Distributed Systems",
+            "Microservices Architecture", "API Architecture", "Database Architecture",
+            "Cloud Architecture", "Scalability", "High Availability", "Security Architecture"
+        ],
+        "optional_skills": [
+            "REST / GraphQL", "Fault Tolerance", "Caching",
+            "Message Queues", "Architecture Design Patterns"
+        ],
+        "skills": [
+            "Software Architecture", "System Design", "Distributed Systems",
+            "Microservices Architecture", "API Architecture", "REST / GraphQL",
+            "Database Architecture", "Cloud Architecture", "Scalability",
+            "High Availability", "Fault Tolerance", "Caching", "Message Queues",
+            "Security Architecture", "Architecture Design Patterns"
+        ]
+    }
 }
 
-ESCO_IT_OCCUPATION_URIS = {
-    "software developer":
-        "http://data.europa.eu/esco/occupation/f2b15a0e-e65a-438a-affb-29b9d50b77d1",
-    "data scientist":
-        "http://data.europa.eu/esco/occupation/258e46f9-0075-4a2e-adae-1ff0477e0f30",
-    "web developer":
-        "http://data.europa.eu/esco/occupation/c40a2919-48a9-40ea-b506-1f34f693496d",
-    "database administrator":
-        "http://data.europa.eu/esco/occupation/8c57af09-719c-42b3-be40-6ed4946236cc",
-    "ICT system analyst":
-        "http://data.europa.eu/esco/occupation/a6a0b60f-08da-4faa-bf54-942987efb471",
-    "cloud DevOps engineer":
-        "http://data.europa.eu/esco/occupation/cc867bee-ab5c-427f-9244-f7a204d9574b",
+ROLE_ALIASES = {
+    "web developer": "Web Developer",
+    "software developer": "Software Developer",
+    "data scientist": "Data Scientist",
+    "cloud devops engineer": "Cloud / DevOps Engineer",
+    "cloud / devops engineer": "Cloud / DevOps Engineer",
+    "database administrator": "Database Administrator",
+    "ict system analyst": "ICT System Analyst",
+    "mobile application developer": "Mobile Application Developer",
+    "user interface developer": "UI / Frontend Developer",
+    "ui / frontend developer": "UI / Frontend Developer",
+    "ict security administrator": "Cybersecurity / Security Administrator",
+    "cybersecurity / security administrator": "Cybersecurity / Security Administrator",
+    "software qa / test engineer": "Software QA / Test Engineer",
+    "data engineer": "Data Engineer",
+    "backend developer": "Backend Developer",
+    "machine learning engineer": "Machine Learning Engineer",
+    "network & systems administrator": "Network & Systems Administrator",
+    "solutions / software architect": "Solutions / Software Architect",
 }
+
+# Backward compatibility mappings for legacy callers
+ONET_IT_MAPPING = {name.lower(): data["onet_code"] for name, data in TAXONOMY_15_ROLES.items()}
+ESCO_IT_OCCUPATION_URIS = {name.lower(): data["esco_uri"] for name, data in TAXONOMY_15_ROLES.items()}
 
 # Skill category inference from ESCO skill labels (keyword → category)
 SKILL_CATEGORY_MAP = [
@@ -101,8 +428,10 @@ def infer_skill_category(skill_label: str) -> str:
 
 
 def get_or_create_skill(name: str, source_uri: str = None, category: str = None) -> Skill:
-    """Return existing Skill or create a new one. Normalizes name to title-case."""
-    name = name.strip()[:140]
+    """Return existing Skill or create a new one. Normalizes name through SkillNormalizer."""
+    from services.skill_normalizer import canonicalize_skill_name
+    canon = canonicalize_skill_name(name)
+    name = (canon or name).strip()[:140]
     s = Skill.query.filter(db.func.lower(Skill.name) == name.lower()).first()
     if not s:
         cat = category or infer_skill_category(name)
@@ -459,76 +788,99 @@ def _coursera_skill_to_canonical(raw_skill: str) -> str | None:
     return norm.get(s, raw_skill.strip()[:50].title())
 
 
-def ingest_coursera(coursera_zip: str) -> dict:
+def ingest_coursera(coursera_source: str) -> dict:
     """
-    Ingest Coursera courses from Dataset/archive (1).zip → Coursera.csv.
+    Ingest Coursera courses from Coursera.csv (or Coursera.zip / archive.zip).
     Only ingests IT-relevant courses (based on Skills column keywords).
     """
-    if not Path(coursera_zip).exists():
-        print(f"  [Coursera] WARNING: {coursera_zip} not found. Skipping.")
-        return {"courses": 0, "course_skills": 0}
+    source_path = Path(coursera_source)
+    if not source_path.exists():
+        # Check alternative csv / zip extensions
+        alt_csv = source_path.with_name("Coursera.csv")
+        alt_zip = source_path.with_name("Coursera.zip")
+        if alt_csv.exists():
+            source_path = alt_csv
+        elif alt_zip.exists():
+            source_path = alt_zip
+        else:
+            print(f"  [Coursera] WARNING: {coursera_source} not found. Skipping.")
+            return {"courses": 0, "course_skills": 0}
 
-    print(f"  [Coursera] Loading courses from {coursera_zip}...")
+    print(f"  [Coursera] Loading courses from {source_path}...")
 
     courses_created = 0
     course_skills_created = 0
 
-    with zipfile.ZipFile(coursera_zip) as z:
-        with z.open("Coursera.csv") as f:
-            reader = csv.DictReader(io.TextIOWrapper(f, encoding="utf-8", errors="replace"))
-            for row in reader:
-                raw_skills_str = row.get("Skills", "")
-                if not raw_skills_str:
-                    continue
+    def _process_reader(reader):
+        nonlocal courses_created, course_skills_created
+        for row in reader:
+            raw_skills_str = row.get("Skills", "")
+            if not raw_skills_str:
+                continue
 
-                # Parse skills field (semicolon, comma, or double-space separated)
-                raw_skills = [
-                    s.strip() for s in re.split(r"[;,]|\s{2,}", raw_skills_str) if s.strip()
-                ]
-                canonical_skills = [
-                    _coursera_skill_to_canonical(s) for s in raw_skills
-                ]
-                canonical_skills = [s for s in canonical_skills if s]
+            # Parse skills field (semicolon, comma, or double-space separated)
+            raw_skills = [
+                s.strip() for s in re.split(r"[;,]|\s{2,}", raw_skills_str) if s.strip()
+            ]
+            canonical_skills = [
+                _coursera_skill_to_canonical(s) for s in raw_skills
+            ]
+            canonical_skills = [s for s in canonical_skills if s]
 
-                if not canonical_skills:
-                    continue  # Skip non-IT courses
+            if not canonical_skills:
+                continue  # Skip non-IT courses
 
-                title = (row.get("Course Name") or "").strip()
-                provider = (row.get("University") or "Coursera").strip()
-                url = (row.get("Course URL") or "").strip()
-                description = (row.get("Course Description") or "").strip()[:600]
-                difficulty = (row.get("Difficulty Level") or "").strip()
-                try:
-                    rating = float(row.get("Course Rating") or 0)
-                except (ValueError, TypeError):
-                    rating = 0.0
+            title = (row.get("Course Name") or "").strip()
+            provider = (row.get("University") or "Coursera").strip()
+            url = (row.get("Course URL") or "").strip()
+            description = (row.get("Course Description") or "").strip()[:600]
+            difficulty = (row.get("Difficulty Level") or "").strip()
+            try:
+                rating = float(row.get("Course Rating") or 0)
+            except (ValueError, TypeError):
+                rating = 0.0
 
-                if not title:
-                    continue
+            if not title:
+                continue
 
-                # Upsert course (avoid duplicates by title+provider)
-                course = Course.query.filter_by(title=title, provider=provider).first()
-                if not course:
-                    course = Course(
-                        title=title, provider=provider, url=url,
-                        description=description, difficulty_level=difficulty,
-                        rating=rating, source="Coursera"
-                    )
-                    db.session.add(course)
-                    db.session.flush()
-                    courses_created += 1
+            # Upsert course (avoid duplicates by title+provider)
+            course = Course.query.filter_by(title=title, provider=provider).first()
+            if not course:
+                course = Course(
+                    title=title, provider=provider, url=url,
+                    description=description, difficulty_level=difficulty,
+                    rating=rating, source="Coursera"
+                )
+                db.session.add(course)
+                db.session.flush()
+                courses_created += 1
 
-                # Map canonical skills to CourseSkill
-                for skill_name in canonical_skills:
-                    skill = get_or_create_skill(skill_name)
-                    existing = CourseSkill.query.filter_by(
-                        course_id=course.id, skill_id=skill.id
-                    ).first()
-                    if not existing:
-                        db.session.add(CourseSkill(
-                            course_id=course.id, skill_id=skill.id, relevance=0.9
-                        ))
-                        course_skills_created += 1
+            # Map canonical skills to CourseSkill
+            for skill_name in canonical_skills:
+                skill = get_or_create_skill(skill_name)
+                existing = CourseSkill.query.filter_by(
+                    course_id=course.id, skill_id=skill.id
+                ).first()
+                if not existing:
+                    db.session.add(CourseSkill(
+                        course_id=course.id, skill_id=skill.id, relevance=0.9
+                    ))
+                    course_skills_created += 1
+
+    if source_path.suffix.lower() == ".zip":
+        with zipfile.ZipFile(source_path) as z:
+            csv_names = [n for n in z.namelist() if n.endswith(".csv")]
+            target = "Coursera.csv" if "Coursera.csv" in csv_names else (csv_names[0] if csv_names else None)
+            if not target:
+                print(f"  [Coursera] No CSV found inside {source_path}.")
+                return {"courses": 0, "course_skills": 0}
+            with z.open(target) as f:
+                reader = csv.DictReader(io.TextIOWrapper(f, encoding="utf-8", errors="replace"))
+                _process_reader(reader)
+    else:
+        with open(source_path, mode="r", encoding="utf-8", errors="replace") as f:
+            reader = csv.DictReader(f)
+            _process_reader(reader)
 
     db.session.commit()
     print(f"  [Coursera] {courses_created} new courses, {course_skills_created} new CourseSkill records.")
@@ -643,31 +995,154 @@ def ingest_students(student_xlsx: str, max_students: int = 20) -> dict:
 # ─────────────────────────────────────────────────────────────────────────────
 # Master ingestion function
 # ─────────────────────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────────────
+# Definitive 15 Roles Synchronization
+# ─────────────────────────────────────────────────────────────────────────────
+def sync_15_roles_and_skills() -> dict:
+    """
+    Calibrate and synchronize the database to the definitive 15 IT Roles × 15 Core Skills taxonomy.
+    Grounded in official ESCO v1.2.1 concept URIs, ISCO-08 groups, and O*NET-SOC codes.
+    Guarantees that each of the 15 roles has exactly 15 high-priority skills.
+    """
+    from models import SkillGap
+
+    print("\n=== Synchronizing 15 Roles × 15 Core Skills ===")
+    roles_synced = 0
+    skills_created_or_mapped = 0
+    total_job_skills = 0
+
+    # Build lookup of existing roles by normalized name
+    existing_roles = {r.name.lower().strip(): r for r in JobRole.query.all()}
+
+    for role_name, role_data in TAXONOMY_15_ROLES.items():
+        # Match existing role by exact title or alias
+        role = existing_roles.get(role_name.lower().strip())
+        if not role:
+            # Check aliases
+            for alias_key, canon_name in ROLE_ALIASES.items():
+                if canon_name == role_name and alias_key in existing_roles:
+                    role = existing_roles[alias_key]
+                    break
+
+        if not role:
+            role = JobRole(
+                name=role_name,
+                source="ESCO",
+                source_identifier=role_data["esco_uri"],
+                description=role_data["description"],
+                isco_group=role_data["isco_group"],
+                onet_code=role_data["onet_code"],
+            )
+            db.session.add(role)
+            db.session.flush()
+        else:
+            # Update canonical attributes
+            role.name = role_name
+            role.source = "ESCO"
+            role.source_identifier = role_data["esco_uri"]
+            role.description = role_data["description"]
+            role.isco_group = role_data["isco_group"]
+            role.onet_code = role_data["onet_code"]
+            db.session.flush()
+
+        roles_synced += 1
+
+        # Map the 15 skills for this role (10 Essential + 5 Optional)
+        target_skill_ids = []
+        essential_list = role_data.get("essential_skills", role_data["skills"][:10])
+        optional_list = role_data.get("optional_skills", role_data["skills"][10:])
+
+        for skill_name in essential_list:
+            skill = get_or_create_skill(skill_name)
+            target_skill_ids.append(skill.id)
+            skills_created_or_mapped += 1
+
+            js = JobSkill.query.filter_by(job_role_id=role.id, skill_id=skill.id).first()
+            if not js:
+                js = JobSkill(
+                    job_role_id=role.id,
+                    skill_id=skill.id,
+                    required_level=75.0,
+                    importance=1.0,
+                    relation_type="essential",
+                    source="ESCO",
+                )
+                db.session.add(js)
+            else:
+                js.required_level = 75.0
+                js.importance = 1.0
+                js.relation_type = "essential"
+                js.source = "ESCO"
+
+        for skill_name in optional_list:
+            skill = get_or_create_skill(skill_name)
+            target_skill_ids.append(skill.id)
+            skills_created_or_mapped += 1
+
+            js = JobSkill.query.filter_by(job_role_id=role.id, skill_id=skill.id).first()
+            if not js:
+                js = JobSkill(
+                    job_role_id=role.id,
+                    skill_id=skill.id,
+                    required_level=60.0,
+                    importance=0.5,
+                    relation_type="optional",
+                    source="ESCO",
+                )
+                db.session.add(js)
+            else:
+                js.required_level = 60.0
+                js.importance = 0.5
+                js.relation_type = "optional"
+                js.source = "ESCO"
+
+        # Remove any extraneous job skills outside the 15 curated skills
+        old_js = JobSkill.query.filter(
+            JobSkill.job_role_id == role.id,
+            ~JobSkill.skill_id.in_(target_skill_ids)
+        ).all()
+        old_skill_ids = [o.skill_id for o in old_js]
+        if old_skill_ids:
+            SkillGap.query.filter(
+                SkillGap.job_role_id == role.id,
+                SkillGap.skill_id.in_(old_skill_ids)
+            ).delete(synchronize_session=False)
+
+            JobSkill.query.filter(
+                JobSkill.job_role_id == role.id,
+                ~JobSkill.skill_id.in_(target_skill_ids)
+            ).delete(synchronize_session=False)
+
+        total_job_skills += len(target_skill_ids)
+
+    db.session.commit()
+    print(f"  Synced {roles_synced} roles.")
+    print(f"  Total active JobSkill mappings: {total_job_skills} (15 per role).")
+    return {
+        "roles": roles_synced,
+        "skills_per_role": 15,
+        "total_job_skills": total_job_skills
+    }
+
+
 def run_ingestion() -> dict:
     """
     Run the full ingestion pipeline in order:
-    1. ESCO IT occupations and skills
-    2. O*NET Knowledge and Work Activities (dual taxonomy)
-    3. Coursera courses
-    4. Student profiles
+    1. Synchronize 15 Roles x 15 Core Skills (ESCO + O*NET)
+    2. Coursera courses
+    3. Student profiles
     """
     cfg = current_app.config
     print("\n=== Starting Data Ingestion Pipeline ===")
 
     summary = {}
 
-    print("\n[1/4] ESCO v1.2.1 Ingestion")
-    summary["esco"] = ingest_esco(cfg["ESCO_DATA_DIR"])
-
-    print("\n[2/4] O*NET Dual-Taxonomy Ingestion")
-    summary["onet"] = ingest_onet(
-        knowledge_path=cfg["ONET_KNOWLEDGE_XLSX"],
-        activities_path=cfg["ONET_ACTIVITIES_XLSX"],
-        occupations_path=cfg["ONET_OCCUPATIONS_XLSX"],
-    )
+    print("\n[1/3] 15 Roles × 15 Core Skills Synchronization")
+    summary["roles_and_skills"] = sync_15_roles_and_skills()
 
     print("\n[3/4] Coursera Dataset Ingestion")
-    summary["coursera"] = ingest_coursera(cfg["COURSERA_ZIP"])
+    coursera_source = cfg.get("COURSERA_CSV") or cfg.get("COURSERA_ZIP")
+    summary["coursera"] = ingest_coursera(coursera_source)
 
     print("\n[4/4] Student Dataset Ingestion")
     summary["students"] = ingest_students(cfg["STUDENT_DATASET_XLSX"])

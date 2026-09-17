@@ -5,7 +5,6 @@ from config import Config
 from extensions import db
 from routes import api
 from auth import auth_bp
-from seed import seed_database
 
 
 def create_app(test_config=None):
@@ -48,13 +47,23 @@ def create_app(test_config=None):
             db.create_all()
             print("Database initialized.")
 
-    @app.cli.command("seed")
-    def seed():
-        """Seed demo roles, courses, and a sample student."""
+    @app.cli.command("sync-roles")
+    def sync_roles():
+        """Synchronize the 15 IT Job Roles with exactly 15 core skills each."""
         with app.app_context():
+            from data.ingest import sync_15_roles_and_skills
             db.create_all()
-            seed_database()
-            print("Demo seed complete.")
+            res = sync_15_roles_and_skills()
+            print(f"Role synchronization complete: {res}")
+
+    @app.cli.command("seed-courses")
+    def seed_courses():
+        """Seed curated learning resources for all role skills."""
+        with app.app_context():
+            from data.seed_courses import seed_curated_courses
+            db.create_all()
+            res = seed_curated_courses()
+            print(f"Course seeding complete: {res}")
 
     @app.cli.command("ingest-data")
     def ingest_data():

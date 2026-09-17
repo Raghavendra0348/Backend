@@ -146,7 +146,8 @@
  The system finds the matching skill from ESCO/O*NET catalogue automatically.
  </div>
  <label>Skill Name</label>
- <input type="text" id="skill-name" placeholder="e.g. Python, SQL, Docker, Machine Learning"/>
+ <input type="text" id="skill-name" placeholder="e.g. Python, SQL, Docker, CSS, Machine Learning"/>
+ <div style="font-size:.68rem;color:var(--muted);margin-top:.25rem;">✨ Synonyms & sub-skills (e.g. css, flexbox, box css, css3, py3, k8s) auto-map to standard competencies.</div>
  <label>Proficiency Level (0 – 100)</label>
  <input type="range" id="skill-prof-range" min="0" max="100" value="70" oninput="document.getElementById('skill-prof-val').textContent=this.value" style="padding:0;"/>
  <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);"><span>Beginner</span><span id="skill-prof-val" style="color:var(--primary);font-weight:700;">70</span><span>Expert</span></div>
@@ -175,32 +176,6 @@
  <input type="number" id="ass-max" min="1" value="100"/>
  <div class="btn-row">
  <button class="btn btn-secondary" onclick="submitAssessment()">Submit Assessment</button>
- </div>
- </div>
-
- <div class="card">
- <div class="card-title"> Add Project</div>
- <div class="card-desc">Test <code>POST /api/students/&lt;id&gt;/projects</code>. Projects strengthen your skill evidence.</div>
- <label>Project Title</label>
- <input type="text" id="proj-title" placeholder="e.g. E-Commerce Microservice"/>
- <label>Skills Used (comma separated)</label>
- <input type="text" id="proj-skills" placeholder="e.g. Python, Docker, PostgreSQL"/>
- <label>Description</label>
- <textarea id="proj-desc" placeholder="Brief project description..."></textarea>
- <div class="btn-row">
- <button class="btn btn-secondary" onclick="addProject()">Add Project</button>
- </div>
- </div>
-
- <div class="card">
- <div class="card-title"> Add Certification</div>
- <div class="card-desc">Test <code>POST /api/students/&lt;id&gt;/certifications</code>.</div>
- <label>Certification Name</label>
- <input type="text" id="cert-name" placeholder="e.g. AWS Solutions Architect"/>
- <label>Issuing Body</label>
- <input type="text" id="cert-issuer" placeholder="e.g. Amazon Web Services"/>
- <div class="btn-row">
- <button class="btn btn-secondary" onclick="addCert()">Add Certification</button>
  </div>
  </div>
  </div>
@@ -251,8 +226,8 @@
  <div class="card-title" id="role-skills-title">Role Required Skills</div>
  <div class="table-wrap">
  <table>
- <thead><tr><th>Skill</th><th>Category</th><th>Required Level</th><th>Importance</th><th>Source</th></tr></thead>
- <tbody id="role-skills-tbody"></tbody>
+  <thead><tr><th>Skill</th><th>Type</th><th>Category</th><th>Required Level</th><th>Importance</th><th>Source</th></tr></thead>
+  <tbody id="role-skills-tbody"></tbody>
  </table>
  </div>
  </div>
@@ -492,14 +467,20 @@
  document.getElementById('role-skills-card').style.display='';
  document.getElementById('role-skills-title').textContent=`Required Skills for "${SS.rname}" (${skills.length})`;
  const tbody = document.getElementById('role-skills-tbody');
- tbody.innerHTML = skills.map(s=>`
- <tr>
+ tbody.innerHTML = skills.map(s => {
+ const isEss = (s.relation_type || 'essential').toLowerCase() === 'essential';
+ const typeBadge = isEss
+ ? '<span class="sev-badge" style="background:#e0e7ff;color:#4338ca;border:1px solid #c7d2fe;font-weight:700;">Essential</span>'
+ : '<span class="sev-badge" style="background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;font-weight:600;">Optional</span>';
+ return `<tr>
  <td><strong>${s.skill}</strong></td>
+ <td>${typeBadge}</td>
  <td><span style="font-size:.72rem;color:var(--muted);">${s.category||'General'}</span></td>
  <td><span style="color:var(--accent);font-weight:600;">${(s.required_level||0).toFixed(0)}/100</span></td>
  <td>${s.importance?`<span style="font-size:.72rem;">${(s.importance*100).toFixed(0)}%</span>`:'—'}</td>
  <td><span style="font-size:.68rem;color:var(--muted);">${s.source||'ESCO'}</span></td>
- </tr>`).join('');
+ </tr>`;
+ }).join('');
  }
 
  async function loadAllRoles() {

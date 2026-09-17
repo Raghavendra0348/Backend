@@ -23,7 +23,7 @@ from __future__ import annotations
 
 from extensions import db
 from models import (
-    Course, CourseSkill, JobRole, LearningPath,
+    Course, CourseSkill, JobRole, JobSkill, LearningPath,
     LearningPathStep, Skill, SkillGap, StudentSkill,
 )
 
@@ -42,17 +42,51 @@ PHASE_LABELS = {
 }
 
 
-def _best_courses_for_skill(skill_id: int, limit: int = 2) -> list[Course]:
-    """Find the most relevant courses for a given skill, ordered by relevance then rating."""
+def _best_courses_for_skill(
+    skill_id: int,
+    current_level: float = 0.0,
+    limit: int = 2,
+) -> list[Course]:
+    """Find the most relevant courses for a given skill.
+
+    Uses alias-aware lookups so that courses mapped to e.g. 'CSS' also
+    satisfy a 'CSS3' gap.  Prefers courses whose difficulty matches the
+    student's current proficiency.
+    """
+    from services.skill_normalizer import get_equivalent_skill_ids
+    eq_ids = get_equivalent_skill_ids(skill_id)
+
     rows = (
         db.session.query(Course, CourseSkill.relevance)
         .join(CourseSkill, CourseSkill.course_id == Course.id)
-        .filter(CourseSkill.skill_id == skill_id)
+        .filter(CourseSkill.skill_id.in_(eq_ids))
         .order_by(CourseSkill.relevance.desc(), Course.rating.desc())
-        .limit(limit)
+        .limit(limit * 3)          # fetch extras so we can re-sort by difficulty
         .all()
     )
-    return [r[0] for r in rows]
+    if not rows:
+        return []
+
+    # Difficulty preference based on student's current level
+    if current_level < 30:
+        preferred = "beginner"
+    elif current_level < 60:
+        preferred = "intermediate"
+    else:
+        preferred = "advanced"
+
+    diff_rank = {"beginner": 0, "intermediate": 1, "advanced": 2}
+    pref_rank = diff_rank.get(preferred, 1)
+
+    def _sort_key(pair):
+        course, relevance = pair
+        diff = (course.difficulty_level or "").lower().strip()
+        d_rank = diff_rank.get(diff, 1)
+        # Prefer courses closest to the preferred difficulty, then by relevance
+        return (abs(d_rank - pref_rank), -float(relevance or 0), -float(course.rating or 0))
+
+    rows.sort(key=_sort_key)
+    return [r[0] for r in rows[:limit]]
 
 
 def _estimated_hours(course: Course) -> int:
@@ -104,12 +138,24 @@ def generate_learning_path(student_id: int, job_role_id: int) -> dict:
 
     for gap, skill in gaps_sorted:
         sev = gap.severity
-        courses = _best_courses_for_skill(skill.id, limit=2)
+        courses = _best_courses_for_skill(
+            skill.id,
+            current_level=float(gap.current_level or 0),
+            limit=2,
+        )
 
         new_courses = [c for c in courses if c.id not in used_course_ids]
         if not new_courses and courses:
             # Allow re-use if no alternatives (multi-skill course)
             new_courses = [courses[0]]
+
+        # Resolve relation_type from the gap's associated JobSkill
+        js_row = (
+            db.session.query(JobSkill)
+            .filter_by(job_role_id=job_role_id, skill_id=skill.id)
+            .first()
+        )
+        relation = js_row.relation_type if js_row else "essential"
 
         for course in new_courses[:1]:  # Max 1 course per skill in path
             used_course_ids.add(course.id)
@@ -119,6 +165,7 @@ def generate_learning_path(student_id: int, job_role_id: int) -> dict:
                 "skill":          skill.name,
                 "skill_gap":      round(gap.gap_percent, 1),
                 "severity":       sev,
+                "relation_type":  relation,
                 "course_id":      course.id,
                 "course":         course.title,
                 "provider":       course.provider,

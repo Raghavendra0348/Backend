@@ -177,6 +177,24 @@ def update_student(sid):
     return jsonify(s.to_dict())
 
 
+def _resolve_skill_id(skill_id, skill_name_raw):
+    """Resolve skill_id either from ID or canonicalized skill_name."""
+    if skill_id:
+        return skill_id if db.session.get(Skill, skill_id) else None
+    if not skill_name_raw:
+        return None
+    from services.skill_normalizer import canonicalize_skill_name
+    sk_name = canonicalize_skill_name(str(skill_name_raw).strip())
+    if not sk_name:
+        return None
+    sk = Skill.query.filter(db.func.lower(Skill.name) == sk_name.lower()).first()
+    if not sk:
+        sk = Skill(name=sk_name, category="General", source="MANUAL")
+        db.session.add(sk)
+        db.session.flush()
+    return sk.id
+
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Skills
 # ──────────────────────────────────────────────────────────────────────────────
@@ -187,17 +205,8 @@ def add_skill(sid):
         return jsonify({"error": "student not found"}), 404
 
     d = request.get_json() or {}
-    skill_id = d.get("skill_id")
-    if not skill_id and d.get("skill_name"):
-        sk_name = d.get("skill_name").strip()
-        sk = Skill.query.filter(db.func.lower(Skill.name) == sk_name.lower()).first()
-        if not sk:
-            sk = Skill(name=sk_name, category="General", source="MANUAL")
-            db.session.add(sk)
-            db.session.flush()
-        skill_id = sk.id
-
-    if not skill_id or not db.session.get(Skill, skill_id):
+    skill_id = _resolve_skill_id(d.get("skill_id"), d.get("skill_name"))
+    if not skill_id:
         return jsonify({"error": "skill_id or valid skill_name is required"}), 400
 
     try:
@@ -228,17 +237,8 @@ def add_skill(sid):
 def assessment(sid):
     """FR-009 — Submit assessment result; derives and persists proficiency."""
     d = request.get_json() or {}
-    skill_id = d.get("skill_id")
-    if not skill_id and d.get("skill_name"):
-        sk_name = d.get("skill_name").strip()
-        sk = Skill.query.filter(db.func.lower(Skill.name) == sk_name.lower()).first()
-        if not sk:
-            sk = Skill(name=sk_name, category="General", source="MANUAL")
-            db.session.add(sk)
-            db.session.flush()
-        skill_id = sk.id
-
-    if not skill_id or not db.session.get(Skill, skill_id):
+    skill_id = _resolve_skill_id(d.get("skill_id"), d.get("skill_name"))
+    if not skill_id:
         return jsonify({"error": "skill_id or valid skill_name is required"}), 400
 
     try:
@@ -477,6 +477,15 @@ def get_gaps(sid):
     )
     if role_id:
         query = query.filter(SkillGap.job_role_id == role_id)
+    else:
+        latest = (
+            SkillGap.query
+            .filter_by(student_id=sid)
+            .order_by(SkillGap.id.desc())
+            .first()
+        )
+        if latest and latest.job_role_id:
+            query = query.filter(SkillGap.job_role_id == latest.job_role_id)
     rows = query.order_by(SkillGap.priority_score.desc()).all()
     return jsonify([gap.to_dict(skill_name=skill.name) for gap, skill in rows])
 
@@ -488,7 +497,8 @@ def get_gaps(sid):
 def get_recommendations(sid):
     """FR-070 — Return top-K personalized course recommendations."""
     top_k = max(1, min(request.args.get("top_k", 10, type=int), 50))
-    return jsonify(recommend(sid, top_k))
+    role_id = request.args.get("job_role_id", type=int) or request.args.get("role_id", type=int)
+    return jsonify(recommend(sid, top_k=top_k, job_role_id=role_id))
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -544,17 +554,8 @@ def reassessment(sid):
     job_role_id is supplied.
     """
     d = request.get_json() or {}
-    skill_id = d.get("skill_id")
-    if not skill_id and d.get("skill_name"):
-        sk_name = d.get("skill_name").strip()
-        sk = Skill.query.filter(db.func.lower(Skill.name) == sk_name.lower()).first()
-        if not sk:
-            sk = Skill(name=sk_name, category="General", source="MANUAL")
-            db.session.add(sk)
-            db.session.flush()
-        skill_id = sk.id
-
-    if not skill_id or not db.session.get(Skill, skill_id):
+    skill_id = _resolve_skill_id(d.get("skill_id"), d.get("skill_name"))
+    if not skill_id:
         return jsonify({"error": "skill_id or valid skill_name is required"}), 400
 
     try:

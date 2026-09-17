@@ -122,20 +122,24 @@ def analyze(student_id: int, role_id: int) -> list[dict]:
 
     results = []
     for req in requirements:
-        # Current proficiency (defaults to 0 if student has no record for this skill)
-        current_row = StudentSkill.query.filter_by(
-            student_id=student_id, skill_id=req.skill_id
-        ).first()
-        current = float(current_row.proficiency) if current_row else 0.0
+        # Current proficiency across primary skill and all aliases/sub-skills
+        from services.skill_normalizer import get_equivalent_skill_ids
+        eq_ids = get_equivalent_skill_ids(req.skill_id)
+        student_skill_rows = StudentSkill.query.filter(
+            StudentSkill.student_id == student_id,
+            StudentSkill.skill_id.in_(eq_ids)
+        ).all()
+        current = max([float(r.proficiency) for r in student_skill_rows] or [0.0])
         required = float(req.required_level)
-        importance = float(req.importance or 1.0)
+        importance = float(req.importance if req.importance is not None else 1.0)
 
         gap = max(0.0, required - current)
         gap_pct = (gap / required * 100) if required > 0 else 0.0
 
-        # Most recent assessment score for this skill (for ML features)
-        latest_assessment = Assessment.query.filter_by(
-            student_id=student_id, skill_id=req.skill_id
+        # Most recent assessment score across equivalent skills
+        latest_assessment = Assessment.query.filter(
+            Assessment.student_id == student_id,
+            Assessment.skill_id.in_(eq_ids)
         ).order_by(Assessment.assessed_at.desc()).first()
         assessment_score = (
             latest_assessment.score / latest_assessment.max_score * 100
