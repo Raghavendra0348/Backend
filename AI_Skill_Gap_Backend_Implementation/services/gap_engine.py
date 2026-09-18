@@ -157,6 +157,7 @@ def analyze(student_id: int, role_id: int) -> list[dict]:
       priority_score = gap_pct * importance * evidence_factor
     """
     from models import Assessment, Project, Certification, Skill
+    from services.skill_normalizer import get_equivalent_skill_ids
 
     model = _load_model()
     model_version = "ml-logistic-v1" if model else "deterministic-baseline-v1"
@@ -169,14 +170,53 @@ def analyze(student_id: int, role_id: int) -> list[dict]:
     project_count = Project.query.filter_by(student_id=student_id).count()
     cert_count = Certification.query.filter_by(student_id=student_id).count()
 
+    # ── N+1 FIX: bulk-load all data needed per-requirement BEFORE the loop ────
+    # 1. Collect all relevant skill IDs (each req + their equivalents).
+    req_skill_ids = [req.skill_id for req in requirements]
+    all_eq_ids: set[int] = set()
+    eq_map: dict[int, list[int]] = {}
+    for sid in req_skill_ids:
+        eqs = get_equivalent_skill_ids(sid)
+        eq_map[sid] = eqs
+        all_eq_ids.update(eqs)
+
+    # 2. Bulk-fetch all StudentSkill rows for this student across all relevant skills.
+    all_student_skills = StudentSkill.query.filter(
+        StudentSkill.student_id == student_id,
+        StudentSkill.skill_id.in_(all_eq_ids),
+    ).all()
+    # Index by skill_id for fast lookups.
+    ss_by_skill: dict[int, list[StudentSkill]] = {}
+    for ss in all_student_skills:
+        ss_by_skill.setdefault(ss.skill_id, []).append(ss)
+
+    # 3. Bulk-fetch most-recent Assessment per skill group.
+    #    We load all relevant assessments once, then find the latest per skill group.
+    all_assessments = Assessment.query.filter(
+        Assessment.student_id == student_id,
+        Assessment.skill_id.in_(all_eq_ids),
+    ).order_by(Assessment.assessed_at.desc()).all()
+    # Index: skill_id → most recent Assessment (already ordered desc).
+    latest_assessment_by_skill: dict[int, Assessment] = {}
+    for a in all_assessments:
+        if a.skill_id not in latest_assessment_by_skill:
+            latest_assessment_by_skill[a.skill_id] = a
+
+    # 4. Bulk-fetch Skill objects for all required skill IDs.
+    skill_obj_map: dict[int, Skill] = {
+        s.id: s for s in Skill.query.filter(Skill.id.in_(req_skill_ids)).all()
+    }
+    # ─────────────────────────────────────────────────────────────────────────
+
     results = []
     for req in requirements:
-        from services.skill_normalizer import get_equivalent_skill_ids
-        eq_ids = get_equivalent_skill_ids(req.skill_id)
-        student_skill_rows = StudentSkill.query.filter(
-            StudentSkill.student_id == student_id,
-            StudentSkill.skill_id.in_(eq_ids)
-        ).all()
+        eq_ids = eq_map[req.skill_id]
+
+        # Look up student skill rows from pre-fetched data.
+        student_skill_rows = []
+        for eq_id in eq_ids:
+            student_skill_rows.extend(ss_by_skill.get(eq_id, []))
+
         current = max([float(r.proficiency) for r in student_skill_rows] or [0.0])
         required = float(req.required_level)
         importance = float(req.importance if req.importance is not None else 1.0)
@@ -190,18 +230,22 @@ def analyze(student_id: int, role_id: int) -> list[dict]:
             student_skill_rows, gap, current
         )
 
-        # Most recent assessment score across equivalent skills
-        latest_assessment = Assessment.query.filter(
-            Assessment.student_id == student_id,
-            Assessment.skill_id.in_(eq_ids)
-        ).order_by(Assessment.assessed_at.desc()).first()
+        # Most recent assessment score across equivalent skills (from pre-fetched data).
+        latest_assessment = None
+        for eq_id in eq_ids:
+            candidate = latest_assessment_by_skill.get(eq_id)
+            if candidate and (
+                latest_assessment is None
+                or candidate.assessed_at > latest_assessment.assessed_at
+            ):
+                latest_assessment = candidate
         assessment_score = (
             latest_assessment.score / latest_assessment.max_score * 100
             if latest_assessment else current
         )
 
-        # Skill category for ML categorical feature
-        skill_obj = db.session.get(Skill, req.skill_id)
+        # Skill metadata from pre-fetched map.
+        skill_obj = skill_obj_map.get(req.skill_id)
         skill_cat = skill_obj.category if skill_obj else "General"
         skill_name = skill_obj.name if skill_obj else str(req.skill_id)
 
@@ -213,6 +257,7 @@ def analyze(student_id: int, role_id: int) -> list[dict]:
             ) or classify_gap(gap_pct)
         else:
             severity = classify_gap(gap_pct)
+
 
         priority = round(gap_pct * importance * evidence_factor, 2)
 
@@ -264,7 +309,11 @@ def analyze(student_id: int, role_id: int) -> list[dict]:
             explanation=r["explanation"],
             model_version=r["model_version"],
         ))
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
 
     return results
 

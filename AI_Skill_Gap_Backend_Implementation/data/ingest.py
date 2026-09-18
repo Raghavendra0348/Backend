@@ -1160,22 +1160,22 @@ def run_ingestion() -> dict:
     print("\n[1/3] 15 Roles × 15 Core Skills Synchronization")
     summary["roles_and_skills"] = sync_15_roles_and_skills()
 
-    print("\n[3/4] Coursera Dataset Ingestion")
+    print("\n[2/3] Coursera Dataset Ingestion")
     coursera_source = cfg.get("COURSERA_CSV") or cfg.get("COURSERA_ZIP")
     summary["coursera"] = ingest_coursera(coursera_source)
 
-    print("\n[4/4] Student Dataset Ingestion")
+    print("\n[3/3] Student Dataset Ingestion")
     summary["students"] = ingest_students(cfg["STUDENT_DATASET_XLSX"])
 
+    # Unpack the combined roles_and_skills summary for display
+    rs = summary["roles_and_skills"]
     print("\n=== Ingestion Complete ===")
-    print(f"  ESCO:     {summary['esco']['roles']} IT roles, "
-          f"{summary['esco']['job_skills']} job-skill mappings")
-    print(f"  O*NET:    {summary['onet']['skills']} competency skills, "
-          f"{summary['onet']['job_skills']} job-skill mappings, "
-          f"{summary['onet']['roles_updated']} roles updated with SOC code")
-    print(f"  Coursera: {summary['coursera']['courses']} courses, "
-          f"{summary['coursera']['course_skills']} course-skill mappings")
-    print(f"  Students: {summary['students']['students']} students, "
-          f"{summary['students']['student_skills']} student skills")
+    print(f"  Roles & Skills: {rs.get('roles', 0)} IT roles, "
+          f"{rs.get('total_job_skills', 0)} job-skill mappings "
+          f"(batch #{rs.get('batch_id', 'n/a')})")
+    print(f"  Coursera: {summary['coursera'].get('courses', 0)} courses, "
+          f"{summary['coursera'].get('course_skills', 0)} course-skill mappings")
+    print(f"  Students: {summary['students'].get('students', 0)} students, "
+          f"{summary['students'].get('student_skills', 0)} student skills")
 
     return summary

@@ -28,7 +28,11 @@ class StudentService:
             target_career=data.get("target_career"),
         )
         db.session.add(student)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            raise
         return student, None, 201
 
     @staticmethod
@@ -82,7 +86,11 @@ class StudentService:
         for field in ("name", "course", "year", "target_career"):
             if field in data:
                 setattr(student, field, data[field])
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            raise
         return student
 
     @staticmethod
@@ -125,7 +133,11 @@ class StudentService:
             db.session.add(ss)
 
         _cache.invalidate_student(student_id)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            raise
 
         return {
             "student_id": student_id,

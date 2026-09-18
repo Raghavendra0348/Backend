@@ -6,6 +6,8 @@ from schemas import validate_json
 from schemas.resume_schemas import ProjectCreateSchema, CertificationCreateSchema
 from services.resume_service import ResumeService
 from auth import require_student_auth
+import pathlib
+import tempfile
 
 resumes_bp = Blueprint("resumes_v1", __name__)
 
@@ -49,7 +51,11 @@ def upload_resume(sid):
         return err
 
     file_obj = request.files.get("file") or request.files.get("resume")
-    upload_dir = current_app.config.get("UPLOAD_DIR", "/tmp")
+    # Use the configured upload dir; fall back to the OS temp dir if somehow
+    # UPLOAD_DIR is missing from config (cross-platform: %TEMP% on Windows,
+    # /tmp on Linux/macOS).
+    _default_upload = str(pathlib.Path(tempfile.gettempdir()) / "skill_gap_uploads")
+    upload_dir = current_app.config.get("UPLOAD_DIR") or _default_upload
 
     result, err_msg, status_code = ResumeService.process_resume(sid, file_obj, upload_dir)
     if err_msg:

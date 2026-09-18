@@ -212,17 +212,21 @@ def recommend(
     }
 
     # Build course text documents for TF-IDF
+    # N+1 FIX: bulk-fetch ALL (course_id, skill_name) pairs in a single JOIN
+    # query instead of one query per course inside the loop below.
+    _course_skill_names: dict[int, list[str]] = defaultdict(list)
+    for row in (
+        db.session.query(CourseSkill.course_id, Skill.name)
+        .join(Skill, Skill.id == CourseSkill.skill_id)
+        .all()
+    ):
+        _course_skill_names[row.course_id].append(row.name)
+
     course_docs = []
     provider_frequencies = defaultdict(int)
     for course in all_courses:
         provider_frequencies[course.provider or "unknown"] += 1
-        skill_names = [
-            cs_row.skill_name
-            for cs_row in db.session.query(Skill.name.label("skill_name"))
-            .join(CourseSkill, CourseSkill.skill_id == Skill.id)
-            .filter(CourseSkill.course_id == course.id)
-            .all()
-        ]
+        skill_names = _course_skill_names.get(course.id, [])
         doc_text = " ".join(filter(None, [
             course.title or "",
             course.description or "",
@@ -233,6 +237,7 @@ def recommend(
 
     idf_map = _build_idf_map(course_docs)
     course_vecs = [_vectorize(doc, idf_map) for doc in course_docs]
+
 
     # Build skill-indexed CourseSkill relevance map (alias-aware)
     from services.skill_normalizer import get_equivalent_skill_ids
@@ -385,7 +390,11 @@ def recommend(
             score=item["score"],
             reason=item["reason"],
         ))
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
 
     return out
 

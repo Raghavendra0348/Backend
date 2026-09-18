@@ -4,6 +4,8 @@ tests/conftest.py — Pytest fixtures for the AI Skill Gap System test suite.
 Uses SQLite in-memory database for fast, isolated testing.
 """
 import pytest
+import pathlib
+import tempfile
 from app import create_app
 from extensions import db as _db
 from models import Skill, JobRole, JobSkill, Course, CourseSkill, Student, StudentSkill
@@ -23,7 +25,7 @@ def app():
             "connect_args": {"check_same_thread": False},
         },
         "WTF_CSRF_ENABLED":         False,
-        "UPLOAD_DIR":               "/tmp/test_uploads",
+        "UPLOAD_DIR":               str(pathlib.Path(tempfile.gettempdir()) / "skill_gap_test_uploads"),
         "MODEL_PATH":               "ml/models/skill_gap_model.joblib",
     }
     _app = create_app(test_config=test_config)

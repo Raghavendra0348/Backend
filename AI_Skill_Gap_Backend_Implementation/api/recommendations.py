@@ -14,7 +14,10 @@ def get_recommendations(sid):
     if err:
         return err
 
-    top_k = min(int(request.args.get("top_k", 10)), 50)
+    top_k = request.args.get("top_k", 10, type=int)
+    if top_k is None or top_k < 1:
+        top_k = 10
+    top_k = min(top_k, 50)
     role_id = request.args.get("job_role_id", type=int) or request.args.get("role_id", type=int)
 
     weights = None
@@ -37,7 +40,10 @@ def get_recommendation_history(sid):
     if err:
         return err
 
-    limit = min(int(request.args.get("limit", 10)), 50)
+    limit = request.args.get("limit", 10, type=int)
+    if limit is None or limit < 1:
+        limit = 10
+    limit = min(limit, 50)
     runs = get_recommendation_runs(sid, limit=limit)
     return api_response(data=runs)
 

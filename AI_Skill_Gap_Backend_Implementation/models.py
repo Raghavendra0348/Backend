@@ -50,7 +50,7 @@ class Skill(db.Model):
 class StudentSkill(db.Model):
     __tablename__ = "student_skills"
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="CASCADE"), nullable=False)
     skill_id = db.Column(db.Integer, db.ForeignKey("skills.id"), nullable=False)
     proficiency = db.Column(db.Float, nullable=False, default=0)   # 0–100 scale
     evidence_type = db.Column(
@@ -66,7 +66,7 @@ class StudentSkill(db.Model):
 class Assessment(db.Model):
     __tablename__ = "assessments"
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="CASCADE"), nullable=False)
     skill_id = db.Column(db.Integer, db.ForeignKey("skills.id"), nullable=False)
     score = db.Column(db.Float, nullable=False)
     max_score = db.Column(db.Float, nullable=False, default=100)
@@ -77,7 +77,7 @@ class Assessment(db.Model):
 class Project(db.Model):
     __tablename__ = "projects"
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="CASCADE"), nullable=False)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text)
     skills_used = db.Column(db.Text)  # Comma-separated skill names (from resume or manual)
@@ -87,7 +87,7 @@ class Project(db.Model):
 class Certification(db.Model):
     __tablename__ = "certifications"
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="CASCADE"), nullable=False)
     name = db.Column(db.String(200), nullable=False)
     issuer = db.Column(db.String(200))
     issued_date = db.Column(db.Date)
@@ -97,7 +97,7 @@ class Certification(db.Model):
 class Resume(db.Model):
     __tablename__ = "resumes"
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="CASCADE"), nullable=False)
     file_name = db.Column(db.String(255), nullable=False)
     stored_path = db.Column(db.String(500))
     extracted_text = db.Column(db.Text)
@@ -114,7 +114,7 @@ class SkillEvidence(db.Model):
     """
     __tablename__ = "skill_evidence"
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False, index=True)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="CASCADE"), nullable=False, index=True)
     skill_id = db.Column(db.Integer, db.ForeignKey("skills.id"), nullable=True)
     raw_term = db.Column(db.String(150), nullable=False)
     evidence_type = db.Column(db.String(50), default="resume")  # resume | project | certification
@@ -147,7 +147,7 @@ class AIExtractionRecord(db.Model):
     """
     __tablename__ = "ai_extraction_records"
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=True, index=True)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="CASCADE"), nullable=True, index=True)
     source_type = db.Column(db.String(50), default="resume")
     source_id = db.Column(db.Integer, nullable=True)
     model = db.Column(db.String(100), default="rule-nlp-v1")
@@ -181,7 +181,7 @@ class UnknownSkillReview(db.Model):
     """
     __tablename__ = "unknown_skill_reviews"
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False, index=True)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="CASCADE"), nullable=False, index=True)
     raw_term = db.Column(db.String(150), nullable=False)
     context_snippet = db.Column(db.Text, nullable=True)
     source = db.Column(db.String(50), default="resume")
@@ -224,7 +224,7 @@ class JobRole(db.Model):
 class JobSkill(db.Model):
     __tablename__ = "job_skills"
     id = db.Column(db.Integer, primary_key=True)
-    job_role_id = db.Column(db.Integer, db.ForeignKey("job_roles.id"), nullable=False)
+    job_role_id = db.Column(db.Integer, db.ForeignKey("job_roles.id", ondelete="CASCADE"), nullable=False)
     skill_id = db.Column(db.Integer, db.ForeignKey("skills.id"), nullable=False)
     required_level = db.Column(db.Float, nullable=False, default=50)  # 0–100
     importance = db.Column(db.Float, default=1.0)     # 1.0 = essential, 0.7 = optional
@@ -255,7 +255,7 @@ class Course(db.Model):
 class CourseSkill(db.Model):
     __tablename__ = "course_skills"
     id = db.Column(db.Integer, primary_key=True)
-    course_id = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey("courses.id", ondelete="CASCADE"), nullable=False)
     skill_id = db.Column(db.Integer, db.ForeignKey("skills.id"), nullable=False)
     relevance = db.Column(db.Float, default=1.0)   # 0–1; how strongly this course covers the skill
 
@@ -263,8 +263,8 @@ class CourseSkill(db.Model):
 class SkillGap(db.Model):
     __tablename__ = "skill_gaps"
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
-    job_role_id = db.Column(db.Integer, db.ForeignKey("job_roles.id"), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="CASCADE"), nullable=False)
+    job_role_id = db.Column(db.Integer, db.ForeignKey("job_roles.id", ondelete="CASCADE"), nullable=False)
     skill_id = db.Column(db.Integer, db.ForeignKey("skills.id"), nullable=False)
     current_level = db.Column(db.Float, nullable=False)
     required_level = db.Column(db.Float, nullable=False)
@@ -298,7 +298,7 @@ class SkillGap(db.Model):
 class Recommendation(db.Model):
     __tablename__ = "recommendations"
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="CASCADE"), nullable=False)
     skill_id = db.Column(db.Integer, db.ForeignKey("skills.id"), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey("courses.id"))
     title = db.Column(db.String(255), nullable=False)
@@ -315,7 +315,7 @@ class RecommendationRun(db.Model):
     """
     __tablename__ = "recommendation_runs"
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False, index=True)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="CASCADE"), nullable=False, index=True)
     job_role_id = db.Column(db.Integer, db.ForeignKey("job_roles.id"), nullable=True)
     weights_used = db.Column(db.JSON, nullable=False)
     total_recommendations = db.Column(db.Integer, default=0)
@@ -337,7 +337,7 @@ class RecommendationRun(db.Model):
 class LearningProgress(db.Model):
     __tablename__ = "learning_progress"
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="CASCADE"), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey("courses.id"))
     skill_id = db.Column(db.Integer, db.ForeignKey("skills.id"))
     title = db.Column(db.String(255), nullable=False)
@@ -353,7 +353,7 @@ class LearningProgress(db.Model):
 class Reassessment(db.Model):
     __tablename__ = "reassessments"
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="CASCADE"), nullable=False)
     skill_id = db.Column(db.Integer, db.ForeignKey("skills.id"), nullable=False)
     old_level = db.Column(db.Float)
     new_level = db.Column(db.Float)
@@ -376,7 +376,7 @@ class User(db.Model):
     name          = db.Column(db.String(120), nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     role          = db.Column(db.String(30), default="student")    # student | admin
-    student_id    = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=True)
+    student_id    = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="SET NULL"), nullable=True)
     created_at    = db.Column(db.DateTime, default=_utcnow)
     last_login    = db.Column(db.DateTime, nullable=True)
 
@@ -402,8 +402,8 @@ class LearningPath(db.Model):
     """
     __tablename__ = "learning_paths"
     id               = db.Column(db.Integer, primary_key=True)
-    student_id       = db.Column(db.Integer, db.ForeignKey("students.id"),  nullable=False)
-    job_role_id      = db.Column(db.Integer, db.ForeignKey("job_roles.id"), nullable=False)
+    student_id       = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="CASCADE"),  nullable=False)
+    job_role_id      = db.Column(db.Integer, db.ForeignKey("job_roles.id", ondelete="CASCADE"), nullable=False)
     total_courses    = db.Column(db.Integer, default=0)
     total_hours      = db.Column(db.Integer, default=0)
     match_score_at_generation = db.Column(db.Float, default=0.0)
@@ -418,7 +418,7 @@ class LearningPathStep(db.Model):
     """
     __tablename__  = "learning_path_steps"
     id             = db.Column(db.Integer, primary_key=True)
-    path_id        = db.Column(db.Integer, db.ForeignKey("learning_paths.id"), nullable=False)
+    path_id        = db.Column(db.Integer, db.ForeignKey("learning_paths.id", ondelete="CASCADE"), nullable=False)
     step_order     = db.Column(db.Integer, nullable=False)   # 1, 2, 3, ...
     course_id      = db.Column(db.Integer, db.ForeignKey("courses.id"),   nullable=False)
     skill_id       = db.Column(db.Integer, db.ForeignKey("skills.id"),    nullable=False)

@@ -105,6 +105,10 @@ def record_progress(sid):
         completion=completion,
     )
     db.session.add(p)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
 
     return api_response(data={"id": p.id, "status": status, "completion": completion}, status_code=201)

@@ -59,7 +59,11 @@ class AssessmentService:
             ))
 
         _cache.invalidate_student(student_id)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            raise
 
         return {
             "assessment_id": a.id,
@@ -116,7 +120,11 @@ class AssessmentService:
         )
         db.session.add(r)
         _cache.invalidate_student(student_id)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            raise
 
         result = {
             "old_level": old_level,

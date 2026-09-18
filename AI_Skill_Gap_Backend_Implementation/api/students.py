@@ -26,7 +26,9 @@ def create_student(validated_data):
 def list_students():
     """List recent students."""
     from api import api_response
-    limit = int(request.args.get("limit", 50))
+    limit = request.args.get("limit", 50, type=int)
+    if limit is None or limit < 1:
+        limit = 50
     students = StudentService.list_students(limit=limit)
     return api_response(data=students)
 

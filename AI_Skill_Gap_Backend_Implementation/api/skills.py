@@ -19,7 +19,9 @@ def list_skills():
     from api import api_response
     search = (request.args.get("search") or "").strip()
     category = (request.args.get("category") or "").strip()
-    limit = int(request.args.get("limit", 100))
+    limit = request.args.get("limit", 100, type=int)
+    if limit is None or limit < 1:
+        limit = 100
 
     result = SkillService.list_skills(search=search, category=category, limit=limit)
     return api_response(data=result)

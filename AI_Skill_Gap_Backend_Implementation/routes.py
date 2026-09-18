@@ -48,7 +48,12 @@ from services.resume_parser import (
 import cache as _cache
 from services.role_matcher import compute_role_match
 from services.learning_path import generate_learning_path, get_learning_path
-from services.analytics import compute_analytics
+from services.analytics import AnalyticsService, compute_analytics
+from services.student_service import StudentService
+from services.role_service import RoleService
+from services.skill_service import SkillService
+from services.assessment_service import AssessmentService
+from services.resume_service import ResumeService
 from auth import require_student_auth, get_student_id_from_jwt
 
 log = logging.getLogger(__name__)
@@ -81,26 +86,13 @@ def list_skills():
     """
     search   = (request.args.get("search") or "").strip()
     category = (request.args.get("category") or "").strip()
-    limit    = min(int(request.args.get("limit", 100)), 500)
+    limit    = request.args.get("limit", 100, type=int)
+    if limit is None or limit < 1:
+        limit = 100
+    limit = min(limit, 500)
 
-    q = Skill.query
-    if search:
-        q = q.filter(Skill.name.ilike(f"%{search}%"))
-    if category:
-        q = q.filter(Skill.category == category)
-    skills = q.order_by(Skill.name).limit(limit).all()
-
-    # Also return distinct categories for UI dropdowns
-    categories = [
-        r[0] for r in
-        db.session.query(Skill.category).distinct().order_by(Skill.category).all()
-        if r[0]
-    ]
-    return jsonify({
-        "total": len(skills),
-        "categories": categories,
-        "skills": [s.to_dict() for s in skills],
-    })
+    result = SkillService.list_skills(search=search, category=category, limit=limit)
+    return jsonify(result)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -110,29 +102,21 @@ def list_skills():
 def create_student():
     """FR-001 — Create a student profile."""
     d = request.get_json() or {}
-    name  = (d.get("name") or "").strip()
-    email = (d.get("email") or "").strip()
-    if not name or not email:
-        return jsonify({"error": "name and email are required"}), 400
-    if Student.query.filter_by(email=email).first():
-        return jsonify({"error": "email already registered"}), 409
-
-    s = Student(
-        name=name, email=email,
-        course=d.get("course"), year=d.get("year"),
-        target_career=d.get("target_career"),
-    )
-    db.session.add(s)
-    db.session.commit()
+    s, err, status_code = StudentService.create_student(d)
+    if err:
+        return jsonify({"error": err}), status_code
     return jsonify({"id": s.id, "name": s.name}), 201
 
 
 @api.get("/students")
 def list_students():
     """List recent students (up to limit, default 50)."""
-    limit = min(int(request.args.get("limit", 50)), 100)
-    students = Student.query.order_by(Student.id.desc()).limit(limit).all()
-    return jsonify([s.to_dict() for s in students])
+    limit = request.args.get("limit", 50, type=int)
+    if limit is None or limit < 1:
+        limit = 50
+    limit = min(limit, 100)
+    students = StudentService.list_students(limit=limit)
+    return jsonify(students)
 
 
 @api.get("/students/<int:sid>")
@@ -142,26 +126,10 @@ def get_student(sid):
     if err:
         return err
 
-    rows = (
-        db.session.query(StudentSkill, Skill)
-        .join(Skill, Skill.id == StudentSkill.skill_id)
-        .filter(StudentSkill.student_id == sid)
-        .all()
-    )
-    return jsonify({
-        **student.to_dict(),
-        "skills": [
-            {
-                "skill_id":     sk.id,
-                "skill":        sk.name,
-                "category":     sk.category,
-                "proficiency":  ss.proficiency,
-                "evidence_type": ss.evidence_type,
-                "confidence":   ss.confidence,
-            }
-            for ss, sk in rows
-        ],
-    })
+    profile = StudentService.get_student_profile(sid)
+    if not profile:
+        return jsonify({"error": "student not found"}), 404
+    return jsonify(profile)
 
 
 @api.put("/students/<int:sid>")
@@ -171,29 +139,15 @@ def update_student(sid):
     if err:
         return err
     d = request.get_json() or {}
-    for field in ("name", "course", "year", "target_career"):
-        if field in d:
-            setattr(student, field, d[field])
-    db.session.commit()
-    return jsonify(student.to_dict())
+    s = StudentService.update_student(sid, d)
+    if not s:
+        return jsonify({"error": "student not found"}), 404
+    return jsonify(s.to_dict())
 
 
 def _resolve_skill_id(skill_id, skill_name_raw):
     """Resolve skill_id either from ID or canonicalized skill_name."""
-    if skill_id:
-        return skill_id if db.session.get(Skill, skill_id) else None
-    if not skill_name_raw:
-        return None
-    from services.skill_normalizer import canonicalize_skill_name
-    sk_name = canonicalize_skill_name(str(skill_name_raw).strip())
-    if not sk_name:
-        return None
-    sk = Skill.query.filter(db.func.lower(Skill.name) == sk_name.lower()).first()
-    if not sk:
-        sk = Skill(name=sk_name, category="General", source="MANUAL")
-        db.session.add(sk)
-        db.session.flush()
-    return sk.id
+    return SkillService.resolve_skill_id(skill_id, skill_name_raw)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -207,29 +161,19 @@ def add_skill(sid):
         return err
 
     d = request.get_json() or {}
-    skill_id = _resolve_skill_id(d.get("skill_id"), d.get("skill_name"))
-    if not skill_id:
-        return jsonify({"error": "skill_id or valid skill_name is required"}), 400
+    res, err_msg, status_code = StudentService.add_or_update_skill(
+        student_id=sid,
+        skill_id=d.get("skill_id"),
+        skill_name=d.get("skill_name"),
+        proficiency=d.get("proficiency", 0),
+        evidence_type=d.get("evidence_type", "self_reported"),
+    )
+    if err_msg:
+        return jsonify({"error": err_msg}), status_code
 
-    try:
-        prof = float(d.get("proficiency", 0))
-    except (TypeError, ValueError):
-        return jsonify({"error": "proficiency must be a number"}), 400
-    if not 0 <= prof <= 100:
-        return jsonify({"error": "proficiency must be between 0 and 100"}), 400
-
-    row = StudentSkill.query.filter_by(student_id=sid, skill_id=skill_id).first()
-    if row:
-        row.proficiency   = prof
-        row.evidence_type = d.get("evidence_type", row.evidence_type)
-    else:
-        row = StudentSkill(
-            student_id=sid, skill_id=skill_id, proficiency=prof,
-            evidence_type=d.get("evidence_type", "self_reported"),
-        )
-        db.session.add(row)
-    db.session.commit()
-    return jsonify({"id": row.id, "proficiency": prof}), 201
+    row = StudentSkill.query.filter_by(student_id=sid, skill_id=res["skill_id"]).first()
+    row_id = row.id if row else res.get("id", res["skill_id"])
+    return jsonify({"id": row_id, "proficiency": res["proficiency"]}), 201
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -242,42 +186,10 @@ def assessment(sid):
     if err:
         return err
     d = request.get_json() or {}
-    skill_id = _resolve_skill_id(d.get("skill_id"), d.get("skill_name"))
-    if not skill_id:
-        return jsonify({"error": "skill_id or valid skill_name is required"}), 400
-
-    try:
-        score   = float(d.get("score", 0))
-        maximum = float(d.get("max_score", 100))
-    except (TypeError, ValueError):
-        return jsonify({"error": "score and max_score must be numbers"}), 400
-
-    if maximum <= 0 or not 0 <= score <= maximum:
-        return jsonify({"error": f"score must be 0–{maximum}"}), 400
-
-    # Determine attempt number
-    prev = Assessment.query.filter_by(
-        student_id=sid, skill_id=skill_id
-    ).count()
-
-    a = Assessment(
-        student_id=sid, skill_id=skill_id,
-        score=score, max_score=maximum, attempt_no=prev + 1,
-    )
-    db.session.add(a)
-
-    prof = round(score / maximum * 100, 2)
-    row = StudentSkill.query.filter_by(student_id=sid, skill_id=skill_id).first()
-    if row:
-        row.proficiency   = prof
-        row.evidence_type = "assessment"
-    else:
-        db.session.add(StudentSkill(
-            student_id=sid, skill_id=skill_id,
-            proficiency=prof, evidence_type="assessment",
-        ))
-    db.session.commit()
-    return jsonify({"assessment_id": a.id, "proficiency": prof, "attempt_no": a.attempt_no}), 201
+    result, err_msg, status_code = AssessmentService.submit_assessment(sid, d)
+    if err_msg:
+        return jsonify({"error": err_msg}), status_code
+    return jsonify(result), 201
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -290,17 +202,10 @@ def add_project(sid):
     if err:
         return err
     d = request.get_json() or {}
-    title = (d.get("title") or "").strip()
-    if not title:
-        return jsonify({"error": "title is required"}), 400
-    p = Project(
-        student_id=sid, title=title,
-        description=d.get("description"),
-        skills_used=d.get("skills_used"),
-    )
-    db.session.add(p)
-    db.session.commit()
-    return jsonify({"id": p.id, "title": p.title}), 201
+    result, err_msg, status_code = ResumeService.add_project(sid, d)
+    if err_msg:
+        return jsonify({"error": err_msg}), status_code
+    return jsonify(result), 201
 
 
 @api.post("/students/<int:sid>/certifications")
@@ -310,16 +215,10 @@ def add_certification(sid):
     if err:
         return err
     d = request.get_json() or {}
-    name = (d.get("name") or "").strip()
-    if not name:
-        return jsonify({"error": "name is required"}), 400
-    c = Certification(
-        student_id=sid, name=name,
-        issuer=d.get("issuer"),
-    )
-    db.session.add(c)
-    db.session.commit()
-    return jsonify({"id": c.id, "name": c.name}), 201
+    result, err_msg, status_code = ResumeService.add_certification(sid, d)
+    if err_msg:
+        return jsonify({"error": err_msg}), status_code
+    return jsonify(result), 201
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -336,44 +235,21 @@ def upload_resume(sid):
     if not f:
         return jsonify({"error": "file is required (form field 'file' or 'resume')"}), 400
 
-    ext = Path(f.filename or "").suffix.lower()
-    if ext not in ALLOWED_EXTENSIONS:
-        return jsonify({"error": f"Only PDF and DOCX files are supported. Got: {ext}"}), 400
+    upload_dir = current_app.config.get("UPLOAD_DIR", "storage/uploads")
+    result, err_msg, status_code = ResumeService.process_resume(sid, f, upload_dir)
+    if err_msg:
+        return jsonify({"error": err_msg}), status_code
 
-    upload_dir = Path(current_app.config["UPLOAD_DIR"])
-    upload_dir.mkdir(parents=True, exist_ok=True)
-    safe_name = secure_filename(f.filename or "resume")
-    save_path = upload_dir / f"{sid}_{safe_name}"
-    f.save(save_path)
-
-    try:
-        text = extract_text(str(save_path))
-        extracted = candidate_skills(text)
-        projects  = extract_projects_text(text)
-        certs     = extract_certifications_text(text)
-
-        r = Resume(
-            student_id=sid, file_name=safe_name,
-            stored_path=str(save_path), extracted_text=text,
-            processing_status="processed",
-        )
-        db.session.add(r)
-        db.session.commit()
-
-        return jsonify({
-            "resume_id":         r.id,
-            "extracted_skills":  extracted,
-            "extracted_projects": projects,
-            "extracted_certs":   certs,
-            "message": (
-                "Review the extracted items and confirm skills "
-                "via POST /api/students/{id}/skills"
-            ),
-        }), 201
-
-    except Exception as exc:
-        log.exception("Resume processing failed for student %s", sid)
-        return jsonify({"error": f"Resume processing failed: {exc}"}), 422
+    return jsonify({
+        "resume_id":         result["resume_id"],
+        "extracted_skills":  result["extracted_skills"],
+        "extracted_projects": result["extracted_projects"],
+        "extracted_certs":   result["extracted_certs"],
+        "message": (
+            "Review the extracted items and confirm skills "
+            "via POST /api/students/{id}/skills"
+        ),
+    }), 201
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -382,8 +258,7 @@ def upload_resume(sid):
 @api.get("/roles")
 def list_roles():
     """List all available target job roles."""
-    roles = JobRole.query.order_by(JobRole.name).all()
-    return jsonify([r.to_dict() for r in roles])
+    return jsonify(RoleService.list_roles())
 
 
 @api.get("/roles/<int:rid>/skills")
@@ -393,69 +268,12 @@ def role_skills(rid):
 
     Query params:
         category: 'technical' | 'knowledge' | 'activity' | 'all'  (default: 'all')
-            - 'technical'  → ESCO hard skills only
-            - 'knowledge'  → O*NET Knowledge competencies only
-            - 'activity'   → O*NET Work Activity competencies only
-            - 'all'        → All skills (ESCO + O*NET)
     """
-    role = db.session.get(JobRole, rid)
-    if not role:
-        return jsonify({"error": "role not found"}), 404
-
-    category_filter = request.args.get("category", "all").lower()
-
-    rows = (
-        db.session.query(JobSkill, Skill)
-        .join(Skill, Skill.id == JobSkill.skill_id)
-        .filter(JobSkill.job_role_id == rid)
-        .all()
-    )
-
-    # Apply category filter
-    filtered_rows = []
-    for js, sk in rows:
-        cat = (sk.category or "").lower()
-        if category_filter == "technical" and "o*net" in cat:
-            continue
-        elif category_filter == "knowledge" and cat != "o*net knowledge":
-            continue
-        elif category_filter == "activity" and cat != "o*net work activity":
-            continue
-        filtered_rows.append((js, sk))
-
-    # Count by taxonomy
-    total_technical = sum(1 for _, sk in rows if "o*net" not in (sk.category or "").lower())
-    total_knowledge  = sum(1 for _, sk in rows if (sk.category or "").lower() == "o*net knowledge")
-    total_activity   = sum(1 for _, sk in rows if (sk.category or "").lower() == "o*net work activity")
-
-    return jsonify({
-        "role": role.to_dict(),
-        # Convenience flat fields (backward-compatible)
-        "role_id":   role.id,
-        "role_name": role.name,
-        "onet_code": role.onet_code,
-        "esco_uri":  role.source_identifier,
-        # Taxonomy breakdown counts
-        "technical_skills_count":  total_technical,
-        "onet_competencies_count": total_knowledge + total_activity,
-        "total_skills":            len(rows),
-        "filtered_count":          len(filtered_rows),
-        "category_filter":         category_filter,
-        # Skills list (filtered)
-        "required_skills": [
-            {
-                "skill_id":       sk.id,
-                "skill":          sk.name,
-                "category":       sk.category,
-                "source":         sk.source,
-                "required_level": js.required_level,
-                "importance":     js.importance,
-                "relation_type":  js.relation_type,
-                "source":         js.source,
-            }
-            for js, sk in filtered_rows
-        ],
-    })
+    category_filter = request.args.get("category", "all")
+    result, err_msg, status_code = RoleService.get_role_skills(rid, category_filter=category_filter)
+    if err_msg:
+        return jsonify({"error": err_msg}), status_code
+    return jsonify(result)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -569,7 +387,12 @@ def record_progress(sid):
         title=title, status=status, completion=completion,
     )
     db.session.add(p)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
+    _cache.invalidate_student(sid)
     return jsonify({"id": p.id, "status": status, "completion": completion}), 201
 
 
@@ -587,54 +410,9 @@ def reassessment(sid):
     if err:
         return err
     d = request.get_json() or {}
-    skill_id = _resolve_skill_id(d.get("skill_id"), d.get("skill_name"))
-    if not skill_id:
-        return jsonify({"error": "skill_id or valid skill_name is required"}), 400
-
-    try:
-        if "new_level" in d:
-            new_level = float(d["new_level"])
-        elif "score" in d and "max_score" in d:
-            new_level = round(float(d["score"]) / float(d["max_score"]) * 100, 2)
-        else:
-            new_level = float(d.get("new_level", 0))
-    except (TypeError, ValueError, ZeroDivisionError):
-        return jsonify({"error": "new_level or score/max_score must be numbers"}), 400
-    if not 0 <= new_level <= 100:
-        return jsonify({"error": "new_level must be between 0 and 100"}), 400
-
-    row = StudentSkill.query.filter_by(student_id=sid, skill_id=skill_id).first()
-    old_level = float(row.proficiency) if row else 0.0
-
-    if row:
-        row.proficiency   = new_level
-        row.evidence_type = "reassessment"
-    else:
-        db.session.add(StudentSkill(
-            student_id=sid, skill_id=skill_id,
-            proficiency=new_level, evidence_type="reassessment",
-        ))
-
-    r = Reassessment(
-        student_id=sid, skill_id=skill_id,
-        old_level=old_level, new_level=new_level,
-        improvement=round(new_level - old_level, 2),
-    )
-    db.session.add(r)
-    db.session.commit()
-
-    result = {
-        "old_level":   old_level,
-        "new_level":   new_level,
-        "improvement": r.improvement,
-    }
-
-    # Optionally refresh gap analysis if a role is supplied
-    job_role_id = d.get("job_role_id")
-    if job_role_id and db.session.get(JobRole, job_role_id):
-        updated_gaps = analyze(sid, int(job_role_id))
-        result["updated_gaps"] = updated_gaps
-
+    result, err_msg, status_code = AssessmentService.submit_reassessment(sid, d)
+    if err_msg:
+        return jsonify({"error": err_msg}), status_code
     return jsonify(result), 201
 
 
@@ -651,121 +429,11 @@ def dashboard(sid):
     student, err = require_student_auth(sid)
     if err:
         return err
-    s = student
 
-    # Current skills
-    skill_rows = (
-        db.session.query(StudentSkill, Skill)
-        .join(Skill, Skill.id == StudentSkill.skill_id)
-        .filter(StudentSkill.student_id == sid)
-        .all()
-    )
-
-    # Top 5 priority gaps (across all roles)
-    top_gaps = (
-        db.session.query(SkillGap, Skill, JobRole)
-        .join(Skill,   Skill.id   == SkillGap.skill_id)
-        .join(JobRole, JobRole.id == SkillGap.job_role_id)
-        .filter(SkillGap.student_id == sid, SkillGap.gap_value > 0)
-        .order_by(SkillGap.priority_score.desc())
-        .limit(5)
-        .all()
-    )
-
-    # Active recommendations (not_started or in_progress)
-    active_progress = (
-        LearningProgress.query
-        .filter(LearningProgress.student_id == sid,
-                LearningProgress.status != "completed")
-        .order_by(LearningProgress.updated_at.desc())
-        .limit(10)
-        .all()
-    )
-
-    # Completed courses
-    completed = (
-        LearningProgress.query
-        .filter(LearningProgress.student_id == sid,
-                LearningProgress.status == "completed")
-        .count()
-    )
-
-    # Reassessment history
-    history = (
-        db.session.query(Reassessment, Skill)
-        .join(Skill, Skill.id == Reassessment.skill_id)
-        .filter(Reassessment.student_id == sid)
-        .order_by(Reassessment.assessed_at.desc())
-        .limit(10)
-        .all()
-    )
-
-    # Top recommendations
-    top_recs = (
-        db.session.query(Recommendation, Skill, Course)
-        .join(Skill,  Skill.id  == Recommendation.skill_id)
-        .join(Course, Course.id == Recommendation.course_id)
-        .filter(Recommendation.student_id == sid)
-        .order_by(Recommendation.score.desc())
-        .limit(5)
-        .all()
-    )
-
-    return jsonify({
-        "student": s.to_dict(),
-        "current_skills": [
-            {
-                "skill": sk.name, "category": sk.category,
-                "proficiency": ss.proficiency, "evidence_type": ss.evidence_type,
-            }
-            for ss, sk in skill_rows
-        ],
-        "top_gaps": [
-            {
-                "role":          role.name,
-                "skill":         skill.name,
-                "current_level": gap.current_level,
-                "required_level": gap.required_level,
-                "severity":      gap.severity,
-                "priority_score": gap.priority_score,
-            }
-            for gap, skill, role in top_gaps
-        ],
-        "active_learning_path": [
-            {
-                "title":      lp.title,
-                "status":     lp.status,
-                "completion": lp.completion,
-            }
-            for lp in active_progress
-        ],
-        "progress_summary": {
-            "completed_courses": completed,
-            "in_progress":       sum(1 for lp in active_progress if lp.status == "in_progress"),
-            "not_started":       sum(1 for lp in active_progress if lp.status == "not_started"),
-        },
-        "top_recommendations": [
-            {
-                "skill":    skill.name,
-                "course":   course.title,
-                "provider": course.provider,
-                "score":    rec.score,
-                "reason":   rec.reason,
-                "url":      course.url,
-            }
-            for rec, skill, course in top_recs
-        ],
-        "reassessment_history": [
-            {
-                "skill":       skill.name,
-                "old_level":   ra.old_level,
-                "new_level":   ra.new_level,
-                "improvement": ra.improvement,
-                "date":        ra.assessed_at.isoformat() if ra.assessed_at else None,
-            }
-            for ra, skill in history
-        ],
-    })
+    data = AnalyticsService.get_dashboard(sid)
+    if not data:
+        return jsonify({"error": "student not found"}), 404
+    return jsonify(data)
 
 
 # ──────────────────────────────────────────────────────────────────────────────

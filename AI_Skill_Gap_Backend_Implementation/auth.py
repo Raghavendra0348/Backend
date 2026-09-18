@@ -92,7 +92,11 @@ def register():
         db.session.flush()
 
     user.student_id = student.id
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
 
     access_token  = create_access_token(identity=str(user.id))
     refresh_token = create_refresh_token(identity=str(user.id))
@@ -136,7 +140,11 @@ def login():
 
     # Update last login time
     user.last_login = _utcnow()
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
 
     return jsonify({
         "access_token":  access_token,

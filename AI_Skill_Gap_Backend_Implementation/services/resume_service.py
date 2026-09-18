@@ -44,7 +44,11 @@ class ResumeService:
             skills_used=skills_used,
         )
         db.session.add(p)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            raise
         return {"id": p.id, "title": p.title}, None, 201
 
     @staticmethod
@@ -64,7 +68,11 @@ class ResumeService:
             issuer=data.get("issuer"),
         )
         db.session.add(c)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            raise
         return {"id": c.id, "name": c.name}, None, 201
 
     @staticmethod
@@ -162,6 +170,13 @@ class ResumeService:
                 ),
             }, None, 201
         except Exception as exc:
+            db.session.rollback()
+            # Clean up orphaned file on disk if parsing, extraction, or commit failed
+            try:
+                if save_path.exists():
+                    save_path.unlink()
+            except OSError as cleanup_err:
+                log.warning("Failed to remove orphaned file %s: %s", save_path, cleanup_err)
             log.exception("Resume processing failed for student %s", student_id)
             return None, f"Resume processing failed: {exc}", 422
 
@@ -242,7 +257,11 @@ class ResumeService:
                 ev.status = "rejected"
                 rejected_count += 1
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            raise
         _cache.invalidate_student(student_id)
 
         return {

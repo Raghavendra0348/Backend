@@ -217,7 +217,11 @@ def generate_learning_path(student_id: int, job_role_id: int) -> dict:
         )
         db.session.add(step)
 
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
 
     # ── Build response ─────────────────────────────────────────────────────────
     phases_out = []
