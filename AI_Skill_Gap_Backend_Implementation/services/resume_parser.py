@@ -113,61 +113,209 @@ SKILL_ALIASES: dict[str, str] = {
 def candidate_skills(text: str) -> list[dict]:
     """
     Match canonical skill vocabulary against normalized resume text.
-    Returns a list of candidate skill dicts with confidence and evidence type.
-    Uses app context to query the Skill table.
+    Returns a list of candidate skill dicts with confidence, evidence type, evidence_span, and section.
     """
-    from models import Skill
-    lower = normalize_text(text)
-
-    # Build a lookup: normalized_name → canonical Skill
-    skills = Skill.query.all()
-    found: dict[int, dict] = {}   # skill_id → result dict
-
-    def _check(pattern: str, skill: "Skill", confidence: float):
-        # Whole-word match with word boundary awareness
-        pat = r"(?<![a-z0-9\+\#])" + re.escape(pattern.lower()) + r"(?![a-z0-9\+\#])"
-        if re.search(pat, lower):
-            if skill.id not in found:
-                found[skill.id] = {
-                    "skill_id": skill.id,
-                    "skill": skill.name,
-                    "confidence": confidence,
-                    "evidence": "resume_keyword_match"
-                }
-
-    for s in skills:
-        _check(s.name, s, 0.85)
-
-    # Also match aliases → look up canonical Skill by name
-    for alias, canonical_name in SKILL_ALIASES.items():
-        canonical = Skill.query.filter(
-            db.func.lower(Skill.name) == canonical_name.lower()
-        ).first()
-        if canonical and canonical.id not in found:
-            _check(alias, canonical, 0.75)
-
-    return list(found.values())
+    mapped, _ = extract_skills_with_evidence(text)
+    return mapped
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Section Extraction (Projects / Certifications)
+# Section Extraction & Evidenced Extraction Pipeline
 # ─────────────────────────────────────────────────────────────────────────────
 SECTION_HEADERS = {
+    "skills": re.compile(
+        r"^\s*(skills?|technical skills?|technologies|competencies|core competencies|tools & technologies)\s*$",
+        re.IGNORECASE | re.MULTILINE
+    ),
+    "experience": re.compile(
+        r"^\s*(experience|work experience|professional experience|employment|internships?)\s*$",
+        re.IGNORECASE | re.MULTILINE
+    ),
     "projects": re.compile(
-        r"^\s*(projects?|academic projects?|personal projects?|side projects?)\s*$",
+        r"^\s*(projects?|academic projects?|personal projects?|side projects?|key projects?)\s*$",
         re.IGNORECASE | re.MULTILINE
     ),
     "certifications": re.compile(
         r"^\s*(certifications?|licenses?|courses? completed|achievements?)\s*$",
         re.IGNORECASE | re.MULTILINE
     ),
+    "education": re.compile(
+        r"^\s*(education|academics?|academic background|qualifications?)\s*$",
+        re.IGNORECASE | re.MULTILINE
+    ),
 }
 
-_NEXT_SECTION = re.compile(
-    r"^\s*(experience|education|skills?|summary|objective|references?|"
-    r"awards?|projects?|certifications?|activities)\s*$",
+_ALL_HEADERS = re.compile(
+    r"^\s*(experience|work experience|professional experience|employment|internships?|"
+    r"education|academics?|academic background|qualifications?|"
+    r"skills?|technical skills?|technologies|competencies|core competencies|tools & technologies|"
+    r"summary|objective|profile|references?|awards?|"
+    r"projects?|academic projects?|personal projects?|side projects?|key projects?|"
+    r"certifications?|licenses?|courses? completed|achievements?|activities)\s*$",
     re.IGNORECASE | re.MULTILINE
 )
+
+
+def split_resume_into_sections(text: str) -> dict[str, str]:
+    """
+    Partition resume text into recognized sections.
+    Returns mapping: section_name -> section_body_text.
+    """
+    sections: dict[str, str] = {"general": ""}
+    matches = list(_ALL_HEADERS.finditer(text))
+
+    if not matches:
+        sections["general"] = text
+        return sections
+
+    # Leading text before first recognized header
+    if matches[0].start() > 0:
+        sections["general"] = text[:matches[0].start()].strip()
+
+    for idx, match in enumerate(matches):
+        header_text = match.group(0).strip().lower()
+        start = match.end()
+        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(text)
+        content = text[start:end].strip()
+
+        # Identify which normalized section category this header belongs to
+        category = "general"
+        for sec_name, pat in SECTION_HEADERS.items():
+            if pat.match(header_text):
+                category = sec_name
+                break
+
+        if category in sections and sections[category]:
+            sections[category] += "\n" + content
+        else:
+            sections[category] = content
+
+    return sections
+
+
+def _extract_evidence_span(text: str, keyword: str, max_chars: int = 180) -> str:
+    """Find the sentence or line containing the keyword to provide clear context."""
+    pat = r"(?<![a-z0-9\+\#])" + re.escape(keyword.lower()) + r"(?![a-z0-9\+\#])"
+    lines = [l.strip() for l in text.splitlines() if l.strip()]
+    for line in lines:
+        if re.search(pat, line.lower()):
+            clean = " ".join(line.split())
+            return clean[:max_chars]
+    return f"Mentioned in resume: {keyword}"
+
+
+def extract_skills_with_evidence(text: str) -> tuple[list[dict], list[dict]]:
+    """
+    Extract skills with section attribution, evidence spans, confidence scoring,
+    and unknown skill detection for review.
+
+    Returns:
+        (mapped_skills, unknown_terms)
+    """
+    from models import Skill
+    from services.skill_normalizer import layered_skill_lookup
+
+    if not text or not text.strip():
+        return [], []
+
+    sections = split_resume_into_sections(text)
+    all_skills = Skill.query.all()
+    found_skills: dict[int, dict] = {}   # skill_id -> skill dict
+    unknown_terms_dict: dict[str, dict] = {}
+
+    # Section confidence adjustments
+    section_bonus = {
+        "projects": 0.08,
+        "experience": 0.08,
+        "skills": 0.05,
+        "certifications": 0.05,
+        "education": 0.0,
+        "general": 0.0,
+    }
+
+    # 1. Match canonical skills across all sections
+    for sec_name, sec_text in sections.items():
+        if not sec_text:
+            continue
+        sec_lower = normalize_text(sec_text)
+        bonus = section_bonus.get(sec_name, 0.0)
+
+        for s in all_skills:
+            pat = r"(?<![a-z0-9\+\#])" + re.escape(s.name.lower()) + r"(?![a-z0-9\+\#])"
+            if re.search(pat, sec_lower):
+                span = _extract_evidence_span(sec_text, s.name)
+                conf = min(0.98, round(0.85 + bonus, 2))
+                if s.id not in found_skills or conf > found_skills[s.id]["confidence"]:
+                    found_skills[s.id] = {
+                        "skill_id": s.id,
+                        "skill": s.name,
+                        "confidence": conf,
+                        "evidence": "resume_keyword_match",
+                        "evidence_span": span,
+                        "section": sec_name,
+                        "match_layer": "exact",
+                    }
+
+        # 2. Match aliases across sections
+        for alias, canon_name in SKILL_ALIASES.items():
+            pat = r"(?<![a-z0-9\+\#])" + re.escape(alias.lower()) + r"(?![a-z0-9\+\#])"
+            if re.search(pat, sec_lower):
+                canonical = Skill.query.filter(
+                    db.func.lower(Skill.name) == canon_name.lower()
+                ).first()
+                if canonical:
+                    span = _extract_evidence_span(sec_text, alias)
+                    conf = min(0.95, round(0.75 + bonus, 2))
+                    if canonical.id not in found_skills or conf > found_skills[canonical.id]["confidence"]:
+                        found_skills[canonical.id] = {
+                            "skill_id": canonical.id,
+                            "skill": canonical.name,
+                            "confidence": conf,
+                            "evidence": "resume_alias_match",
+                            "evidence_span": span,
+                            "section": sec_name,
+                            "match_layer": "alias",
+                        }
+
+    # 3. Analyze candidate terms from the "skills" section for layered lookup & unknown review queue
+    skills_section = sections.get("skills", "")
+    if skills_section:
+        # Split by commas, bullets, pipes, slashes, or newlines
+        tokens = re.split(r"[,;\|\n•\-\*]+", skills_section)
+        for tok in tokens:
+            cleaned = tok.strip()
+            # Filter out very short or overly long tokens
+            if len(cleaned) < 2 or len(cleaned) > 50:
+                continue
+            if re.match(r"^\d+$", cleaned):
+                continue
+
+            matched_skill, match_layer, conf = layered_skill_lookup(cleaned)
+            if matched_skill:
+                if matched_skill.id not in found_skills:
+                    found_skills[matched_skill.id] = {
+                        "skill_id": matched_skill.id,
+                        "skill": matched_skill.name,
+                        "confidence": min(0.95, conf),
+                        "evidence": f"resume_{match_layer}_match",
+                        "evidence_span": _extract_evidence_span(skills_section, cleaned),
+                        "section": "skills",
+                        "match_layer": match_layer,
+                    }
+            else:
+                # Potential candidate term not found in canonical catalog -> route to unknown review
+                lower_term = cleaned.lower()
+                # Exclude trivial non-skill words
+                if lower_term not in {"and", "with", "other", "proficient", "familiar", "knowledge", "tools", "languages"}:
+                    if lower_term not in unknown_terms_dict:
+                        unknown_terms_dict[lower_term] = {
+                            "raw_term": cleaned,
+                            "context_snippet": _extract_evidence_span(skills_section, cleaned),
+                            "section": "skills",
+                            "confidence": 0.50,
+                        }
+
+    return list(found_skills.values()), list(unknown_terms_dict.values())
 
 
 def _extract_section_text(text: str, section_pattern: re.Pattern) -> str:
@@ -177,8 +325,7 @@ def _extract_section_text(text: str, section_pattern: re.Pattern) -> str:
         return ""
     start = m.end()
     rest = text[start:]
-    # Find next section boundary
-    next_m = _NEXT_SECTION.search(rest)
+    next_m = _ALL_HEADERS.search(rest)
     end = next_m.start() if next_m else len(rest)
     return rest[:end].strip()
 
@@ -189,7 +336,6 @@ def extract_projects_text(text: str) -> list[str]:
     if not section:
         return []
     lines = [l.strip() for l in section.split("\n") if l.strip()]
-    # Filter out very short lines (bullets) — keep descriptive ones
     return [l for l in lines if len(l) > 15][:10]
 
 
@@ -200,3 +346,4 @@ def extract_certifications_text(text: str) -> list[str]:
         return []
     lines = [l.strip() for l in section.split("\n") if l.strip()]
     return [l for l in lines if len(l) > 5][:10]
+

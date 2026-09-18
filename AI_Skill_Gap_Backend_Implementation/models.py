@@ -107,6 +107,101 @@ class Resume(db.Model):
     created_at = db.Column(db.DateTime, default=_utcnow)
 
 
+class SkillEvidence(db.Model):
+    """
+    Granular evidence for a student skill extracted from resumes, projects, or certifications.
+    Includes context snippet (evidence span) and section location.
+    """
+    __tablename__ = "skill_evidence"
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False, index=True)
+    skill_id = db.Column(db.Integer, db.ForeignKey("skills.id"), nullable=True)
+    raw_term = db.Column(db.String(150), nullable=False)
+    evidence_type = db.Column(db.String(50), default="resume")  # resume | project | certification
+    source_id = db.Column(db.Integer, nullable=True)            # resume_id, project_id, etc.
+    confidence = db.Column(db.Float, default=0.8)
+    evidence_span = db.Column(db.Text, nullable=True)          # snippet/sentence where skill was identified
+    section = db.Column(db.String(100), nullable=True)         # skills | experience | projects | education | certs
+    status = db.Column(db.String(30), default="pending")       # pending | verified | rejected
+    created_at = db.Column(db.DateTime, default=_utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "student_id": self.student_id,
+            "skill_id": self.skill_id,
+            "raw_term": self.raw_term,
+            "evidence_type": self.evidence_type,
+            "source_id": self.source_id,
+            "confidence": round(self.confidence, 2) if self.confidence else None,
+            "evidence_span": self.evidence_span,
+            "section": self.section,
+            "status": self.status,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class AIExtractionRecord(db.Model):
+    """
+    Audit record tracking AI extraction pipeline runs, latency, and token/model usage.
+    """
+    __tablename__ = "ai_extraction_records"
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=True, index=True)
+    source_type = db.Column(db.String(50), default="resume")
+    source_id = db.Column(db.Integer, nullable=True)
+    model = db.Column(db.String(100), default="rule-nlp-v1")
+    prompt_version = db.Column(db.String(50), default="v1.0")
+    latency_ms = db.Column(db.Float, default=0.0)
+    token_usage = db.Column(db.Integer, default=0)
+    skills_extracted_count = db.Column(db.Integer, default=0)
+    unknown_count = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=_utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "student_id": self.student_id,
+            "source_type": self.source_type,
+            "source_id": self.source_id,
+            "model": self.model,
+            "prompt_version": self.prompt_version,
+            "latency_ms": round(self.latency_ms, 2) if self.latency_ms else 0.0,
+            "token_usage": self.token_usage,
+            "skills_extracted_count": self.skills_extracted_count,
+            "unknown_count": self.unknown_count,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class UnknownSkillReview(db.Model):
+    """
+    Review queue for candidate skill terms that could not be mapped to the canonical catalog.
+    Prevents catalog pollution and provides human review queue.
+    """
+    __tablename__ = "unknown_skill_reviews"
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False, index=True)
+    raw_term = db.Column(db.String(150), nullable=False)
+    context_snippet = db.Column(db.Text, nullable=True)
+    source = db.Column(db.String(50), default="resume")
+    status = db.Column(db.String(30), default="pending_review")  # pending_review | approved | rejected
+    suggested_canonical_id = db.Column(db.Integer, db.ForeignKey("skills.id"), nullable=True)
+    created_at = db.Column(db.DateTime, default=_utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "student_id": self.student_id,
+            "raw_term": self.raw_term,
+            "context_snippet": self.context_snippet,
+            "source": self.source,
+            "status": self.status,
+            "suggested_canonical_id": self.suggested_canonical_id,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
 class JobRole(db.Model):
     __tablename__ = "job_roles"
     id = db.Column(db.Integer, primary_key=True)
@@ -177,6 +272,9 @@ class SkillGap(db.Model):
     gap_percent = db.Column(db.Float, nullable=False)
     severity = db.Column(db.String(20), nullable=False)     # LOW | MEDIUM | HIGH
     priority_score = db.Column(db.Float, nullable=False)
+    evidence_summary = db.Column(db.String(255), nullable=True)
+    evidence_factor = db.Column(db.Float, default=1.0)
+    explanation = db.Column(db.Text, nullable=True)
     model_version = db.Column(db.String(100), default="deterministic-baseline-v1")
     created_at = db.Column(db.DateTime, default=_utcnow)
 
@@ -190,7 +288,10 @@ class SkillGap(db.Model):
             "gap_percent": self.gap_percent,
             "severity": self.severity,
             "priority_score": self.priority_score,
-            "model_version": self.model_version
+            "evidence_summary": self.evidence_summary,
+            "evidence_factor": self.evidence_factor,
+            "explanation": self.explanation,
+            "model_version": self.model_version,
         }
 
 
@@ -205,6 +306,32 @@ class Recommendation(db.Model):
     score = db.Column(db.Float, nullable=False)
     reason = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=_utcnow)
+
+
+class RecommendationRun(db.Model):
+    """
+    Snapshot of a recommendation generation run.
+    Ensures recommendation results are reproducible over time, auditable, and traceable.
+    """
+    __tablename__ = "recommendation_runs"
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False, index=True)
+    job_role_id = db.Column(db.Integer, db.ForeignKey("job_roles.id"), nullable=True)
+    weights_used = db.Column(db.JSON, nullable=False)
+    total_recommendations = db.Column(db.Integer, default=0)
+    recommendations_snapshot = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=_utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "student_id": self.student_id,
+            "job_role_id": self.job_role_id,
+            "weights_used": self.weights_used,
+            "total_recommendations": self.total_recommendations,
+            "recommendations_snapshot": self.recommendations_snapshot,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
 
 
 class LearningProgress(db.Model):
@@ -297,3 +424,45 @@ class LearningPathStep(db.Model):
     skill_id       = db.Column(db.Integer, db.ForeignKey("skills.id"),    nullable=False)
     phase          = db.Column(db.String(10), nullable=False)  # HIGH | MEDIUM | LOW
     estimated_hours = db.Column(db.Integer, default=25)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Data Import Tracking
+# ─────────────────────────────────────────────────────────────────────────────
+class ImportBatch(db.Model):
+    """
+    Records every CLI data import run (sync-roles, seed-courses, ingest-onet).
+    Enables tracking what data was loaded and when.
+    """
+    __tablename__ = "import_batches"
+    id            = db.Column(db.Integer, primary_key=True)
+    source        = db.Column(db.String(100), nullable=False)  # sync_15_roles | seed_courses | onet
+    started_at    = db.Column(db.DateTime, default=_utcnow)
+    completed_at  = db.Column(db.DateTime, nullable=True)
+    status        = db.Column(db.String(20), default="running")  # running | success | failed
+    rows_inserted = db.Column(db.Integer, default=0)
+    rows_updated  = db.Column(db.Integer, default=0)
+    rows_skipped  = db.Column(db.Integer, default=0)
+    error_summary = db.Column(db.Text, nullable=True)
+
+    def finish(self, inserted=0, updated=0, skipped=0, error=None):
+        """Mark this batch as completed (call at end of CLI import)."""
+        self.completed_at  = _utcnow()
+        self.status        = "failed" if error else "success"
+        self.rows_inserted = inserted
+        self.rows_updated  = updated
+        self.rows_skipped  = skipped
+        self.error_summary = str(error) if error else None
+
+    def to_dict(self):
+        return {
+            "id":           self.id,
+            "source":       self.source,
+            "started_at":   self.started_at.isoformat()   if self.started_at   else None,
+            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "status":       self.status,
+            "rows_inserted": self.rows_inserted,
+            "rows_updated":  self.rows_updated,
+            "rows_skipped":  self.rows_skipped,
+            "error_summary": self.error_summary,
+        }

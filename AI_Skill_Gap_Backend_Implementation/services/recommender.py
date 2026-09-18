@@ -17,9 +17,70 @@ import re
 from collections import defaultdict
 
 from extensions import db
-from models import SkillGap, Skill, Course, CourseSkill, Recommendation
+from models import (
+    SkillGap, Skill, Course, CourseSkill, Recommendation,
+    RecommendationRun, LearningProgress
+)
 
 log = logging.getLogger(__name__)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Configurable Scoring Weights (PRD / Staged Plan Stage 7)
+# ─────────────────────────────────────────────────────────────────────────────
+DEFAULT_WEIGHTS: dict[str, float] = {
+    "skill_gap_relevance": 0.35,
+    "learning_level_fit": 0.20,
+    "content_similarity": 0.15,
+    "quality": 0.10,
+    "user_preference": 0.10,
+    "diversity": 0.10,
+}
+
+
+def normalize_weights(custom_weights: dict[str, float] | None = None) -> dict[str, float]:
+    """Merge custom weights into defaults and normalize so they sum to 1.0."""
+    w = dict(DEFAULT_WEIGHTS)
+    if custom_weights:
+        for k, v in custom_weights.items():
+            if k in w and isinstance(v, (int, float)) and v >= 0:
+                w[k] = float(v)
+    total = sum(w.values())
+    if total <= 0:
+        return dict(DEFAULT_WEIGHTS)
+    return {k: round(v / total, 4) for k, v in w.items()}
+
+
+def _compute_level_fit(current_level: float, difficulty: str | None) -> float:
+    """
+    Score how well course difficulty fits student's current proficiency (0.0 to 1.0):
+      - Beginner: optimal for proficiency < 35%
+      - Intermediate: optimal for 30%–75%
+      - Advanced: optimal for > 65%
+    """
+    diff = (difficulty or "").strip().lower()
+    if diff == "beginner":
+        if current_level < 35.0:
+            return 1.0
+        elif current_level < 65.0:
+            return 0.70
+        else:
+            return 0.35
+    elif diff == "intermediate":
+        if 30.0 <= current_level <= 75.0:
+            return 1.0
+        elif current_level < 30.0:
+            return 0.65
+        else:
+            return 0.60
+    elif diff == "advanced":
+        if current_level >= 65.0:
+            return 1.0
+        elif current_level >= 40.0:
+            return 0.60
+        else:
+            return 0.25
+    return 0.70
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Lightweight TF-IDF implementation (no external ML dependency at runtime)
@@ -88,15 +149,24 @@ def recommend(
     student_id: int,
     top_k: int = 10,
     job_role_id: int | None = None,
+    role_id: int | None = None,
+    weights: dict[str, float] | None = None,
 ) -> list[dict]:
     """
     Generate top-K personalized course recommendations for a student.
 
-    Uses the persisted SkillGap records and CourseSkill relevance mappings.
-    Falls back to explicit CourseSkill matching when TF-IDF similarity is 0.
-    Ensures skill diversity across top recommendations so distinct gap areas
-    are prioritized before recommending multiple courses for the same skill.
+    Uses a multi-factor intelligence pipeline:
+      - 0.35 skill_gap_relevance
+      - 0.20 learning_level_fit
+      - 0.15 content_similarity
+      - 0.10 quality rating
+      - 0.10 user_preference signals (completed courses excluded, enrolled boosted)
+      - 0.10 diversity
+    Persists active recommendations and snapshots the run to recommendation_runs.
     """
+    effective_role_id = job_role_id if job_role_id is not None else role_id
+    w = normalize_weights(weights)
+
     # Fetch skill gaps ordered by priority
     query = (
         db.session.query(SkillGap, Skill)
@@ -104,10 +174,9 @@ def recommend(
         .filter(SkillGap.student_id == student_id, SkillGap.gap_value > 0)
     )
 
-    if job_role_id:
-        query = query.filter(SkillGap.job_role_id == job_role_id)
+    if effective_role_id:
+        query = query.filter(SkillGap.job_role_id == effective_role_id)
     else:
-        # If no role specified, filter to the most recently evaluated role
         latest_gap = (
             SkillGap.query
             .filter(SkillGap.student_id == student_id, SkillGap.gap_value > 0)
@@ -115,6 +184,7 @@ def recommend(
             .first()
         )
         if latest_gap and latest_gap.job_role_id:
+            effective_role_id = latest_gap.job_role_id
             query = query.filter(SkillGap.job_role_id == latest_gap.job_role_id)
 
     gaps = query.order_by(SkillGap.priority_score.desc()).all()
@@ -126,9 +196,26 @@ def recommend(
     if not all_courses:
         return []
 
+    # Check student learning progress for preference signals
+    learning_progress_rows = LearningProgress.query.filter_by(student_id=student_id).all()
+    completed_course_ids = {
+        lp.course_id for lp in learning_progress_rows
+        if lp.course_id and (lp.status == "completed" or (lp.completion or 0) >= 100.0)
+    }
+    in_progress_course_ids = {
+        lp.course_id for lp in learning_progress_rows
+        if lp.course_id and lp.status == "in_progress"
+    }
+    preferred_providers = {
+        c.provider for c in all_courses
+        if c.id in completed_course_ids and c.provider
+    }
+
     # Build course text documents for TF-IDF
     course_docs = []
+    provider_frequencies = defaultdict(int)
     for course in all_courses:
+        provider_frequencies[course.provider or "unknown"] += 1
         skill_names = [
             cs_row.skill_name
             for cs_row in db.session.query(Skill.name.label("skill_name"))
@@ -153,7 +240,6 @@ def recommend(
     for cs in CourseSkill.query.all():
         skill_course_relevance[cs.skill_id][cs.course_id] = float(cs.relevance or 0)
 
-    # Also build alias mappings: for each gap skill, find all equivalent skill IDs
     alias_relevance: dict[int, dict[int, float]] = defaultdict(dict)
     for gap, skill in gaps:
         eq_ids = get_equivalent_skill_ids(skill.id)
@@ -166,45 +252,68 @@ def recommend(
     candidates: list[dict] = []
 
     for gap, skill in gaps:
-        # Query vector for this gap skill
+        curr_level = float(gap.current_level or 0.0)
         query_text = f"{skill.name} {skill.category or ''} {skill.description or ''}"
         q_vec = _vectorize(_tokenize(query_text), idf_map)
 
-        for idx, course in enumerate(all_courses):
-            # Content similarity (guaranteed non-negative)
-            content_sim = _cosine(q_vec, course_vecs[idx]) if q_vec else 0.0
+        # Gap priority relevance (0 to 1)
+        priority_norm = min(float(gap.priority_score or 0) / 100.0, 1.0)
+        gap_mag = min(float(gap.gap_percent or 0) / 100.0, 1.0)
+        skill_gap_relevance = min(1.0, round(0.7 * priority_norm + 0.3 * gap_mag, 4))
 
-            # Explicit skill mapping bonus (alias-aware)
+        for idx, course in enumerate(all_courses):
+            # Exclude courses the student has already completed
+            if course.id in completed_course_ids:
+                continue
+
+            # Content similarity
+            content_sim = _cosine(q_vec, course_vecs[idx]) if q_vec else 0.0
             mapping_relevance = alias_relevance[skill.id].get(course.id, 0.0)
             if mapping_relevance == 0.0:
                 mapping_relevance = skill_course_relevance[skill.id].get(course.id, 0.0)
 
-            # If there's no content similarity and no mapping, skip
             if content_sim == 0.0 and mapping_relevance == 0.0:
                 continue
 
-            # If skill mapping exists, use it as a floor for content similarity
             effective_sim = max(content_sim, mapping_relevance * 0.8)
 
-            # Rating normalised to 0–1 (Coursera: 0–5)
-            rating_norm = min(float(course.rating or 0), 5.0) / 5.0
+            # Learning level / difficulty fit (0 to 1)
+            level_fit = _compute_level_fit(curr_level, course.difficulty_level)
 
-            priority_norm = min(float(gap.priority_score) / 100.0, 1.0)
+            # Quality rating (0 to 1)
+            rating_norm = (min(float(course.rating or 0), 5.0) / 5.0) if (course.rating and course.rating > 0) else 0.70
 
+            # User preference signals (0 to 1)
+            if course.id in in_progress_course_ids:
+                user_pref = 1.0
+            elif course.provider in preferred_providers:
+                user_pref = 0.85
+            else:
+                user_pref = 0.50
+
+            # Diversity score
+            prov_count = provider_frequencies.get(course.provider or "unknown", 1)
+            diversity_score = max(0.3, min(1.0, round(1.0 / math.sqrt(prov_count) * 1.5, 3)))
+
+            # 6-Factor weighted score
             score = (
-                0.5 * effective_sim
-                + 0.3 * priority_norm
-                + 0.2 * rating_norm
+                w["skill_gap_relevance"] * skill_gap_relevance
+                + w["learning_level_fit"] * level_fit
+                + w["content_similarity"] * effective_sim
+                + w["quality"] * rating_norm
+                + w["user_preference"] * user_pref
+                + w["diversity"] * diversity_score
             )
 
             if score <= 0:
                 continue
 
             match_pct = int(round(min(max(effective_sim, 0.0), 1.0) * 100))
+            diff_label = course.difficulty_level or "Suitable"
             reason = (
-                f"Addresses your {skill.name} gap of "
-                f"{gap.gap_percent:.1f}% (priority {gap.priority_score:.1f}). "
-                f"Content match: {match_pct}%."
+                f"Addresses your {skill.name} gap of {gap.gap_percent:.1f}% "
+                f"(priority {gap.priority_score:.1f}). {diff_label} difficulty fits your "
+                f"{curr_level:.1f}% proficiency. Content match: {match_pct}%. Rating: {course.rating or 4.0}★."
             )
 
             candidates.append({
@@ -219,14 +328,14 @@ def recommend(
                 "score":          round(score, 4),
                 "reason":         reason,
                 "priority_score": gap.priority_score,
+                "level_fit":      round(level_fit, 2),
+                "content_match":  match_pct,
             })
 
-    # Sort all candidates by score descending
+    # Sort candidates by score descending
     candidates.sort(key=lambda x: x["score"], reverse=True)
 
-    # Diversity-aware ranking:
-    # Ensure distinct skills get recommended first so multiple courses for the same skill
-    # don't crowd out other high-priority gaps.
+    # Diversity-aware ranking
     seen_skills = set()
     seen_courses = set()
     first_pass = []
@@ -251,7 +360,20 @@ def recommend(
                 if len(out) == top_k:
                     break
 
-    # Persist recommendations (replace previous ones for this student)
+    # Persist snapshot to recommendation_runs
+    try:
+        run_record = RecommendationRun(
+            student_id=student_id,
+            job_role_id=effective_role_id,
+            weights_used=w,
+            total_recommendations=len(out),
+            recommendations_snapshot=out,
+        )
+        db.session.add(run_record)
+    except Exception as exc:
+        log.warning("Failed to record recommendation run: %s", exc)
+
+    # Persist active recommendations (replace previous ones for this student)
     Recommendation.query.filter_by(student_id=student_id).delete()
     for item in out:
         db.session.add(Recommendation(
@@ -266,3 +388,15 @@ def recommend(
     db.session.commit()
 
     return out
+
+
+def get_recommendation_runs(student_id: int, limit: int = 10) -> list[dict]:
+    """Retrieve historical recommendation run snapshots for a student."""
+    runs = (
+        RecommendationRun.query.filter_by(student_id=student_id)
+        .order_by(RecommendationRun.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+    return [r.to_dict() for r in runs]
+

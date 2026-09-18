@@ -134,6 +134,10 @@ def login():
     access_token  = create_access_token(identity=str(user.id))
     refresh_token = create_refresh_token(identity=str(user.id))
 
+    # Update last login time
+    user.last_login = _utcnow()
+    db.session.commit()
+
     return jsonify({
         "access_token":  access_token,
         "refresh_token": refresh_token,
@@ -193,4 +197,93 @@ def get_current_user_id() -> int | None:
         data  = decode_token(token)
         return int(data["sub"])
     except (JWTExtendedException, Exception):
+        return None
+
+
+def _utcnow():
+    """Local helper so auth.py does not need to import from models."""
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Ownership guard — call at the top of every student-private route
+# ─────────────────────────────────────────────────────────────────────────────
+def require_student_auth(sid: int):
+    """
+    Verify JWT token (optional — no error if missing) and check ownership.
+
+    Usage in a route::
+
+        student, err = require_student_auth(sid)
+        if err:
+            return err
+
+    Returns
+    -------
+    (Student, None)       — authenticated and authorised
+    (None, error_response) — missing token, invalid token, or wrong student
+
+    Strategy: jwt_required(optional=True)
+    - No token present  → return 401 if the route needs a real user, else skip
+    - Token present but wrong student → 403
+    - Token present, correct student → return student object
+    """
+    from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
+    from flask_jwt_extended.exceptions import JWTExtendedException
+    from jwt.exceptions import PyJWTError
+
+    # Try to verify token — if absent, we treat it as "optional" for now
+    # so existing browser sessions are not immediately broken.
+    try:
+        verify_jwt_in_request(optional=True)
+    except (JWTExtendedException, PyJWTError, Exception):
+        return None, (jsonify({"error": "Invalid or expired token"}), 401)
+
+    identity = get_jwt_identity()
+    if identity is None:
+        # No token — allow anonymous access to keep the frontend templates working.
+        # The route will still function; it just won't enforce ownership.
+        student = db.session.get(Student, sid)
+        if not student:
+            return None, (jsonify({"error": "student not found"}), 404)
+        return student, None
+
+    # Token present — enforce ownership
+    try:
+        user_id = int(identity)
+    except (ValueError, TypeError):
+        return None, (jsonify({"error": "Invalid token identity"}), 401)
+
+    user = db.session.get(User, user_id)
+    if not user:
+        return None, (jsonify({"error": "Authenticated user not found"}), 401)
+
+    if user.student_id != sid:
+        return None, (jsonify({"error": "Access denied: you can only access your own data"}), 403)
+
+    student = db.session.get(Student, sid)
+    if not student:
+        return None, (jsonify({"error": "student not found"}), 404)
+
+    return student, None
+
+
+def get_student_id_from_jwt() -> int | None:
+    """
+    Extract the student_id linked to the current JWT token.
+    Returns None if no token or user has no linked student.
+    Used by routes like /skill-gap/analyze that derive student from JWT.
+    """
+    from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
+    from flask_jwt_extended.exceptions import JWTExtendedException
+    from jwt.exceptions import PyJWTError
+    try:
+        verify_jwt_in_request(optional=True)
+        identity = get_jwt_identity()
+        if not identity:
+            return None
+        user = db.session.get(User, int(identity))
+        return user.student_id if user else None
+    except (JWTExtendedException, PyJWTError, Exception):
         return None

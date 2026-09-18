@@ -1525,56 +1525,81 @@ def seed_curated_courses() -> dict:
     Seed all curated courses into the database.
     Idempotent: skips courses that already exist (by title + provider).
     """
+    from models import ImportBatch
+
+    batch = ImportBatch(source="seed_courses", status="running")
+    db.session.add(batch)
+    db.session.commit()
+
     print("\n=== Seeding Curated Learning Resources ===")
     courses_created = 0
     course_skills_created = 0
+    courses_skipped = 0
     skills_covered = set()
 
-    for entry in CURATED_COURSES:
-        title = entry["title"]
-        provider = entry["provider"]
+    try:
+        for entry in CURATED_COURSES:
+            title = entry["title"]
+            provider = entry["provider"]
 
-        # Skip if already exists
-        existing = Course.query.filter_by(title=title, provider=provider).first()
-        if existing:
-            course = existing
-        else:
-            course = Course(
-                title=title,
-                provider=provider,
-                url=entry.get("url", ""),
-                description=entry.get("description", ""),
-                difficulty_level=entry.get("difficulty", "Intermediate"),
-                rating=entry.get("rating", 4.0),
-                source="Curated",
-            )
-            db.session.add(course)
-            db.session.flush()
-            courses_created += 1
+            # Skip if already exists
+            existing = Course.query.filter_by(title=title, provider=provider).first()
+            if existing:
+                course = existing
+                courses_skipped += 1
+            else:
+                course = Course(
+                    title=title,
+                    provider=provider,
+                    url=entry.get("url", ""),
+                    description=entry.get("description", ""),
+                    difficulty_level=entry.get("difficulty", "Intermediate"),
+                    rating=entry.get("rating", 4.0),
+                    source="Curated",
+                )
+                db.session.add(course)
+                db.session.flush()
+                courses_created += 1
 
-        # Map skills
-        for skill_name, relevance in entry.get("skills", {}).items():
-            skill = _get_or_create_skill(skill_name)
-            skills_covered.add(skill.name)
+            # Map skills
+            for skill_name, relevance in entry.get("skills", {}).items():
+                skill = _get_or_create_skill(skill_name)
+                skills_covered.add(skill.name)
 
-            existing_cs = CourseSkill.query.filter_by(
-                course_id=course.id, skill_id=skill.id
-            ).first()
-            if not existing_cs:
-                db.session.add(CourseSkill(
-                    course_id=course.id,
-                    skill_id=skill.id,
-                    relevance=relevance,
-                ))
-                course_skills_created += 1
+                existing_cs = CourseSkill.query.filter_by(
+                    course_id=course.id, skill_id=skill.id
+                ).first()
+                if not existing_cs:
+                    db.session.add(CourseSkill(
+                        course_id=course.id,
+                        skill_id=skill.id,
+                        relevance=relevance,
+                    ))
+                    course_skills_created += 1
 
-    db.session.commit()
-    print(f"  {courses_created} new courses seeded")
-    print(f"  {course_skills_created} new CourseSkill mappings created")
-    print(f"  {len(skills_covered)} unique skills covered by curated courses")
+        batch.finish(
+            inserted=courses_created + course_skills_created,
+            updated=0,
+            skipped=courses_skipped,
+        )
+        db.session.commit()
+        print(f"  {courses_created} new courses seeded")
+        print(f"  {course_skills_created} new CourseSkill mappings created")
+        print(f"  {len(skills_covered)} unique skills covered by curated courses")
+        print(f"  Batch #{batch.id} recorded with status: {batch.status}")
 
-    return {
-        "courses_created": courses_created,
-        "course_skills_created": course_skills_created,
-        "skills_covered": len(skills_covered),
-    }
+        return {
+            "batch_id": batch.id,
+            "courses_created": courses_created,
+            "course_skills_created": course_skills_created,
+            "skills_covered": len(skills_covered),
+        }
+    except Exception as e:
+        batch.finish(
+            inserted=courses_created + course_skills_created,
+            updated=0,
+            skipped=courses_skipped,
+            error=e,
+        )
+        db.session.commit()
+        raise

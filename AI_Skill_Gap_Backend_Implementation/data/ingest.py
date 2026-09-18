@@ -1004,125 +1004,145 @@ def sync_15_roles_and_skills() -> dict:
     Grounded in official ESCO v1.2.1 concept URIs, ISCO-08 groups, and O*NET-SOC codes.
     Guarantees that each of the 15 roles has exactly 15 high-priority skills.
     """
-    from models import SkillGap
+    from models import SkillGap, ImportBatch
+
+    batch = ImportBatch(source="sync_15_roles", status="running")
+    db.session.add(batch)
+    db.session.commit()
 
     print("\n=== Synchronizing 15 Roles × 15 Core Skills ===")
     roles_synced = 0
     skills_created_or_mapped = 0
     total_job_skills = 0
+    rows_inserted = 0
+    rows_updated = 0
 
-    # Build lookup of existing roles by normalized name
-    existing_roles = {r.name.lower().strip(): r for r in JobRole.query.all()}
+    try:
+        # Build lookup of existing roles by normalized name
+        existing_roles = {r.name.lower().strip(): r for r in JobRole.query.all()}
 
-    for role_name, role_data in TAXONOMY_15_ROLES.items():
-        # Match existing role by exact title or alias
-        role = existing_roles.get(role_name.lower().strip())
-        if not role:
-            # Check aliases
-            for alias_key, canon_name in ROLE_ALIASES.items():
-                if canon_name == role_name and alias_key in existing_roles:
-                    role = existing_roles[alias_key]
-                    break
+        for role_name, role_data in TAXONOMY_15_ROLES.items():
+            # Match existing role by exact title or alias
+            role = existing_roles.get(role_name.lower().strip())
+            if not role:
+                # Check aliases
+                for alias_key, canon_name in ROLE_ALIASES.items():
+                    if canon_name == role_name and alias_key in existing_roles:
+                        role = existing_roles[alias_key]
+                        break
 
-        if not role:
-            role = JobRole(
-                name=role_name,
-                source="ESCO",
-                source_identifier=role_data["esco_uri"],
-                description=role_data["description"],
-                isco_group=role_data["isco_group"],
-                onet_code=role_data["onet_code"],
-            )
-            db.session.add(role)
-            db.session.flush()
-        else:
-            # Update canonical attributes
-            role.name = role_name
-            role.source = "ESCO"
-            role.source_identifier = role_data["esco_uri"]
-            role.description = role_data["description"]
-            role.isco_group = role_data["isco_group"]
-            role.onet_code = role_data["onet_code"]
-            db.session.flush()
-
-        roles_synced += 1
-
-        # Map the 15 skills for this role (10 Essential + 5 Optional)
-        target_skill_ids = []
-        essential_list = role_data.get("essential_skills", role_data["skills"][:10])
-        optional_list = role_data.get("optional_skills", role_data["skills"][10:])
-
-        for skill_name in essential_list:
-            skill = get_or_create_skill(skill_name)
-            target_skill_ids.append(skill.id)
-            skills_created_or_mapped += 1
-
-            js = JobSkill.query.filter_by(job_role_id=role.id, skill_id=skill.id).first()
-            if not js:
-                js = JobSkill(
-                    job_role_id=role.id,
-                    skill_id=skill.id,
-                    required_level=75.0,
-                    importance=1.0,
-                    relation_type="essential",
+            if not role:
+                role = JobRole(
+                    name=role_name,
                     source="ESCO",
+                    source_identifier=role_data["esco_uri"],
+                    description=role_data["description"],
+                    isco_group=role_data["isco_group"],
+                    onet_code=role_data["onet_code"],
                 )
-                db.session.add(js)
+                db.session.add(role)
+                db.session.flush()
+                rows_inserted += 1
             else:
-                js.required_level = 75.0
-                js.importance = 1.0
-                js.relation_type = "essential"
-                js.source = "ESCO"
+                # Update canonical attributes
+                role.name = role_name
+                role.source = "ESCO"
+                role.source_identifier = role_data["esco_uri"]
+                role.description = role_data["description"]
+                role.isco_group = role_data["isco_group"]
+                role.onet_code = role_data["onet_code"]
+                db.session.flush()
+                rows_updated += 1
 
-        for skill_name in optional_list:
-            skill = get_or_create_skill(skill_name)
-            target_skill_ids.append(skill.id)
-            skills_created_or_mapped += 1
+            roles_synced += 1
 
-            js = JobSkill.query.filter_by(job_role_id=role.id, skill_id=skill.id).first()
-            if not js:
-                js = JobSkill(
-                    job_role_id=role.id,
-                    skill_id=skill.id,
-                    required_level=60.0,
-                    importance=0.5,
-                    relation_type="optional",
-                    source="ESCO",
-                )
-                db.session.add(js)
-            else:
-                js.required_level = 60.0
-                js.importance = 0.5
-                js.relation_type = "optional"
-                js.source = "ESCO"
+            # Map the 15 skills for this role (10 Essential + 5 Optional)
+            target_skill_ids = []
+            essential_list = role_data.get("essential_skills", role_data["skills"][:10])
+            optional_list = role_data.get("optional_skills", role_data["skills"][10:])
 
-        # Remove any extraneous job skills outside the 15 curated skills
-        old_js = JobSkill.query.filter(
-            JobSkill.job_role_id == role.id,
-            ~JobSkill.skill_id.in_(target_skill_ids)
-        ).all()
-        old_skill_ids = [o.skill_id for o in old_js]
-        if old_skill_ids:
-            SkillGap.query.filter(
-                SkillGap.job_role_id == role.id,
-                SkillGap.skill_id.in_(old_skill_ids)
-            ).delete(synchronize_session=False)
+            for skill_name in essential_list:
+                skill = get_or_create_skill(skill_name)
+                target_skill_ids.append(skill.id)
+                skills_created_or_mapped += 1
 
-            JobSkill.query.filter(
+                js = JobSkill.query.filter_by(job_role_id=role.id, skill_id=skill.id).first()
+                if not js:
+                    js = JobSkill(
+                        job_role_id=role.id,
+                        skill_id=skill.id,
+                        required_level=75.0,
+                        importance=1.0,
+                        relation_type="essential",
+                        source="ESCO",
+                    )
+                    db.session.add(js)
+                    rows_inserted += 1
+                else:
+                    js.required_level = 75.0
+                    js.importance = 1.0
+                    js.relation_type = "essential"
+                    js.source = "ESCO"
+                    rows_updated += 1
+
+            for skill_name in optional_list:
+                skill = get_or_create_skill(skill_name)
+                target_skill_ids.append(skill.id)
+                skills_created_or_mapped += 1
+
+                js = JobSkill.query.filter_by(job_role_id=role.id, skill_id=skill.id).first()
+                if not js:
+                    js = JobSkill(
+                        job_role_id=role.id,
+                        skill_id=skill.id,
+                        required_level=60.0,
+                        importance=0.5,
+                        relation_type="optional",
+                        source="ESCO",
+                    )
+                    db.session.add(js)
+                    rows_inserted += 1
+                else:
+                    js.required_level = 60.0
+                    js.importance = 0.5
+                    js.relation_type = "optional"
+                    js.source = "ESCO"
+                    rows_updated += 1
+
+            # Remove any extraneous job skills outside the 15 curated skills
+            old_js = JobSkill.query.filter(
                 JobSkill.job_role_id == role.id,
                 ~JobSkill.skill_id.in_(target_skill_ids)
-            ).delete(synchronize_session=False)
+            ).all()
+            old_skill_ids = [o.skill_id for o in old_js]
+            if old_skill_ids:
+                SkillGap.query.filter(
+                    SkillGap.job_role_id == role.id,
+                    SkillGap.skill_id.in_(old_skill_ids)
+                ).delete(synchronize_session=False)
 
-        total_job_skills += len(target_skill_ids)
+                JobSkill.query.filter(
+                    JobSkill.job_role_id == role.id,
+                    ~JobSkill.skill_id.in_(target_skill_ids)
+                ).delete(synchronize_session=False)
 
-    db.session.commit()
-    print(f"  Synced {roles_synced} roles.")
-    print(f"  Total active JobSkill mappings: {total_job_skills} (15 per role).")
-    return {
-        "roles": roles_synced,
-        "skills_per_role": 15,
-        "total_job_skills": total_job_skills
-    }
+            total_job_skills += len(target_skill_ids)
+
+        batch.finish(inserted=rows_inserted, updated=rows_updated, skipped=0)
+        db.session.commit()
+        print(f"  Synced {roles_synced} roles.")
+        print(f"  Total active JobSkill mappings: {total_job_skills} (15 per role).")
+        print(f"  Batch #{batch.id} recorded with status: {batch.status}")
+        return {
+            "batch_id": batch.id,
+            "roles": roles_synced,
+            "skills_per_role": 15,
+            "total_job_skills": total_job_skills
+        }
+    except Exception as e:
+        batch.finish(inserted=rows_inserted, updated=rows_updated, skipped=0, error=e)
+        db.session.commit()
+        raise
 
 
 def run_ingestion() -> dict:

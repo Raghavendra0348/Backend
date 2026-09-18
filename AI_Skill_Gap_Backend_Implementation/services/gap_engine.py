@@ -95,17 +95,66 @@ def _predict_with_model(
         return None
 
 
+def _derive_evidence_metadata(student_skill_rows, gap: float, current: float) -> tuple[str, float]:
+    """
+    Derive evidence summary string and evidence adjustment factor.
+    Verified / assessment evidence maintains standard weight (1.0).
+    Unverified or self-reported evidence increases priority urgency (factor > 1.0) when a gap exists.
+    """
+    if not student_skill_rows or current == 0.0:
+        return "No evidence acquired", 1.0
+
+    # Highest verification level among matching student skill rows
+    evidence_types = {r.evidence_type.lower() for r in student_skill_rows if r.evidence_type}
+
+    if "assessment" in evidence_types:
+        return f"Verified by MCQ Assessment ({current:.0f}%)", 1.0
+    if "certified" in evidence_types or "certification" in evidence_types:
+        return f"Verified by Certification ({current:.0f}%)", 1.0
+    if "resume" in evidence_types:
+        factor = 1.05 if gap > 0 else 1.0
+        return f"Extracted from Resume/Projects ({current:.0f}%)", factor
+    if "reassessment" in evidence_types:
+        return f"Verified by Reassessment ({current:.0f}%)", 1.0
+    if "self_reported" in evidence_types:
+        factor = 1.15 if gap > 0 else 1.0
+        return f"Self-reported ({current:.0f}%) — unverified", factor
+
+    return f"Recorded ({current:.0f}%)", 1.0
+
+
+def generate_gap_explanation(
+    skill_name: str,
+    current: float,
+    required: float,
+    gap: float,
+    gap_pct: float,
+    severity: str,
+    relation_type: str | None,
+    evidence_summary: str,
+) -> str:
+    """Produce natural language explanation for the gap result."""
+    rel_desc = "Essential requirement" if relation_type == "essential" else "Recommended competency"
+    if gap == 0.0:
+        return (
+            f"Proficiency requirement fulfilled ({current:.1f}/{required:.1f}). "
+            f"Evidence: {evidence_summary}."
+        )
+
+    return (
+        f"{rel_desc} with {severity} gap: current proficiency is {current:.1f}/{required:.1f} "
+        f"({gap:.1f} pt deficit, {gap_pct:.1f}% gap). Evidence: {evidence_summary}."
+    )
+
+
 def analyze(student_id: int, role_id: int) -> list[dict]:
     """
     Analyze skill gaps for a student against a target role.
 
-    For each required skill:
-      1. Look up student's current proficiency.
-      2. Compute gap and gap_percent using deterministic formula.
-      3. Classify severity with ML model if available, else deterministic thresholds.
-      4. Score priority = gap_pct × importance.
-      5. Persist results to skill_gaps table (replacing previous analysis).
-      6. Return sorted list of gap dicts.
+    Source of truth:
+      gap = max(0.0, required_level - current_level)
+      gap_pct = (gap / required_level * 100) if required > 0 else 0.0
+      priority_score = gap_pct * importance * evidence_factor
     """
     from models import Assessment, Project, Certification, Skill
 
@@ -122,7 +171,6 @@ def analyze(student_id: int, role_id: int) -> list[dict]:
 
     results = []
     for req in requirements:
-        # Current proficiency across primary skill and all aliases/sub-skills
         from services.skill_normalizer import get_equivalent_skill_ids
         eq_ids = get_equivalent_skill_ids(req.skill_id)
         student_skill_rows = StudentSkill.query.filter(
@@ -133,8 +181,14 @@ def analyze(student_id: int, role_id: int) -> list[dict]:
         required = float(req.required_level)
         importance = float(req.importance if req.importance is not None else 1.0)
 
+        # Deterministic formula as source of truth
         gap = max(0.0, required - current)
         gap_pct = (gap / required * 100) if required > 0 else 0.0
+
+        # Evidence evaluation & priority adjustment
+        evidence_summary, evidence_factor = _derive_evidence_metadata(
+            student_skill_rows, gap, current
+        )
 
         # Most recent assessment score across equivalent skills
         latest_assessment = Assessment.query.filter(
@@ -160,18 +214,32 @@ def analyze(student_id: int, role_id: int) -> list[dict]:
         else:
             severity = classify_gap(gap_pct)
 
-        priority = round(gap_pct * importance, 2)
+        priority = round(gap_pct * importance * evidence_factor, 2)
+
+        explanation = generate_gap_explanation(
+            skill_name=skill_name,
+            current=current,
+            required=required,
+            gap=gap,
+            gap_pct=gap_pct,
+            severity=severity,
+            relation_type=req.relation_type,
+            evidence_summary=evidence_summary,
+        )
 
         results.append({
-            "skill_id":      req.skill_id,
-            "skill":         skill_name,
+            "skill_id": req.skill_id,
+            "skill": skill_name,
             "current_level": current,
             "required_level": required,
-            "gap":           round(gap, 2),
-            "gap_percent":   round(gap_pct, 2),
-            "severity":      severity,
+            "gap": round(gap, 2),
+            "gap_percent": round(gap_pct, 2),
+            "severity": severity,
             "priority_score": priority,
             "relation_type": req.relation_type,
+            "evidence_summary": evidence_summary,
+            "evidence_factor": evidence_factor,
+            "explanation": explanation,
             "model_version": model_version,
         })
 
@@ -191,8 +259,18 @@ def analyze(student_id: int, role_id: int) -> list[dict]:
             gap_percent=r["gap_percent"],
             severity=r["severity"],
             priority_score=r["priority_score"],
+            evidence_summary=r["evidence_summary"],
+            evidence_factor=r["evidence_factor"],
+            explanation=r["explanation"],
             model_version=r["model_version"],
         ))
     db.session.commit()
 
     return results
+
+
+class SkillGapService:
+    @staticmethod
+    def analyze(student_id: int, job_role_id: int) -> list[dict]:
+        return analyze(student_id, job_role_id)
+

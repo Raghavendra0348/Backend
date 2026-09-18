@@ -213,3 +213,139 @@ def compute_analytics(student_id: int) -> dict:
         "learning_path_progress": path_progress,
         "skill_categories":      skill_categories,
     }
+
+
+def get_student_dashboard(student_id: int) -> dict | None:
+    """FR-084 — Aggregated student dashboard summary."""
+    from models import (
+        Student, Course, LearningProgress, Recommendation,
+        StudentSkill, Skill as SkillModel, SkillGap, JobRole, Reassessment,
+    )
+    student = db.session.get(Student, student_id)
+    if not student:
+        return None
+
+    skill_rows = (
+        db.session.query(StudentSkill, SkillModel)
+        .join(SkillModel, SkillModel.id == StudentSkill.skill_id)
+        .filter(StudentSkill.student_id == student_id)
+        .all()
+    )
+
+    top_gaps = (
+        db.session.query(SkillGap, SkillModel, JobRole)
+        .join(SkillModel, SkillModel.id == SkillGap.skill_id)
+        .join(JobRole, JobRole.id == SkillGap.job_role_id)
+        .filter(SkillGap.student_id == student_id, SkillGap.gap_value > 0)
+        .order_by(SkillGap.priority_score.desc())
+        .limit(5)
+        .all()
+    )
+
+    active_progress = (
+        LearningProgress.query
+        .filter(
+            LearningProgress.student_id == student_id,
+            LearningProgress.status != "completed"
+        )
+        .order_by(LearningProgress.updated_at.desc())
+        .limit(10)
+        .all()
+    )
+
+    completed = (
+        LearningProgress.query
+        .filter(
+            LearningProgress.student_id == student_id,
+            LearningProgress.status == "completed"
+        )
+        .count()
+    )
+
+    history = (
+        db.session.query(Reassessment, SkillModel)
+        .join(SkillModel, SkillModel.id == Reassessment.skill_id)
+        .filter(Reassessment.student_id == student_id)
+        .order_by(Reassessment.assessed_at.desc())
+        .limit(10)
+        .all()
+    )
+
+    top_recs = (
+        db.session.query(Recommendation, SkillModel, Course)
+        .join(SkillModel, SkillModel.id == Recommendation.skill_id)
+        .join(Course, Course.id == Recommendation.course_id)
+        .filter(Recommendation.student_id == student_id)
+        .order_by(Recommendation.score.desc())
+        .limit(5)
+        .all()
+    )
+
+    return {
+        "student": student.to_dict(),
+        "current_skills": [
+            {
+                "skill": sk.name,
+                "category": sk.category,
+                "proficiency": ss.proficiency,
+                "evidence_type": ss.evidence_type,
+            }
+            for ss, sk in skill_rows
+        ],
+        "top_gaps": [
+            {
+                "role": role.name,
+                "skill": skill.name,
+                "current_level": gap.current_level,
+                "required_level": gap.required_level,
+                "severity": gap.severity,
+                "priority_score": gap.priority_score,
+            }
+            for gap, skill, role in top_gaps
+        ],
+        "active_learning_path": [
+            {
+                "title": lp.title,
+                "status": lp.status,
+                "completion": lp.completion,
+            }
+            for lp in active_progress
+        ],
+        "progress_summary": {
+            "completed_courses": completed,
+            "in_progress": sum(1 for lp in active_progress if lp.status == "in_progress"),
+            "not_started": sum(1 for lp in active_progress if lp.status == "not_started"),
+        },
+        "top_recommendations": [
+            {
+                "skill": skill.name,
+                "course": course.title,
+                "provider": course.provider,
+                "score": rec.score,
+                "reason": rec.reason,
+                "url": course.url,
+            }
+            for rec, skill, course in top_recs
+        ],
+        "reassessment_history": [
+            {
+                "skill": skill.name,
+                "old_level": ra.old_level,
+                "new_level": ra.new_level,
+                "improvement": ra.improvement,
+                "date": ra.assessed_at.isoformat() if ra.assessed_at else None,
+            }
+            for ra, skill in history
+        ],
+    }
+
+
+class AnalyticsService:
+    @staticmethod
+    def compute_analytics(student_id: int) -> dict:
+        return compute_analytics(student_id)
+
+    @staticmethod
+    def get_dashboard(student_id: int) -> dict | None:
+        return get_student_dashboard(student_id)
+

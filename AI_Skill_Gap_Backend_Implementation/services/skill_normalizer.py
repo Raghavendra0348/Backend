@@ -295,3 +295,79 @@ def get_equivalent_skill_ids(target_skill_id: int) -> list[int]:
         ids.add(s.id)
 
     return list(ids)
+
+
+def layered_skill_lookup(
+    raw_term: str,
+    min_fuzzy_ratio: float = 0.82
+) -> tuple[Skill | None, str, float]:
+    """
+    Multi-layer normalization pipeline to map raw terms to canonical catalog skills:
+      Layer 1: Exact case-insensitive match against Skill.name (confidence 1.0)
+      Layer 2: Alias dictionary match via SKILL_ALIAS_MAP (confidence 0.90)
+      Layer 3: Canonicalized name exact match in DB (confidence 0.88)
+      Layer 4: Fuzzy string match (difflib SequenceMatcher >= min_fuzzy_ratio) (confidence 0.75–0.85)
+      Layer 5: Token containment / word boundary match against canonical catalog (confidence 0.72)
+      Layer 6: Unknown — returns (None, "unknown", 0.0) for routing to review queue.
+
+    Returns:
+      (matched_skill, match_layer, confidence)
+    """
+    import difflib
+
+    cleaned = clean_skill_str(raw_term)
+    if not cleaned:
+        return None, "empty", 0.0
+
+    lower_cleaned = cleaned.lower()
+
+    # Layer 1: Exact match against canonical database skill name
+    exact = Skill.query.filter(db.func.lower(Skill.name) == lower_cleaned).first()
+    if exact:
+        return exact, "exact", 1.0
+
+    # Layer 2: Alias lookup
+    if lower_cleaned in SKILL_ALIAS_MAP:
+        alias_target = SKILL_ALIAS_MAP[lower_cleaned]
+        matched = Skill.query.filter(db.func.lower(Skill.name) == alias_target.lower()).first()
+        if matched:
+            return matched, "alias", 0.90
+
+    # Layer 3: Rule-based canonicalization
+    canon_name = canonicalize_skill_name(cleaned)
+    if canon_name.lower() != lower_cleaned:
+        canon_match = Skill.query.filter(db.func.lower(Skill.name) == canon_name.lower()).first()
+        if canon_match:
+            return canon_match, "canonical_rule", 0.88
+
+    # Pre-fetch all skills for Layer 4 & Layer 5
+    all_skills = Skill.query.all()
+    if not all_skills:
+        return None, "unknown", 0.0
+
+    # Layer 4: Fuzzy matching
+    best_skill: Skill | None = None
+    best_ratio: float = 0.0
+    for s in all_skills:
+        s_lower = s.name.lower()
+        ratio = difflib.SequenceMatcher(None, lower_cleaned, s_lower).ratio()
+        if ratio > best_ratio:
+            best_ratio = ratio
+            best_skill = s
+
+    if best_ratio >= min_fuzzy_ratio and best_skill:
+        confidence = round(0.75 + (best_ratio - min_fuzzy_ratio) * 0.5, 2)
+        return best_skill, "fuzzy", min(0.85, confidence)
+
+    # Layer 5: Token containment / boundary matching
+    for s in all_skills:
+        s_lower = s.name.lower()
+        # Word boundary check
+        pattern_1 = r"(?<![a-z0-9])" + re.escape(lower_cleaned) + r"(?![a-z0-9])"
+        pattern_2 = r"(?<![a-z0-9])" + re.escape(s_lower) + r"(?![a-z0-9])"
+        if re.search(pattern_1, s_lower) or re.search(pattern_2, lower_cleaned):
+            return s, "token_containment", 0.72
+
+    # Layer 6: Unknown — unmapped term
+    return None, "unknown", 0.0
+

@@ -123,3 +123,85 @@ MCA 2024
         certs = extract_certifications_text(text)
         assert len(certs) >= 1
         assert any("AWS" in c or "Google" in c for c in certs)
+
+
+class TestLayeredSkillLookup:
+    def test_layer1_exact(self, app_ctx):
+        from services.skill_normalizer import layered_skill_lookup
+        with app_ctx.app_context():
+            skill, layer, conf = layered_skill_lookup("Python")
+            assert skill is not None
+            assert skill.name == "Python"
+            assert layer == "exact"
+            assert conf == 1.0
+
+    def test_layer2_alias(self, app_ctx):
+        from services.skill_normalizer import layered_skill_lookup
+        with app_ctx.app_context():
+            skill, layer, conf = layered_skill_lookup("py")
+            assert skill is not None
+            assert skill.name == "Python"
+            assert layer == "alias"
+            assert conf >= 0.90
+
+    def test_layer3_rule_canonicalization(self, app_ctx):
+        from services.skill_normalizer import layered_skill_lookup
+        with app_ctx.app_context():
+            skill, layer, conf = layered_skill_lookup("python 3.9")
+            assert skill is not None
+            assert skill.name == "Python"
+            assert layer in ("canonical_rule", "exact", "alias")
+            assert conf >= 0.85
+
+    def test_layer4_fuzzy(self, app_ctx):
+        from services.skill_normalizer import layered_skill_lookup
+        with app_ctx.app_context():
+            skill, layer, conf = layered_skill_lookup("Pythoon")
+            assert skill is not None
+            assert skill.name == "Python"
+            assert layer == "fuzzy"
+            assert conf >= 0.75
+
+    def test_layer6_unknown(self, app_ctx):
+        from services.skill_normalizer import layered_skill_lookup
+        with app_ctx.app_context():
+            skill, layer, conf = layered_skill_lookup("SuperCalifragilisticHyperDrive999")
+            assert skill is None
+            assert layer == "unknown"
+            assert conf == 0.0
+
+
+class TestEvidencedResumePipeline:
+    def test_extract_skills_with_evidence_and_unknowns(self, app_ctx):
+        from services.resume_parser import extract_skills_with_evidence, split_resume_into_sections
+        text = """
+Skills
+Python, Docker, SuperRareNonExistentSkillXYZ
+
+Projects
+Built an E-Commerce backend using Python and REST APIs.
+Deployed microservices on Kubernetes.
+
+Education
+B.Tech in Computer Science
+"""
+        with app_ctx.app_context():
+            sections = split_resume_into_sections(text)
+            assert "skills" in sections
+            assert "projects" in sections
+
+            mapped, unknowns = extract_skills_with_evidence(text)
+            mapped_names = [m["skill"] for m in mapped]
+            assert "Python" in mapped_names
+            assert "Docker" in mapped_names
+
+            # Verify evidence span and section attribution
+            python_item = next(m for m in mapped if m["skill"] == "Python")
+            assert "evidence_span" in python_item
+            assert len(python_item["evidence_span"]) > 0
+            assert "section" in python_item
+
+            # Verify unknown skill detection
+            assert len(unknowns) >= 1
+            assert any("superrarenonexistentskillxyz" in u["raw_term"].lower() for u in unknowns)
+

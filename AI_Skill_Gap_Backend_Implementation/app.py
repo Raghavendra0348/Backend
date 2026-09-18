@@ -1,10 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from config import Config
-from extensions import db
+from extensions import db, migrate
 from routes import api
 from auth import auth_bp
+from api import api_v1
 
 
 def create_app(test_config=None):
@@ -13,11 +14,38 @@ def create_app(test_config=None):
     if test_config:
         app.config.update(test_config)
     db.init_app(app)
+    migrate.init_app(app, db)
     JWTManager(app)
-    # Enable CORS for all /api/* routes so any frontend can call the API
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    # CORS: allow localhost in development; override CORS_ORIGINS env var in production
+    import os
+    allowed_origins = os.getenv("CORS_ORIGINS", "http://localhost:5000,http://127.0.0.1:5000").split(",")
+    CORS(app, resources={r"/api/*": {"origins": allowed_origins}})
     app.register_blueprint(api,     url_prefix="/api")
+    app.register_blueprint(api_v1,  url_prefix="/api/v1")
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
+
+    # ───────────────────────────────────────────────────────────────────────────
+    # Centralized error handlers (no raw exception messages to clients)
+    # ───────────────────────────────────────────────────────────────────────────
+    @app.errorhandler(400)
+    def bad_request(e):
+        return jsonify({"error": "Bad request", "detail": str(e)}), 400
+
+    @app.errorhandler(401)
+    def unauthorized(e):
+        return jsonify({"error": "Authentication required"}), 401
+
+    @app.errorhandler(403)
+    def forbidden(e):
+        return jsonify({"error": "Access denied"}), 403
+
+    @app.errorhandler(404)
+    def not_found(e):
+        return jsonify({"error": "Resource not found"}), 404
+
+    @app.errorhandler(500)
+    def internal_error(e):
+        return jsonify({"error": "Internal server error"}), 500
 
     @app.get("/")
     @app.get("/test")

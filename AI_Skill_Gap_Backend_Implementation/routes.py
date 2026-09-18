@@ -49,6 +49,7 @@ import cache as _cache
 from services.role_matcher import compute_role_match
 from services.learning_path import generate_learning_path, get_learning_path
 from services.analytics import compute_analytics
+from auth import require_student_auth, get_student_id_from_jwt
 
 log = logging.getLogger(__name__)
 api = Blueprint("api", __name__)
@@ -137,9 +138,9 @@ def list_students():
 @api.get("/students/<int:sid>")
 def get_student(sid):
     """Get student profile with current skills."""
-    s = db.session.get(Student, sid)
-    if not s:
-        return jsonify({"error": "student not found"}), 404
+    student, err = require_student_auth(sid)
+    if err:
+        return err
 
     rows = (
         db.session.query(StudentSkill, Skill)
@@ -148,7 +149,7 @@ def get_student(sid):
         .all()
     )
     return jsonify({
-        **s.to_dict(),
+        **student.to_dict(),
         "skills": [
             {
                 "skill_id":     sk.id,
@@ -166,15 +167,15 @@ def get_student(sid):
 @api.put("/students/<int:sid>")
 def update_student(sid):
     """Update student profile fields."""
-    s = db.session.get(Student, sid)
-    if not s:
-        return jsonify({"error": "student not found"}), 404
+    student, err = require_student_auth(sid)
+    if err:
+        return err
     d = request.get_json() or {}
     for field in ("name", "course", "year", "target_career"):
         if field in d:
-            setattr(s, field, d[field])
+            setattr(student, field, d[field])
     db.session.commit()
-    return jsonify(s.to_dict())
+    return jsonify(student.to_dict())
 
 
 def _resolve_skill_id(skill_id, skill_name_raw):
@@ -201,8 +202,9 @@ def _resolve_skill_id(skill_id, skill_name_raw):
 @api.post("/students/<int:sid>/skills")
 def add_skill(sid):
     """FR-002/FR-003 — Add or update a skill proficiency for a student."""
-    if not db.session.get(Student, sid):
-        return jsonify({"error": "student not found"}), 404
+    _, err = require_student_auth(sid)
+    if err:
+        return err
 
     d = request.get_json() or {}
     skill_id = _resolve_skill_id(d.get("skill_id"), d.get("skill_name"))
@@ -236,6 +238,9 @@ def add_skill(sid):
 @api.post("/students/<int:sid>/assessments")
 def assessment(sid):
     """FR-009 — Submit assessment result; derives and persists proficiency."""
+    _, err = require_student_auth(sid)
+    if err:
+        return err
     d = request.get_json() or {}
     skill_id = _resolve_skill_id(d.get("skill_id"), d.get("skill_name"))
     if not skill_id:
@@ -281,6 +286,9 @@ def assessment(sid):
 @api.post("/students/<int:sid>/projects")
 def add_project(sid):
     """FR-007 — Add a student project."""
+    _, err = require_student_auth(sid)
+    if err:
+        return err
     d = request.get_json() or {}
     title = (d.get("title") or "").strip()
     if not title:
@@ -298,6 +306,9 @@ def add_project(sid):
 @api.post("/students/<int:sid>/certifications")
 def add_certification(sid):
     """FR-008 — Add a student certification."""
+    _, err = require_student_auth(sid)
+    if err:
+        return err
     d = request.get_json() or {}
     name = (d.get("name") or "").strip()
     if not name:
@@ -317,8 +328,9 @@ def add_certification(sid):
 @api.post("/students/<int:sid>/resume")
 def upload_resume(sid):
     """FR-010 — Upload and parse a PDF/DOCX resume."""
-    if not db.session.get(Student, sid):
-        return jsonify({"error": "student not found"}), 404
+    _, err = require_student_auth(sid)
+    if err:
+        return err
 
     f = request.files.get("file") or request.files.get("resume")
     if not f:
@@ -451,12 +463,21 @@ def role_skills(rid):
 # ──────────────────────────────────────────────────────────────────────────────
 @api.post("/skill-gap/analyze")
 def gap_analyze():
-    """FR-060 — Run gap analysis for a student against a target role."""
+    """FR-060 — Run gap analysis for a student against a target role.
+
+    student_id is derived from the JWT token (if present).
+    Falls back to body student_id for unauthenticated/legacy calls.
+    """
     d = request.get_json() or {}
-    student_id  = d.get("student_id")
     job_role_id = d.get("job_role_id") or d.get("role_id")
-    if not student_id or not job_role_id:
-        return jsonify({"error": "student_id and job_role_id (or role_id) are required"}), 400
+    if not job_role_id:
+        return jsonify({"error": "job_role_id (or role_id) is required"}), 400
+
+    # Prefer JWT-derived student_id; fall back to body for unauthenticated calls
+    student_id = get_student_id_from_jwt() or d.get("student_id")
+    if not student_id:
+        return jsonify({"error": "student_id is required (send JWT token or include in body)"}), 400
+
     if not db.session.get(Student, student_id):
         return jsonify({"error": "student not found"}), 404
     if not db.session.get(JobRole, job_role_id):
@@ -469,6 +490,9 @@ def gap_analyze():
 @api.get("/students/<int:sid>/gaps")
 def get_gaps(sid):
     """Retrieve most recent gap analysis for a student."""
+    _, err = require_student_auth(sid)
+    if err:
+        return err
     role_id = request.args.get("job_role_id", type=int) or request.args.get("role_id", type=int)
     query = (
         db.session.query(SkillGap, Skill)
@@ -496,6 +520,9 @@ def get_gaps(sid):
 @api.get("/students/<int:sid>/recommendations")
 def get_recommendations(sid):
     """FR-070 — Return top-K personalized course recommendations."""
+    _, err = require_student_auth(sid)
+    if err:
+        return err
     top_k = max(1, min(request.args.get("top_k", 10, type=int), 50))
     role_id = request.args.get("job_role_id", type=int) or request.args.get("role_id", type=int)
     return jsonify(recommend(sid, top_k=top_k, job_role_id=role_id))
@@ -507,6 +534,9 @@ def get_recommendations(sid):
 @api.post("/students/<int:sid>/progress")
 def record_progress(sid):
     """FR-080 — Record a learning progress update."""
+    _, err = require_student_auth(sid)
+    if err:
+        return err
     d = request.get_json() or {}
     course_id = d.get("course_id")
     title = (d.get("title") or "").strip()
@@ -553,6 +583,9 @@ def reassessment(sid):
     Updates StudentSkill, persists Reassessment, and re-runs gap analysis if
     job_role_id is supplied.
     """
+    _, err = require_student_auth(sid)
+    if err:
+        return err
     d = request.get_json() or {}
     skill_id = _resolve_skill_id(d.get("skill_id"), d.get("skill_name"))
     if not skill_id:
@@ -615,9 +648,10 @@ def dashboard(sid):
     Returns: profile, current skills radar data, top gaps, active learning path,
              progress summary, and reassessment history.
     """
-    s = db.session.get(Student, sid)
-    if not s:
-        return jsonify({"error": "student not found"}), 404
+    student, err = require_student_auth(sid)
+    if err:
+        return err
+    s = student
 
     # Current skills
     skill_rows = (
@@ -752,9 +786,10 @@ def role_match(sid):
         top_missing     (top 5 skills not yet acquired),
         verdict         (human-readable label)
     """
-    s = db.session.get(Student, sid)
-    if not s:
-        return jsonify({"error": "student not found"}), 404
+    student, err = require_student_auth(sid)
+    if err:
+        return err
+    s = student
 
     job_role_id = request.args.get("job_role_id", type=int)
 
@@ -789,9 +824,9 @@ def create_learning_path(sid):
 
     Requires gap analysis to have been run first.
     """
-    s = db.session.get(Student, sid)
-    if not s:
-        return jsonify({"error": "student not found"}), 404
+    _, err = require_student_auth(sid)
+    if err:
+        return err
 
     job_role_id = request.args.get("job_role_id", type=int)
     if not job_role_id:
@@ -818,9 +853,9 @@ def get_student_learning_path(sid):
     Required query param:
         ?job_role_id=<int>
     """
-    s = db.session.get(Student, sid)
-    if not s:
-        return jsonify({"error": "student not found"}), 404
+    _, err = require_student_auth(sid)
+    if err:
+        return err
 
     job_role_id = request.args.get("job_role_id", type=int)
     if not job_role_id:
@@ -858,9 +893,9 @@ def student_analytics(sid):
         gap_severity_counts:  {HIGH: N, MEDIUM: N, LOW: N}
         best_fit_role:        role with fewest HIGH severity gaps
     """
-    s = db.session.get(Student, sid)
-    if not s:
-        return jsonify({"error": "student not found"}), 404
+    _, err = require_student_auth(sid)
+    if err:
+        return err
 
     analytics = compute_analytics(sid)
     return jsonify({"student_id": sid, **analytics})
