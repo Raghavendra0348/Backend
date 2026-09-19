@@ -100,6 +100,20 @@
  .chip{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .6rem;border-radius:6px;font-size:.75rem;font-weight:500;margin:.2rem;}
  .chip-ok{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);color:var(--success);}
 
+ /* Skill proficiency editor rows */
+ .skill-prof-list{display:flex;flex-direction:column;gap:.5rem;margin:.75rem 0;}
+ .skill-prof-row{display:flex;align-items:center;gap:.75rem;padding:.6rem .8rem;border-radius:8px;background:var(--surface2);border:1px solid var(--border);transition:border-color .2s,box-shadow .2s;}
+ .skill-prof-row:hover{border-color:var(--primary);box-shadow:0 0 0 2px rgba(79,70,229,.08);}
+ .skill-prof-name{display:flex;align-items:center;gap:.4rem;min-width:140px;font-size:.82rem;font-weight:600;color:var(--text);}
+ .skill-prof-name .chip-dot{width:8px;height:8px;border-radius:50%;background:var(--success);flex-shrink:0;}
+ .skill-prof-slider-wrap{flex:1;display:flex;align-items:center;gap:.6rem;}
+ .skill-prof-slider-wrap input[type=range]{flex:1;height:6px;-webkit-appearance:none;appearance:none;background:linear-gradient(to right,var(--success),var(--primary),var(--accent));border-radius:3px;outline:none;padding:0;cursor:pointer;}
+ .skill-prof-slider-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--primary);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.18);cursor:grab;transition:transform .15s;}
+ .skill-prof-slider-wrap input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15);}
+ .skill-prof-slider-wrap input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--primary);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.18);cursor:grab;}
+ .skill-prof-value{min-width:38px;text-align:center;font-size:.8rem;font-weight:700;color:var(--primary);background:rgba(79,70,229,.08);padding:.2rem .45rem;border-radius:5px;}
+ .skill-prof-section{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;min-width:70px;text-align:right;}
+
  .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.75rem 1.25rem;font-size:.85rem;font-weight:500;box-shadow:var(--shadow);z-index:999;animation:slideUp .2s ease;display:none;}
  .toast.show{display:block;}
  .toast.success{border-left:3px solid var(--success);}
@@ -201,11 +215,11 @@
 
  <div class="card" id="resume-results-card" style="display:none;">
  <div class="card-title" style="justify-content:space-between;">
- <span> Extracted Skills</span>
- <button class="btn btn-success btn-sm" onclick="saveExtractedSkills()">Save All to Profile</button>
+ <span>📄 Extracted Skills</span>
+ <button class="btn btn-success btn-sm" onclick="saveExtractedSkills()">💾 Save All to Profile</button>
  </div>
- <div class="card-desc">These skills were detected from your resume. Click "Save All to Profile" to add them.</div>
- <div id="parsed-chips" style="margin:.5rem 0;"></div>
+ <div class="card-desc">Set your proficiency level for each detected skill, then click "Save All to Profile".</div>
+ <div id="parsed-chips" class="skill-prof-list" style="margin:.75rem 0;"></div>
  <div id="parsed-extra"></div>
  </div>
  </div>
@@ -422,6 +436,22 @@
  if(input.files[0]) document.getElementById('file-chosen').textContent=` ${input.files[0].name} (${(input.files[0].size/1024).toFixed(1)} KB)`;
  }
 
+ function _defaultProficiency(section) {
+ /* Smart default based on which resume section the skill was found in */
+ const s = (section||'').toLowerCase();
+ if(s === 'skills') return 70;
+ if(s === 'experience') return 60;
+ if(s === 'projects') return 65;
+ if(s === 'certifications') return 60;
+ return 50;
+ }
+
+ function _onSliderInput(idx, slider) {
+ /* Update the value badge and store the user's choice */
+ document.getElementById('prof-val-'+idx).textContent = slider.value;
+ extractedSkills[idx].userProficiency = parseInt(slider.value);
+ }
+
  async function uploadResume() {
  if(!SS.sid) return toast('Select a student first','error');
  const file = document.getElementById('resume-file').files[0];
@@ -429,33 +459,50 @@
  const fd = new FormData(); fd.append('file',file); fd.append('resume',file);
  const r = await api(`/api/students/${SS.sid}/resume`,{method:'POST',body:fd});
  if(!r.ok) { toast(r.data.error||'Parse failed','error'); return; }
- extractedSkills = r.data.extracted_skills||r.data.parsed_skills||[];
+ extractedSkills = (r.data.extracted_skills||r.data.parsed_skills||[]).map(s => {
+ const def = _defaultProficiency(s.section);
+ return {...s, userProficiency: def};
+ });
  document.getElementById('resume-results-card').style.display='';
- const chips = document.getElementById('parsed-chips');
- chips.innerHTML = extractedSkills.length
- ? extractedSkills.map(s=>`<span class="chip chip-ok"> ${s.skill||s.name||s}</span>`).join('')
- : '<span style="color:var(--muted);font-size:.8rem;">No canonical skills detected</span>';
+ const container = document.getElementById('parsed-chips');
+ if(!extractedSkills.length) {
+ container.innerHTML = '<span style="color:var(--muted);font-size:.8rem;">No canonical skills detected</span>';
+ } else {
+ container.innerHTML = extractedSkills.map((s, i) => {
+ const name = s.skill||s.name||s;
+ const def = s.userProficiency;
+ const sec = s.section||'general';
+ return `<div class="skill-prof-row">`
+ + `<div class="skill-prof-name"><span class="chip-dot"></span>${name}</div>`
+ + `<div class="skill-prof-slider-wrap">`
+ + `<input type="range" min="0" max="100" value="${def}" oninput="_onSliderInput(${i}, this)" />`
+ + `<span class="skill-prof-value" id="prof-val-${i}">${def}</span>`
+ + `</div>`
+ + `<span class="skill-prof-section">${sec}</span>`
+ + `</div>`;
+ }).join('');
+ }
  const extra = r.data.extracted_projects||[];
  const certs = r.data.extracted_certs||[];
  document.getElementById('parsed-extra').innerHTML = [
  extra.length?`<strong>Projects:</strong><ul style="margin:.5rem 0 0 1.2rem;">${extra.map(p=>`<li style="font-size:.8rem;">${p}</li>`).join('')}</ul>`:'',
  certs.length?`<strong>Certifications:</strong><ul style="margin:.5rem 0 0 1.2rem;">${certs.map(c=>`<li style="font-size:.8rem;">${c}</li>`).join('')}</ul>`:''
  ].join('');
- toast(` ${extractedSkills.length} skills extracted!`);
+ toast(`🎯 ${extractedSkills.length} skills extracted! Adjust proficiency and save.`);
  }
 
  async function saveExtractedSkills() {
  if(!SS.sid||!extractedSkills.length) return toast('No skills to save','error');
  let count = 0;
  for(const s of extractedSkills) {
- const payload = {proficiency:75,evidence_type:'resume'};
+ const payload = {proficiency: s.userProficiency || 50, evidence_type:'resume'};
  if(s.skill_id) payload.skill_id=s.skill_id;
  else if(s.skill||s.name) payload.skill_name=s.skill||s.name;
  else continue;
  await api(`/api/students/${SS.sid}/skills`,{method:'POST',body:JSON.stringify(payload)});
  count++;
  }
- toast(` Saved ${count} skills to profile!`);
+ toast(`✅ Saved ${count} skills with your proficiency levels!`);
  }
 
  // ── Roles ──────────────────────────────────────────────────────────────────
